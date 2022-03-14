@@ -10,7 +10,7 @@ import { AmountMath } from '@agoric/ertp';
 
 import installationConstants from '../ui/src/conf/installationConstants.js';
 
-import { cards } from './cards.js';
+import { tickets } from './tickets.js';
 
 const PRICE_PER_CARD_IN_MONEY_UNITS = 1n;
 
@@ -123,7 +123,7 @@ export default async function deployApi(homePromise, { pathResolve }) {
   ]);
 
   // CMT (haseeb.asim@robor.systems): Cards Array from card.js. Hardening it so that it becomes immutable.
-  const allCardNames = harden(cards);
+  const allTickets = harden(tickets);
 
   // CMT (haseeb.asim@robor.systems): Calculation of the price of each card.
   const moneyValue =
@@ -140,7 +140,7 @@ export default async function deployApi(homePromise, { pathResolve }) {
     auctionItemsPublicFacet: publicFacet,
     auctionItemsInstance: instance,
   } = await E(baseballCardSellerFacet).auctionCards(
-    allCardNames,
+    allTickets,
     moneyIssuer,
     auctionInstallation,
     auctionItemsInstallation,
@@ -169,13 +169,6 @@ export default async function deployApi(homePromise, { pathResolve }) {
     E(cardIssuerP).getBrand(),
     invitationBrandP,
   ]);
-
-  // CMT (haseeb.asim@robor.systems): Creating issuerKeyWordRecord for Secondary Store Wrapper which contains
-  // all the issuer that are required in the contract.
-  const issuerKeywordRecord = harden({
-    Items: cardIssuer,
-    Money: moneyIssuer,
-  });
 
   const {
     publicFacet: simpleExchangePublicFacet,

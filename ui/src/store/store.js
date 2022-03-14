@@ -48,7 +48,7 @@ export const {
     tokenPetname: null,
     openExpandModal: null,
     activeTab: 0,
-    type: 'Marketplace',
+    type: 'marketplace',
     userOffers: [],
     pendingOffers: [],
     openEnableAppDialog: false,
