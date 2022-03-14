@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root,
+.App {
+  height: 100%;
+}
+
+:root {
+  --color-secondary: #3eb2ff;
+  --color-secondary-dark: #29a9ff;
+  --color-alternative: #eb5757;
+  --color-alternative-light: #cfcfcf;
+  --color-field: #f1f1f1;
+  --color-primary: #363636;
+  --color-primary-light: #a1a1a1;
+}
+
+@layer base {
+  p,
+  span,
+  h1,
+  h2 {
+    @apply text-primary;
+  }
+
+  select {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+  }
+
+  input::placeholder {
+    color: var(--color-primary-light);
+  }
+
+  select::placeholder {
+    color: var(--color-primary);
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    appearance: none;
+    -moz-appearance: none;
+  }
+
+  input[type='date']::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    z-index: 10 !important;
+  }
+}
+
+@layer utilities {
+  .nav-shadow {
+    box-shadow: 0px 3px 8px #0000001f;
+  }
+
+  .modal-shadow {
+    box-shadow: 0px 6px 16px #00000029;
+  }
+
+  .btn-shadow:hover {
+    box-shadow: 0px 3px 6px #00000029;
+  }
+  /* 
+  .modal {
+    max-height: 640px !important;
+  } */
+
+  .modal-img {
+    /* min-width: 100%; */
+    max-width: 1269px;
+    max-height: 85%;
+  }
+
+  .modal::-webkit-scrollbar {
+    display: none;
+  }
+
+  .card {
+    width: 360px;
+    max-height: 490px;
+  }
+
+  .card-image-only {
+    width: 308px !important;
+    height: 377px !important;
+  }
+
+  .card:hover {
+    box-shadow: 0px 6px 18px #00000029;
+  }
+
+  .card-media {
+    width: 336px;
+    height: 336px;
+  }
+
+  .card-media-small {
+    width: 288px !important;
+    height: 288px !important;
+  }
+
+  .media-action,
+  .overlay,
+  .media-action-expand {
+    visibility: hidden;
+  }
+
+  .card-media:hover .overlay,
+  .card-media:hover .media-action,
+  .card-media:hover .media-action-expand {
+    visibility: visible;
+  }
+
+  .display-card {
+    margin: 72px auto;
+  }
+
+  /* .form {
+    width: 336px;
+  } */
+}
