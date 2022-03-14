@@ -5,9 +5,9 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-import enableDappPng from '../assets/enable-dapp.png';
-import { useApplicationContext } from '../context/Application';
-import { setOpenEnableAppDialog } from '../store/store';
+import enableDappPng from '../../../assets/enable-dapp.png';
+import { useApplicationContext } from '../../../context/Application';
+import { setOpenEnableAppDialog } from '../../../store/store';
 
 const EnableAppDialog = () => {
   const { state, dispatch } = useApplicationContext();

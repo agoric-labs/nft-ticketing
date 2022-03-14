@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import SearchIcon from '../assets/icons/search.png';
-import FilterIcon from '../assets/icons/filter.png';
-import { useApplicationContext } from '../context/Application';
+import SearchIcon from '../../../assets/icons/search.png';
+import FilterIcon from '../../../assets/icons/filter.png';
+import { useApplicationContext } from '../../../context/Application';
 
 const SearchBar = () => {
   const {
@@ -13,7 +13,7 @@ const SearchBar = () => {
   return (
     <>
       {activeTab === 0 && (
-        <div className="mt-20 flex flex-col gap-y-8 sm:flex-row gap-x-4 justify-center w-full px-2 mb-14">
+        <div className="mt-10 flex flex-col gap-y-8 sm:flex-row space-x-4 justify-center mb-14">
           <div className="flex  sm:w-3/4 border justify-between px-4 border-alternativeLight rounded items-center">
             <input
               className="outline-none focus:outline-none rounded h-12 text-lg w-full"

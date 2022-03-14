@@ -1,13 +1,12 @@
 import React, { useEffect } from 'react';
 import './styles/global.css';
 
-import Header from './components/Header.jsx';
-import ApproveOfferSnackbar from './components/ApproveOfferSnackbar.jsx';
-import EnableAppDialog from './components/EnableAppDialog.jsx';
+import NavBar from './components/common/NavBar.jsx';
 
 import { useApplicationContext } from './context/Application';
 import { setActiveTab, setType } from './store/store';
-import SearchBar from './components/SearchBar';
+import MainContainer from './components/MainContainer/MainContainer';
+import Footer from './components/common/Footer';
 
 function App() {
   const { dispatch, walletP } = useApplicationContext();
@@ -19,10 +18,9 @@ function App() {
 
   return (
     <div className="relative w-full h-full">
-      <Header />
-      <SearchBar />
-      <EnableAppDialog />
-      <ApproveOfferSnackbar />
+      <NavBar />
+      <MainContainer />
+      <Footer />
     </div>
   );
 }

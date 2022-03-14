@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useApplicationContext } from '../context/Application';
-import { setActiveTab, setType } from '../store/store';
+import { useApplicationContext } from '../../context/Application';
+import { setActiveTab, setType } from '../../store/store';
 
 const Header = () => {
   const { state, dispatch } = useApplicationContext();
@@ -63,10 +63,10 @@ const Header = () => {
     <>
       <div className="flex justify-between nav-shadow items-center w-full h-20 px-14 text-base">
         <p className="lg:text-xl">Ticket Store</p>
-        <div className="flex-row flex text-base text-center">
+        <div className="flex-row flex text-base text-center md:pl-12">
           <TabButton tabIndex={0} text="Marketplace" width="w-36" />
           <TabButton tabIndex={1} text="Check In" width="w-36" />
-          <TabButton tabIndex={2} text="Create" width="w-28" />
+          <TabButton tabIndex={2} text="Create" width="w-32" />
         </div>
         <div>
           Agoric Wallet: {walletStatus}
