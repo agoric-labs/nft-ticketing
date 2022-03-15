@@ -4,7 +4,7 @@ const Heading = ({ tab }) => {
   let text = '';
   switch (tab) {
     case 0:
-      text = 'MarketPlace - Explore Events';
+      text = 'Marketplace - Explore Events';
       break;
     case 1:
       text = 'Check In';

@@ -11,6 +11,7 @@ module.exports = {
         secondaryDark: 'var(--color-secondary-dark)',
         primaryLight: 'var(--color-primary-light)',
         fieldBg: 'var(--color-field)',
+        iconBtnColor: 'var(--color-button-primary)',
       },
       fontFamily: {
         sans: [

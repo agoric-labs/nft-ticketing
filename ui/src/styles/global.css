@@ -23,6 +23,7 @@ body,
   --color-field: #f1f1f1;
   --color-primary: #363636;
   --color-primary-light: #a1a1a1;
+--color-button-primary: #f8fcff;
 }
 
 @layer base {

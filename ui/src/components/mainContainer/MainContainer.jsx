@@ -12,7 +12,7 @@ const MainContainer = () => {
   } = useApplicationContext();
 
   return (
-    <div className="w-4/5 mx-auto">
+    <div className="mx-auto md:w-12/12 lg:w-10/12">
       <Heading tab={activeTab} />
       <SearchBar />
       <ContentToDisplay tab={activeTab} />

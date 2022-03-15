@@ -5,7 +5,6 @@ function Select({ label, children, style, handleChange, fieldName, value }) {
   return (
     <div>
       {label && <span className="text-lg leading-none">{label}</span>}
-      {/* <div className="flex bg-fieldBg justify-between pr-4 border border-alternativeLight rounded items-center"> */}
       <select
         value={value}
         style={{

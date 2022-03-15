@@ -1,33 +1,41 @@
 import React, { useState } from 'react';
 // import axios from 'axios';
 import { nanoid } from 'nanoid';
-import Button from './common/Button';
-import Input from './common/InputField';
-import DateTimeField from './common/DateTimeField';
-import { makeValue } from '../utils/amount';
-import { setAddFormLoader, setCreationSnackbar } from '../store/store';
-import { useApplicationContext } from '../context/Application';
+import Button from '../common/Button';
+import Input from '../common/InputField';
+// import DateTimeField from './common/DateTimeField';
+import { makeValue } from '../../utils/amount';
+// import { setAddFormLoader, setCreationSnackbar } from '../store/store';
+// import { useApplicationContext } from '../context/Application';
 
-function CreateTicketForm({ tokenDisplayInfo, handleNFTMint }) {
-  const { dispatch } = useApplicationContext();
+function CreateTicketForm({ tokenDisplayInfo }) {
+  // const { dispatch } = useApplicationContext();
   const [Form, setForm] = useState({
     id: '',
     name: '',
     image: '',
-    salePrice: 0,
+    price: 0,
+    dateTime: '',
     Tickets: 0,
     creatorName: '',
   });
+  const handleInputChange = (event) => {
+    setForm({ ...Form, [event.target.name]: event.target.value });
+  };
   // const [price, setPrice] = useState(null);
   const [attributes, setAttributes] = useState([]);
 
   const handleSubmit = async () => {
     try {
+      console.log(tokenDisplayInfo);
+      console.log(setAttributes);
+      console.log(makeValue);
+      console.log(nanoid);
       const amount = makeValue(Form.price, tokenDisplayInfo);
       const id = nanoid();
       const cardDetails = {
         id,
-        name: Form.title,
+        name: Form.name,
         price: amount,
         image: Form.image,
         dateTime: Form.dateTime,
@@ -35,7 +43,7 @@ function CreateTicketForm({ tokenDisplayInfo, handleNFTMint }) {
         description: Form.description,
         attributes,
       };
-      // console.log(cardDetails);
+      console.log(cardDetails);
       setForm({
         title: '',
         image: '',
@@ -43,10 +51,10 @@ function CreateTicketForm({ tokenDisplayInfo, handleNFTMint }) {
         price: '',
         ticketsCount: 0,
       });
-      setAttributes([]);
-      dispatch(setAddFormLoader(true));
-      dispatch(setCreationSnackbar(true));
-      handleNFTMint({ cardDetails });
+      // setAttributes([]);
+      // dispatch(setAddFormLoader(true));
+      // dispatch(setCreationSnackbar(true));
+      // handleNFTMint({ cardDetails });
     } catch (error) {
       console.log(error);
     }
@@ -60,33 +68,31 @@ function CreateTicketForm({ tokenDisplayInfo, handleNFTMint }) {
         type="text"
         label="Event Name"
         value={Form.name}
-        handleChange={(val) => {
-          setForm({ ...Form, name: val });
-        }}
+        handleChange={handleInputChange}
       />
       <Input
         value={Form.image}
-        handleChange={(val) => {
-          setForm({ ...Form, image: val });
-        }}
+        handleChange={handleInputChange}
         label="Image CID"
         placeHolder="Please provide a valid ipfs CID"
         type="text"
       />
-      <DateTimeField value={Form.dateTime} />
-      <Input
-        value={Form.price}
-        handleChange={(val) => {
-          setForm({ ...Form, price: val });
-        }}
-        label="Price"
-      />
+      <div>
+        <span className="text-lg leading-none">Date and Time</span>
+        <div className="flex relative justify-between  border border-alternativeLight rounded items-center">
+          <input
+            name="dateTime"
+            value={Form.dateTime}
+            onChange={handleInputChange}
+            type="datetime-local"
+            className="w-full h-12 pl-4 outline-none pr-4 focus:outline-none text-primaryLight"
+          />
+        </div>
+      </div>
       <Input
         type="text"
         value={Form.ticketsCount}
-        handleChange={(val) => {
-          setForm({ ...Form, ticketsCount: val });
-        }}
+        handleChange={handleInputChange}
         label="Tickets count"
         placeHolder="Enter ticket count"
       />

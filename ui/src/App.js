@@ -5,7 +5,7 @@ import NavBar from './components/common/NavBar.jsx';
 
 import { useApplicationContext } from './context/Application';
 import { setActiveTab, setType } from './store/store';
-import MainContainer from './components/MainContainer/MainContainer';
+import MainContainer from './components/mainContainer/MainContainer';
 import Footer from './components/common/Footer';
 
 function App() {

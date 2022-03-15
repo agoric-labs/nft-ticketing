@@ -1,7 +1,7 @@
 import React from 'react';
-import CheckInContainer from '../../CheckInContainer';
-import CreateTicketForm from '../../CreateTicketForm';
-import TicketDisplay from '../../TicketDisplay';
+import CheckInContainer from '../../checkIn/CheckInContainer';
+import CreateTicketForm from '../../createEvent/CreateEventForm';
+import TicketDisplay from '../../marketplace/TicketDisplay';
 
 const ContentToDisplay = ({ tab }) => {
   let content;
