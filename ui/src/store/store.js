@@ -30,6 +30,8 @@ export const {
     setCreationSnackbar,
     setAddFormLoader,
     setCheckIcon,
+    setSearchInput,
+    setSearchOption,
   },
 } = autodux({
   slice: 'cardStore',
@@ -58,6 +60,8 @@ export const {
     creationSnackbar: false,
     addFormLoader: false,
     checkIcon: false,
+    searchInput: '',
+    searchOption: 'Name',
   },
   actions: {},
 });

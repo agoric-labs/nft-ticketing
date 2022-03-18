@@ -15,7 +15,7 @@ function Select({ label, children, style, handleChange, fieldName, value }) {
         }}
         name={fieldName}
         onChange={handleChange}
-        className={`bg-no-repeat cursor-pointer rounded-md w-full h-12 px-3.5 text-lg outline-none focus:outline-none font-normal ${style}`}
+        className={`bg-no-repeat cursor-pointer rounded-md w-full h-12 px-3.5 text-lg outline-none focus:outline-none font-normal ${style} hover:bg-gray-100`}
       >
         {children}
       </select>

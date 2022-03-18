@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import SearchIcon from '../../../assets/icons/search.png';
 import FilterIcon from '../../../assets/icons/filter.png';
 import { useApplicationContext } from '../../../context/Application';
+import { setSearchInput, setSearchOption } from '../../../store/store';
 
 const SearchBar = () => {
   const {
-    state: { activeTab },
+    state: { activeTab, searchInput, searchOption },
+    dispatch,
   } = useApplicationContext();
-  const [searchInput, setSearchInput] = useState('');
-  const [menuOption, setMenuOption] = useState('Name');
-  const menuOptions = ['Name', 'SalePrice', 'Tickets Left', 'Time'];
+  const menuOptions = ['Name', 'Tickets Left >=', 'Time'];
   return (
     <>
       {activeTab === 0 && (
@@ -19,7 +19,7 @@ const SearchBar = () => {
               className="outline-none focus:outline-none rounded h-12 text-lg w-full"
               placeholder="Search"
               value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
+              onChange={(e) => dispatch(setSearchInput(e.target.value))}
             />
             <img
               className="w-4 h-4 relative"
@@ -34,10 +34,10 @@ const SearchBar = () => {
               backgroundPositionY: 'center',
               backgroundPositionX: '95%',
             }}
-            className="bg-no-repeat cursor-pointer text-primaryLight border border-alternativeLight bg-white rounded sm:w-1/5 h-12 px-3.5 text-lg outline-none focus:outline-none font-normal"
-            value={menuOption}
+            className="bg-no-repeat cursor-pointer text-primaryLight border border-alternativeLight bg-white rounded w-full sm:w-1/5 h-12 px-3.5 text-lg outline-none focus:outline-none font-normal"
+            value={searchOption}
             onChange={(e) => {
-              setMenuOption(e.target.value);
+              dispatch(setSearchOption(e.target.value));
             }}
           >
             {menuOptions?.map((item, i) => (
