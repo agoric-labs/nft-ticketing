@@ -12,7 +12,7 @@ const SearchBar = () => {
   const menuOptions = ['Name', 'Tickets Left >=', 'Time'];
   return (
     <>
-      {activeTab === 0 && (
+      {activeTab !== 2 && (
         <div className="mt-10 flex flex-col gap-y-8 sm:flex-row space-x-4 justify-center mb-14">
           <div className="flex  sm:w-3/4 border justify-between px-4 border-alternativeLight rounded items-center">
             <input

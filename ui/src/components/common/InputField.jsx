@@ -12,7 +12,9 @@ function Input({
 }) {
   return (
     <div>
-      {!noLabel && <span className="text-lg leading-none">{label}</span>}
+      {!noLabel && (
+        <span className="text-lg leading-none font-medium mb-2">{label}</span>
+      )}
       <div
         className={`flex justify-between  border border-alternativeLight rounded items-center ${
           type === 'number' && 'pr-4'

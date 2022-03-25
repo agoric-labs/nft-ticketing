@@ -48,7 +48,7 @@ export const tickets = [
     salePrice: 99,
     ticketsSold: 45,
     ticketsCount: 500,
-    teventDetails: [
+    eventDetails: [
       { ticketType: 'Vip', ticketCount: 100, ticketPrice: 400 },
       { ticketType: 'General', ticketCount: 100, ticketPrice: 50 },
       { ticketType: 'Bussiness', ticketCount: 100, ticketPrice: 200 },

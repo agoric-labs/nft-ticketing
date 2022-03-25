@@ -87,14 +87,14 @@ const TicketCard = ({ cardDetail }) => {
                     }}
                     className={`bg-no-repeat cursor-pointer rounded-md w-full h-12 px-3.5 text-lg outline-none focus:outline-none font-normal border-alternativeLight border bg-white text-primaryLight`}
                   >
+                    <option hidden>Ticket Type</option>
                     {cardDetail?.eventDetails?.map((item, i) => (
                       <option
                         key={i}
-                        value={item}
+                        value={item.ticketPrice}
                         className="text-lg text-black"
                       >
-                        {item.ticketType}
-                        {item.ticketPrice}
+                        {item.ticketType} {item.ticketPrice}
                       </option>
                     ))}
                   </select>
