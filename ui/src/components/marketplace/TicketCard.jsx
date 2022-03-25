@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Arrow from '../../assets/icons/arrow-select.png';
 
 // import User from '../assets/icons/user.png';
@@ -10,28 +10,26 @@ import Button from '../common/Button';
 const TicketCard = ({ cardDetail }) => {
   const [ticketCount, setTicketCount] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [selectedTicket, setSelectedTicket] = useState({});
-  const updateTotalPrice = () => {
-    setTotalPrice(selectedTicket.ticketPrice * ticketCount);
-  };
+  const [selectedTicket, setSelectedTicket] = useState('');
+  const [selectedTicketInMenu, setSelectedTicketInMenu] = useState({});
+  // const updateTotalPrice = () => {
+  //   setTotalPrice(selectedTicketInMenu.ticketPrice * ticketCount);
+  //   console.log('totalPrice:', totalPrice);
+  // };
+  useEffect(() => {
+    setTotalPrice(parseInt(selectedTicket.ticketPrice * ticketCount, 10));
+  }, [selectedTicket, ticketCount]);
   const handleIncrementCount = () => {
     if (!selectedTicket.ticketType) return;
     const ticketsLeft = cardDetail.ticketsCount - cardDetail.ticketsSold;
     if (ticketCount === ticketsLeft) return;
     setTicketCount(ticketCount + 1);
-    updateTotalPrice();
   };
   const handleDecrementCount = () => {
     if (!selectedTicket.ticketType) return;
     if (ticketCount === 0) return;
     setTicketCount(ticketCount - 1);
-    updateTotalPrice();
   };
-  // const handleTicketType = (e) => {
-  //   console.log('value:', e.target);
-  //   console.log('value:', e.target.name);
-  //   setSelectedTicket(e.target.value);
-  // };
 
   return (
     <div className="flex flex-col md:flex-row p-4 border border-alternativeLight rounded-md my-10  transform transition duration-200 hover:scale-105">
@@ -49,7 +47,7 @@ const TicketCard = ({ cardDetail }) => {
               <div className="text-xl font-semibold lg:w-80">
                 {cardDetail.name}
               </div>
-              <div className="text-secondary text-base">
+              <div className="text-secondary text-base mt-0 lg:mt-2">
                 Thu, Mar 17 at 07:00PM EST
               </div>
             </div>
@@ -66,13 +64,12 @@ const TicketCard = ({ cardDetail }) => {
             <div className="space-y-2">
               <div>Select Ticket(s)</div>
               <div
-                className={`flex flex-col space-y-4  lg:flex-row lg:space-y-0 ${
-                  totalPrice > 0 ? 'justify-between' : 'justify-start space-x-8'
-                }`}
+                className={`flex flex-col space-y-4  space-x-0 lg:space-x-8  lg:flex-row lg:space-y-0 justify-start `}
               >
                 <div className="w-full lg:w-6/12 ">
                   <select
-                    value={selectedTicket}
+                    value={selectedTicketInMenu}
+                    type="object"
                     style={{
                       backgroundImage: `url(${Arrow})`,
                       backgroundSize: '15px',
@@ -81,20 +78,23 @@ const TicketCard = ({ cardDetail }) => {
                     }}
                     name={'ticket'}
                     onChange={(e) => {
-                      console.log('value:', e.target.value.ticketType);
-                      console.log('value:', e.target.name);
-                      setSelectedTicket(e.target.value);
+                      const selectedTicketType = cardDetail.eventDetails.find(
+                        (ticket) => ticket.ticketType === e.target.value,
+                      );
+                      setSelectedTicketInMenu(e.target.value);
+                      setSelectedTicket(selectedTicketType);
                     }}
                     className={`bg-no-repeat cursor-pointer rounded-md w-full h-12 px-3.5 text-lg outline-none focus:outline-none font-normal border-alternativeLight border bg-white text-primaryLight`}
                   >
                     <option hidden>Ticket Type</option>
                     {cardDetail?.eventDetails?.map((item, i) => (
                       <option
+                        type="object"
                         key={i}
-                        value={item.ticketPrice}
+                        value={item.ticketType}
                         className="text-lg text-black"
                       >
-                        {item.ticketType} {item.ticketPrice}
+                        {item.ticketType} {item.ticketPrice} RUN
                       </option>
                     ))}
                   </select>

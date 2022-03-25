@@ -12,16 +12,16 @@ const CheckInCard = ({ cardDetail }) => {
     <div
       className={`transition-all duration-200 flex flex-col border border-alternativeLight rounded-md p-3 mx-0 hover:shadow-lg`}
     >
-      <div className={`mb-3 relative self-center`}>
+      <div className={`card-media mb-3 relative self-center`}>
         <img
-          className="w-full rounded-md"
+          className="w-full rounded-md 0"
           src={images[cardDetail.name]}
           alt={cardDetail?.name}
         />
         <>
           <div className="overlay rounded-md absolute top-0 left-0 w-full h-full bg-primary opacity-50 items-center"></div>
           <Button
-            styles="media-action absolute bottom-6 w-52 left-16"
+            styles="media-action  absolute left-1/4 bottom-6 w-2/4"
             text="Buy"
           />
         </>
@@ -43,7 +43,9 @@ const CheckInCard = ({ cardDetail }) => {
         <div className="flex items-center justify-between px-1">
           <div>
             <p className="text-base text-primaryLight">Ticket Type</p>
-            <p className="text-lg font-normal">General Admission</p>
+            <p className="text-lg font-normal">
+              {cardDetail?.eventDetails[3].ticketType}
+            </p>
           </div>
         </div>
       </>

@@ -23,7 +23,7 @@ body,
   --color-field: #f1f1f1;
   --color-primary: #363636;
   --color-primary-light: #a1a1a1;
---color-button-primary: #f8fcff;
+  --color-button-primary: #f8fcff;
 }
 
 @layer base {
@@ -106,8 +106,8 @@ body,
   }
 
   .card-media {
-    width: 336px;
-    height: 336px;
+    width: '100%';
+    height: fitContent;
   }
 
   .card-media-small {

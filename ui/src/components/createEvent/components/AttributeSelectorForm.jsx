@@ -30,7 +30,7 @@ export default function AttributeSelectorForm({
               </div>
               <div className="w-56">
                 <input
-                  type={'text'}
+                  type={'number'}
                   className="outline-none rounded-md border-alternativeLight border bg-white text-primary focus:outline-none w-full h-12 pl-4 "
                   placeholder={'Enter Ticket Count'}
                   value={attribute.name}
@@ -42,7 +42,7 @@ export default function AttributeSelectorForm({
                 className={`w-56 flex border border-alternativeLight rounded-md items-center px-4 h-12 bg-white flex-start`}
               >
                 <input
-                  type={'number'}
+                  type="number"
                   className="outline-none focus:outline-none w-2/4 h-full rounded-md"
                   placeholder="0.00"
                   value={attribute.name}
