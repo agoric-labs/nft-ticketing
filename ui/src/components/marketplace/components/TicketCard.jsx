@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import Arrow from '../../../assets/icons/arrow-select.png';
-
-// import User from '../assets/icons/user.png';
-// import { stringifyValueRUN } from '../utils/amount';
+import { useApplicationContext } from '../../../context/Application';
 import { images } from '../../../images';
+import { setModalType, setOpenModal } from '../../../store/store';
 import Button from '../../common/Button';
-// import Select from '../common/SelectField';
 
 const TicketCard = ({ cardDetail }) => {
+  const { dispatch } = useApplicationContext();
+
   const [ticketCount, setTicketCount] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [selectedTicket, setSelectedTicket] = useState('');
@@ -21,6 +21,7 @@ const TicketCard = ({ cardDetail }) => {
       setError('Select a ticket type first');
       return;
     }
+    setError('');
     const ticketsLeft = cardDetail.ticketsCount - cardDetail.ticketsSold;
     if (ticketCount === ticketsLeft) return;
     setTicketCount(ticketCount + 1);
@@ -29,8 +30,8 @@ const TicketCard = ({ cardDetail }) => {
     if (!selectedTicket.ticketType) {
       setError('Select a ticket type first');
       return;
-    }
-    if (ticketCount === 0) return;
+    } else if (ticketCount === 0) return;
+    setError('');
     setTicketCount(ticketCount - 1);
   };
   const handleMenuOption = (e) => {
@@ -42,9 +43,15 @@ const TicketCard = ({ cardDetail }) => {
     setSelectedTicket(selectedTicketType);
   };
   const handleBuyTicket = () => {
-    if (!selectedTicket.ticketType) setError('Select a ticket type first');
-    else if (totalPrice === 0) setError('Increase the number of tickets');
-    else setError('');
+    if (!selectedTicket.ticketType) {
+      setError('Select a ticket type first');
+      return;
+    } else if (totalPrice === 0) {
+      setError('Increase the number of tickets');
+      return;
+    } else setError('');
+    dispatch(setModalType('buy Ticket'));
+    dispatch(setOpenModal(true));
   };
 
   return (
@@ -99,12 +106,12 @@ const TicketCard = ({ cardDetail }) => {
                     <option hidden>Ticket Type</option>
                     {cardDetail?.eventDetails?.map((item, i) => (
                       <option
-                        type="object"
+                        type="text"
                         key={i}
                         value={item.ticketType}
                         className="text-lg text-black"
                       >
-                        {item.ticketType} {item.ticketPrice} RUN
+                        {item.ticketType}
                       </option>
                     ))}
                   </select>

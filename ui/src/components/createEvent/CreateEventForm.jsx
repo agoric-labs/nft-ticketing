@@ -6,11 +6,14 @@ import Input from '../common/InputField';
 // import DateTimeField from './common/DateTimeField';
 import { makeValue } from '../../utils/amount';
 import AttributeSelectorForm from './components/AttributeSelectorForm';
+import { setModalType, setOpenModal } from '../../store/store';
+import { useApplicationContext } from '../../context/Application';
 // import { setAddFormLoader, setCreationSnackbar } from '../store/store';
 // import { useApplicationContext } from '../context/Application';
 
 function CreateTicketForm({ tokenDisplayInfo }) {
-  // const { dispatch } = useApplicationContext();
+  const { dispatch } = useApplicationContext();
+
   const [Form, setForm] = useState({
     id: '',
     name: '',
@@ -18,10 +21,9 @@ function CreateTicketForm({ tokenDisplayInfo }) {
     price: 0,
     dateTime: '',
     Tickets: 0,
-    creatorName: '',
   });
   const handleInputChange = (event) => {
-    setForm({ ...Form, [event.target.name]: event.target.value });
+    ({ ...Form, [event.target.name]: event.target.value });
   };
   // const [price, setPrice] = useState(null);
   const [attributes, setAttributes] = useState([
@@ -45,6 +47,8 @@ function CreateTicketForm({ tokenDisplayInfo }) {
     setAttributes([...temp]);
   };
   const handleSubmit = async () => {
+    dispatch(setModalType('create Event'));
+    dispatch(setOpenModal(true));
     try {
       console.log(tokenDisplayInfo);
       console.log(setAttributes);
@@ -58,7 +62,6 @@ function CreateTicketForm({ tokenDisplayInfo }) {
         price: amount,
         image: Form.image,
         dateTime: Form.dateTime,
-        creatorName: Form.creatorName,
         description: Form.description,
         attributes,
       };

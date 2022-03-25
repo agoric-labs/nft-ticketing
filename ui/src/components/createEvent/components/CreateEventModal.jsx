@@ -1,0 +1,35 @@
+import React from 'react';
+// import CheckInCard from '../../checkIn/components/CheckInCard';
+import { tickets, images } from '../../../images';
+import Button from '../../common/Button';
+import ModalBottomDetail from '../../common/modal/ModalBottomDetail';
+import ModalTopDetail from '../../common/modal/ModalTopDetail';
+
+const CreateEventModal = () => {
+  const cardDetail = tickets[0];
+  return (
+    <>
+      <h1 className="text-2xl font-semibold text-center">Create New Event</h1>
+      <div className="flex flex-col gap-y-10 mt-8 mx-10 mb-8">
+        <div>
+          <ModalTopDetail cardDetail={cardDetail} images={images} />
+          <div className="w-full h-32 overflow-auto mb-8 customScrollbar">
+            {cardDetail.eventDetails.map((ticket, i) => {
+              return (
+                <>
+                  <ModalBottomDetail key={i} ticket={ticket} />
+                  {i + 1 !== cardDetail.eventDetails.length && (
+                    <hr className="mt-3 mb-2 bg-alternativeLight" />
+                  )}
+                </>
+              );
+            })}
+          </div>
+          <Button styles="w-full" text="Create" />
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default CreateEventModal;

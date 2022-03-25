@@ -1,12 +1,15 @@
 import React from 'react';
+import { useApplicationContext } from '../../../context/Application';
 // import Tag from '../assets/icons/tag.png';
 // import User from '../../../assets/icons/user.png';
 import { images } from '../../../images';
+import { setModalType, setOpenModal } from '../../../store/store';
 // import Expand from '../../../assets/icons/expand.png';
 import Button from '../../common/Button';
 // import { stringifyValueRUN } from '../../../utils/amount';
 
 const CheckInCard = ({ cardDetail }) => {
+  const { dispatch } = useApplicationContext();
   console.log('card:', cardDetail);
   return (
     <div
@@ -23,6 +26,10 @@ const CheckInCard = ({ cardDetail }) => {
           <Button
             styles="media-action  absolute left-1/4 bottom-6 w-2/4"
             text="Check In"
+            onClick={() => {
+              dispatch(setModalType('check In'));
+              dispatch(setOpenModal(true));
+            }}
           />
         </>
       </div>
