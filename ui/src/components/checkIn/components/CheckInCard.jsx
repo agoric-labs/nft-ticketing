@@ -22,7 +22,7 @@ const CheckInCard = ({ cardDetail }) => {
           <div className="overlay rounded-md absolute top-0 left-0 w-full h-full bg-primary opacity-50 items-center"></div>
           <Button
             styles="media-action  absolute left-1/4 bottom-6 w-2/4"
-            text="Buy"
+            text="Check In"
           />
         </>
       </div>

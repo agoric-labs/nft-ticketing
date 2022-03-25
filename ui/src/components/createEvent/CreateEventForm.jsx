@@ -88,8 +88,8 @@ function CreateTicketForm({ tokenDisplayInfo }) {
         handleChange={(val) => {
           setForm({ ...Form, image: val });
         }}
-        label="Event Cover Image CID"
-        placeHolder="Please provide a valid ipfs CID"
+        label="Event Cover Image URL"
+        placeHolder="https://imageurl.jpg"
         type="text"
       />
       <Input

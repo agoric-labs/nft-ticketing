@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import Arrow from '../../assets/icons/arrow-select.png';
+import Arrow from '../../../assets/icons/arrow-select.png';
 
 // import User from '../assets/icons/user.png';
 // import { stringifyValueRUN } from '../utils/amount';
-import { images } from '../../images';
-import Button from '../common/Button';
+import { images } from '../../../images';
+import Button from '../../common/Button';
 // import Select from '../common/SelectField';
 
 const TicketCard = ({ cardDetail }) => {
@@ -12,27 +12,43 @@ const TicketCard = ({ cardDetail }) => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [selectedTicket, setSelectedTicket] = useState('');
   const [selectedTicketInMenu, setSelectedTicketInMenu] = useState({});
-  // const updateTotalPrice = () => {
-  //   setTotalPrice(selectedTicketInMenu.ticketPrice * ticketCount);
-  //   console.log('totalPrice:', totalPrice);
-  // };
+  const [error, setError] = useState('');
   useEffect(() => {
     setTotalPrice(parseInt(selectedTicket.ticketPrice * ticketCount, 10));
   }, [selectedTicket, ticketCount]);
   const handleIncrementCount = () => {
-    if (!selectedTicket.ticketType) return;
+    if (!selectedTicket.ticketType) {
+      setError('Select a ticket type first');
+      return;
+    }
     const ticketsLeft = cardDetail.ticketsCount - cardDetail.ticketsSold;
     if (ticketCount === ticketsLeft) return;
     setTicketCount(ticketCount + 1);
   };
   const handleDecrementCount = () => {
-    if (!selectedTicket.ticketType) return;
+    if (!selectedTicket.ticketType) {
+      setError('Select a ticket type first');
+      return;
+    }
     if (ticketCount === 0) return;
     setTicketCount(ticketCount - 1);
   };
+  const handleMenuOption = (e) => {
+    setError('');
+    const selectedTicketType = cardDetail.eventDetails.find(
+      (ticket) => ticket.ticketType === e.target.value,
+    );
+    setSelectedTicketInMenu(e.target.value);
+    setSelectedTicket(selectedTicketType);
+  };
+  const handleBuyTicket = () => {
+    if (!selectedTicket.ticketType) setError('Select a ticket type first');
+    else if (totalPrice === 0) setError('Increase the number of tickets');
+    else setError('');
+  };
 
   return (
-    <div className="flex flex-col md:flex-row p-4 border border-alternativeLight rounded-md my-10  transform transition duration-200 hover:scale-105">
+    <div className="flex flex-col md:flex-row p-4 border border-alternativeLight rounded-md my-10 transition-all duration-100 hover:shadow-xl">
       <div className="w-full md:6/12 lg:w-5/12">
         <img
           className="h-full w-full rounded-md"
@@ -77,13 +93,7 @@ const TicketCard = ({ cardDetail }) => {
                       backgroundPositionX: '95%',
                     }}
                     name={'ticket'}
-                    onChange={(e) => {
-                      const selectedTicketType = cardDetail.eventDetails.find(
-                        (ticket) => ticket.ticketType === e.target.value,
-                      );
-                      setSelectedTicketInMenu(e.target.value);
-                      setSelectedTicket(selectedTicketType);
-                    }}
+                    onChange={handleMenuOption}
                     className={`bg-no-repeat cursor-pointer rounded-md w-full h-12 px-3.5 text-lg outline-none focus:outline-none font-normal border-alternativeLight border bg-white text-primaryLight`}
                   >
                     <option hidden>Ticket Type</option>
@@ -142,10 +152,11 @@ const TicketCard = ({ cardDetail }) => {
             </div>
             <div className="w-full flex items-center lg:m">
               <Button
-                // onClick={handleSubmit}
+                onClick={handleBuyTicket}
                 text="Buy Tickets"
                 styles="shadow-black w-4/12 lg:w-4/12"
               />
+              {error && <span className="pl-5 text-red-600">{error}</span>}
             </div>
           </div>
         </div>
