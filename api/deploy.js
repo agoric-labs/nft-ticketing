@@ -66,7 +66,7 @@ export default async function deployApi(homePromise, { pathResolve }) {
   // grab the installation that our contract deploy script put
   // in the public board.
 
-  // CMT (haseeb.asim@robor.systems): These constants contain the board ids of the installation of all the contracts in card-store-dapp.
+  // CMT (hussain.rizvi@robor.systems): These constants contain the board ids of the installation of all the contracts in card-store-dapp.
   const {
     INSTALLATION_BOARD_ID,
     AUCTION_INSTALLATION_BOARD_ID,
@@ -76,15 +76,15 @@ export default async function deployApi(homePromise, { pathResolve }) {
     SIMPLE_EXCHANGE_WRAPPER_INSTALLATION_BOARD_ID,
   } = installationConstants;
 
-  // CMT (haseeb.asim@robor.systems): Fetching the installation of the contract.js from the board.
+  // CMT (hussain.rizvi@robor.systems): Fetching the installation of the contract.js from the board.
   const installation = await E(board).getValue(INSTALLATION_BOARD_ID);
 
-  // CMT (haseeb.asim@robor.systems): Fetching the installation of the auctionItems.js from the board.
+  // CMT (hussain.rizvi@robor.systems): Fetching the installation of the auctionItems.js from the board.
   const auctionItemsInstallation = await E(board).getValue(
     AUCTION_ITEMS_INSTALLATION_BOARD_ID,
   );
 
-  // CMT (haseeb.asim@robor.systems): Fetching the installation of the auction logic from the board.
+  // CMT (hussain.rizvi@robor.systems): Fetching the installation of the auction logic from the board.
   const auctionInstallation = await E(board).getValue(
     AUCTION_INSTALLATION_BOARD_ID,
   );
@@ -100,46 +100,45 @@ export default async function deployApi(homePromise, { pathResolve }) {
   // program that can take offers through Zoe. Making an instance will
   // give us a `creatorFacet` that will let us make invitations we can
   // send to users.
-  const {
-    creatorFacet: baseballCardSellerFacet,
-    instance: baseballCardInstance,
-  } = await E(zoe).startInstance(installation);
+  const { creatorFacet: marketPlaceInstanceSellerFacet } = await E(
+    zoe,
+  ).startInstance(installation);
 
   /**
    * @type {ERef<Issuer>}
    */
 
-  // CMT (haseeb.asim@robor.systems): Fetching the promise of issuer of RUN currency from the board
+  // CMT (hussain.rizvi@robor.systems): Fetching the promise of issuer of RUN currency from the board
   const moneyIssuerP = E(home.agoricNames).lookup('issuer', 'RUN');
 
-  // CMT (haseeb.asim@robor.systems): Fetching the promise of brand of RUN currency from the board.
+  // CMT (hussain.rizvi@robor.systems): Fetching the promise of brand of RUN currency from the board.
   const moneyBrandP = E(moneyIssuerP).getBrand();
 
-  // CMT (haseeb.asim@robor.systems): Resolving the promises to obtain issuer, brand and display info of RUN currency.
+  // CMT (hussain.rizvi@robor.systems): Resolving the promises to obtain issuer, brand and display info of RUN currency.
   const [moneyIssuer, moneyBrand, { decimalPlaces = 0 }] = await Promise.all([
     moneyIssuerP,
     moneyBrandP,
     E(moneyBrandP).getDisplayInfo(),
   ]);
 
-  // CMT (haseeb.asim@robor.systems): Cards Array from card.js. Hardening it so that it becomes immutable.
+  // CMT (hussain.rizvi@robor.systems): Cards Array from card.js. Hardening it so that it becomes immutable.
   const allTickets = harden(tickets);
 
-  // CMT (haseeb.asim@robor.systems): Calculation of the price of each card.
+  // CMT (hussain.rizvi@robor.systems): Calculation of the price of each card.
   const moneyValue =
     PRICE_PER_CARD_IN_MONEY_UNITS * 10n ** BigInt(decimalPlaces);
 
-  // CMT (haseeb.asim@robor.systems): Minimum Bid Amount for each card.
+  // CMT (hussain.rizvi@robor.systems): Minimum Bid Amount for each card.
   const minBidPerCard = AmountMath.make(moneyBrand, moneyValue);
 
-  // CMT (haseeb.asim@robor.systems): Calling the auctionCards function form the contract.js using it's public facet.
+  // CMT (hussain.rizvi@robor.systems): Calling the auctionCards function form the contract.js using it's public facet.
   // The function takes in the required params and creates an instance of the auctionItems contract and returns it's public facet
   //  and instance.
   const {
     auctionItemsCreatorFacet: creatorFacet,
     auctionItemsPublicFacet: publicFacet,
     auctionItemsInstance: instance,
-  } = await E(baseballCardSellerFacet).auctionCards(
+  } = await E(marketPlaceInstanceSellerFacet).marketPlaceCards(
     allTickets,
     moneyIssuer,
     auctionInstallation,
@@ -148,22 +147,22 @@ export default async function deployApi(homePromise, { pathResolve }) {
     chainTimerService,
   );
 
-  // CMT (haseeb.asim@robor.systems): Using the publicFacet of contract.js to get the minter for the baseball cards.
-  const minter = await E(baseballCardSellerFacet).getMinter();
+  // CMT (hussain.rizvi@robor.systems): Using the publicFacet of contract.js to get the minter for the baseball cards.
+  const minter = await E(marketPlaceInstanceSellerFacet).getMinter();
 
   console.log('- SUCCESS! contract instance is running on Zoe');
   console.log('Retrieving Board IDs for issuers and brands');
 
-  // CMT (haseeb.asim@robor.systems): Fetching promise of the global issuer for invitations.
+  // CMT (hussain.rizvi@robor.systems): Fetching promise of the global issuer for invitations.
   const invitationIssuerP = E(zoe).getInvitationIssuer();
 
-  // CMT (haseeb.asim@robor.systems): Fetching promise of invitation brand using invitation issuer.
+  // CMT (hussain.rizvi@robor.systems): Fetching promise of invitation brand using invitation issuer.
   const invitationBrandP = E(invitationIssuerP).getBrand();
 
-  // CMT (haseeb.asim@robor.systems): Using the publicFacet of the contract.js, fetching promise of issuer of the baseball cards.
+  // CMT (hussain.rizvi@robor.systems): Using the publicFacet of the contract.js, fetching promise of issuer of the baseball cards.
   const cardIssuerP = E(publicFacet).getItemsIssuer();
 
-  // CMT (haseeb.asim@robor.systems): Resolving all the above promises to obtain cardIssuer, cardBrand, invitationBrand.
+  // CMT (hussain.rizvi@robor.systems): Resolving all the above promises to obtain cardIssuer, cardBrand, invitationBrand.
   const [cardIssuer, cardBrand, invitationBrand] = await Promise.all([
     cardIssuerP,
     E(cardIssuerP).getBrand(),
@@ -199,7 +198,7 @@ export default async function deployApi(homePromise, { pathResolve }) {
     }),
   );
 
-  // CMT (haseeb.asim@robor.systems): Storing each important variable on the board and getting their board ids.
+  // CMT (hussain.rizvi@robor.systems): Storing each important variable on the board and getting their board ids.
   const [
     INSTANCE_BOARD_ID,
     CARD_BRAND_BOARD_ID,
@@ -219,7 +218,7 @@ export default async function deployApi(homePromise, { pathResolve }) {
     E(board).getId(moneyIssuer),
     E(board).getId(minter),
     E(board).getId(invitationBrand),
-    E(board).getId(baseballCardInstance),
+    E(board).getId(marketPlaceInstanceSellerFacet),
     E(board).getId(simpleExchangeWrapperInstance),
     E(board).getId(simpleExchangeInstance),
   ]);
