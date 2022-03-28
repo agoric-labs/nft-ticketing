@@ -1,8 +1,12 @@
 import React from 'react';
 import Button from '../../common/Button';
 import checkLogo from '../../../assets/icons/Check.svg';
+import { useApplicationContext } from '../../../context/Application';
 
 const CreationSuccessModal = () => {
+  const {
+    state: { activeCard },
+  } = useApplicationContext();
   return (
     <div className="w-96">
       {' '}
@@ -10,7 +14,7 @@ const CreationSuccessModal = () => {
         <img className="w-12 animate-pulse" src={checkLogo} alt="React Logo" />
         <p className="font-semibold text-xl">Congratulations!</p>
         <p className="text-center">
-          Your event <b>{'Los Angeles Lakers'}</b> has been created
+          Your event <b>{`"${activeCard.name}"`}</b> has been created
           successfully.
         </p>
         <Button styles="w-full" text="View Event on Marketplace" />

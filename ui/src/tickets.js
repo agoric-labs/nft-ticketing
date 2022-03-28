@@ -1,23 +1,10 @@
-import LosAngelesLakers from './assets/tickets/Lakers.png';
-import Coachella2022 from './assets/tickets/Coachella.png';
-import AvrilLavigne from './assets/tickets/Avril lavigne.png';
-import AfterHours from './assets/tickets/After hours.png';
-import MonsterJam from './assets/tickets/Monster Jam.png';
-
-export const images = {
-  'Los Angeles Lakers': LosAngelesLakers,
-  'Coachella 2022': Coachella2022,
-  'Avril Lavigne Bite Me Canada Tour 2022 with Modsun': AvrilLavigne,
-  'After Hours Till Dawn Tour': AfterHours,
-  'Monster Jam': MonsterJam,
-};
-
-// Courtesy of https://twitter.com/lrgmnn/status/813635533658144768/
+export const ipfsUrl = 'https://gateway.pinata.cloud/ipfs/';
 export const tickets = [
   {
     id: '4cCuxGrhmw1_ccYnuOIXk',
     name: 'Los Angeles Lakers',
-    image: '',
+    date: '2022-03-28T22:22',
+    image: 'QmfQrwm7PhRVNZrEVzdef39RD4fyjZroJ5sj6n9hLfB8Ga',
     ticketsSold: 45,
     ticketsCount: 500,
     eventDetails: [
@@ -30,8 +17,8 @@ export const tickets = [
   {
     id: '4cCuxGrhmw1_ccYnuOIXk',
     name: 'Coachella 2022',
-    image: '',
-    salePrice: 99,
+    date: '2022-03-28T22:22',
+    image: 'QmfUkXyisB3PHAxzqFeRVp6JQisz5T5fGMAzzyocsEh6QL',
     ticketsSold: 905,
     ticketsCount: 5000,
     eventDetails: [
@@ -44,8 +31,8 @@ export const tickets = [
   {
     id: 'ZnJ8MnhrMlYMkFcJk_pJP',
     name: 'Avril Lavigne Bite Me Canada Tour 2022 with Modsun',
-    image: '',
-    salePrice: 99,
+    date: '2022-03-28T22:22',
+    image: 'QmZc8BMXPTd1Jh2jkNGPKtEWhtrjK6Dy6328AipQLcKvRt',
     ticketsSold: 45,
     ticketsCount: 500,
     eventDetails: [
@@ -58,8 +45,8 @@ export const tickets = [
   {
     id: 'fb8ApBtpIY1Ik9d62ZqFS',
     name: 'After Hours Till Dawn Tour',
-    image: '',
-    salePrice: 99,
+    date: '2022-03-28T22:22',
+    image: 'QmWsQ4GgvxkeVEjgQ31ynZuqtx7b7DE9hPMHbzCJJN5mcy',
     ticketsSold: 45,
     ticketsCount: 500,
     eventDetails: [
@@ -72,8 +59,8 @@ export const tickets = [
   {
     id: 'J7NrtjDWJnXcbbVfTn7iG',
     name: 'Monster Jam',
-    image: '',
-    salePrice: 99,
+    date: '2022-03-28T22:22',
+    image: 'QmPVdPutqiNyJjd74eVpnfwUV4XZKLZBbBpyKqqDmampFy',
     ticketsSold: 45,
     ticketsCount: 500,
     eventDetails: [
@@ -82,5 +69,58 @@ export const tickets = [
       { ticketType: 'Bussiness', ticketCount: 100, ticketPrice: 200 },
       { ticketType: 'General Admission', ticketCount: 100, ticketPrice: 200 },
     ],
+  },
+];
+
+export const activeTicket = {
+  id: 'J7NrtjDWJnXcbbVfTn7iG',
+  name: 'Monster Jam',
+  date: '2022-03-28T22:22',
+  image: 'QmPVdPutqiNyJjd74eVpnfwUV4XZKLZBbBpyKqqDmampFy',
+  ticketType: 'Vip',
+  ticketCount: 100,
+  ticketPrice: 400,
+};
+
+export const checkInCards = [
+  {
+    id: '4cCuxGrhmw1_ccYnuOIXk',
+    name: 'Los Angeles Lakers',
+    date: '2022-03-28T22:22',
+    image: 'QmfQrwm7PhRVNZrEVzdef39RD4fyjZroJ5sj6n9hLfB8Ga',
+    ticketType: 'Vip',
+    ticketPrice: 400,
+  },
+  {
+    id: '4cCuxGrhmw1_ccYnuOIXk',
+    name: 'Coachella 2022',
+    date: '2022-03-28T22:22',
+    image: 'QmfUkXyisB3PHAxzqFeRVp6JQisz5T5fGMAzzyocsEh6QL',
+    ticketType: 'Bussiness',
+    ticketPrice: 200,
+  },
+  {
+    id: 'ZnJ8MnhrMlYMkFcJk_pJP',
+    name: 'Avril Lavigne Bite Me Canada Tour 2022 with Modsun',
+    date: '2022-03-28T22:22',
+    image: 'QmZc8BMXPTd1Jh2jkNGPKtEWhtrjK6Dy6328AipQLcKvRt',
+    ticketType: 'General Admission',
+    ticketPrice: 200,
+  },
+  {
+    id: 'fb8ApBtpIY1Ik9d62ZqFS',
+    name: 'After Hours Till Dawn Tour',
+    date: '2022-03-28T22:22',
+    image: 'QmWsQ4GgvxkeVEjgQ31ynZuqtx7b7DE9hPMHbzCJJN5mcy',
+    ticketType: 'Vip',
+    ticketPrice: 400,
+  },
+  {
+    id: 'J7NrtjDWJnXcbbVfTn7iG',
+    name: 'Monster Jam',
+    date: '2022-03-28T22:22',
+    image: 'QmPVdPutqiNyJjd74eVpnfwUV4XZKLZBbBpyKqqDmampFy',
+    ticketType: 'General',
+    ticketPrice: 50,
   },
 ];

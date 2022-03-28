@@ -7,7 +7,7 @@ import Input from '../common/InputField';
 // import DateTimeField from './common/DateTimeField';
 // import { makeValue } from '../../utils/amount';
 import AttributeSelectorForm from './components/AttributeSelectorForm';
-import { setModalType, setOpenModal } from '../../store/store';
+import { setActiveCard, setModalType, setOpenModal } from '../../store/store';
 import { useApplicationContext } from '../../context/Application';
 import { Modal } from '../../helpers/ModalActions';
 // import { setAddFormLoader, setCreationSnackbar } from '../store/store';
@@ -24,11 +24,6 @@ function CreateTicketForm() {
     dateTime: '',
     Tickets: 0,
   });
-  // const handleInputChange = (event) => {
-  //   console.log('name:', event.target.name);
-  //   setForm({ ...Form, [event.target.name]: event.target.value });
-  // };
-  // const [price, setPrice] = useState(null);
   const [eventDetails, setEventDetails] = useState([
     { ticketType: '', ticketCount: 0, ticketPrice: 0 },
   ]);
@@ -64,6 +59,7 @@ function CreateTicketForm() {
       setError('* All fields are required');
       return;
     }
+    setError('');
     try {
       const id = nanoid();
       const ticketCount = eventDetails
@@ -76,19 +72,20 @@ function CreateTicketForm() {
         id,
         name: Form.name,
         image: Form.image,
-        dateTime: Form.dateTime,
+        date: Form.dateTime,
         ticketsSold: 0,
         ticketCount,
         eventDetails,
       };
       console.log('cardDetails:', cardDetails);
+      dispatch(setActiveCard(cardDetails));
       setForm({
         name: '',
         image: '',
         dateTime: '',
         ticketsCount: 0,
       });
-      setEventDetails([]);
+      setEventDetails([{ ticketType: '', ticketCount: 0, ticketPrice: 0 }]);
       dispatch(setModalType(Modal.CREATE_EVENT));
       dispatch(setOpenModal(true));
     } catch (err) {
@@ -122,7 +119,7 @@ function CreateTicketForm() {
             name="dateTime"
             value={Form.dateTime}
             onChange={(event) => {
-              console.log('val:', event.target.name);
+              console.log('val:', event.target.value);
               setForm({ ...Form, dateTime: event.target.value });
             }}
             type="datetime-local"

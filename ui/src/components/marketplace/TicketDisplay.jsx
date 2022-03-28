@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useApplicationContext } from '../../context/Application';
 import { getFilteredList } from '../../helpers/searchBar';
-import { tickets } from '../../images';
+import { tickets } from '../../tickets';
 import TicketCard from './components/TicketCard';
 
 const TicketDisplay = () => {

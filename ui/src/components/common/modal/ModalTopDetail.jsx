@@ -1,12 +1,13 @@
 import React from 'react';
+import { getDateTime } from '../../../helpers/date';
 
-const ModalTopDetail = ({ cardDetail, images }) => {
+const ModalTopDetail = ({ cardDetail, image }) => {
   return (
     <div>
       <div className={`card-media mb-3 relative self-center`}>
         <img
           className="w-full rounded-md 0"
-          src={images[cardDetail.name]}
+          src={image}
           alt={cardDetail?.name}
         />
       </div>
@@ -15,9 +16,9 @@ const ModalTopDetail = ({ cardDetail, images }) => {
           <div className="flex justify-between items-center">
             <p className="text-lg mb-1 font-semibold">{cardDetail?.name}</p>
           </div>
-          <div className="flex items-center">
+          <div className="flex citems-center">
             <span className="text-secondary capitalize">
-              Thu, Mar 17 at 07:00PM EST
+              {getDateTime(new Date(cardDetail?.date).toLocaleString())}
             </span>
           </div>
         </div>

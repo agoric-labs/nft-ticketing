@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import Arrow from '../../../assets/icons/arrow-select.png';
 import { useApplicationContext } from '../../../context/Application';
-import { images } from '../../../images';
-import { setModalType, setOpenModal } from '../../../store/store';
+import { ipfsUrl } from '../../../tickets';
+import {
+  setActiveCard,
+  setModalType,
+  setOpenModal,
+} from '../../../store/store';
 import Button from '../../common/Button';
+import { Modal } from '../../../helpers/ModalActions';
+import { getDateTime } from '../../../helpers/date';
 
 const TicketCard = ({ cardDetail }) => {
   const { dispatch } = useApplicationContext();
-
   const [ticketCount, setTicketCount] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [selectedTicket, setSelectedTicket] = useState('');
   const [selectedTicketInMenu, setSelectedTicketInMenu] = useState({});
   const [error, setError] = useState('');
+  const image = `${ipfsUrl + cardDetail.image}`;
   useEffect(() => {
     setTotalPrice(parseInt(selectedTicket.ticketPrice * ticketCount, 10));
   }, [selectedTicket, ticketCount]);
@@ -50,7 +56,18 @@ const TicketCard = ({ cardDetail }) => {
       setError('Increase the number of tickets');
       return;
     } else setError('');
-    dispatch(setModalType('buy Ticket'));
+    dispatch(
+      setActiveCard({
+        id: cardDetail.id,
+        name: cardDetail.name,
+        date: cardDetail.date,
+        image: cardDetail.image,
+        ...selectedTicket,
+        ticketCount,
+        totalPrice,
+      }),
+    );
+    dispatch(setModalType(Modal.MARKETPLACE));
     dispatch(setOpenModal(true));
   };
 
@@ -59,7 +76,7 @@ const TicketCard = ({ cardDetail }) => {
       <div className="w-full md:6/12 lg:w-5/12">
         <img
           className="h-full w-full rounded-md"
-          src={images[cardDetail.name]}
+          src={image}
           alt={cardDetail?.name}
         />
       </div>
@@ -71,7 +88,7 @@ const TicketCard = ({ cardDetail }) => {
                 {cardDetail.name}
               </div>
               <div className="text-secondary text-base mt-0 lg:mt-2">
-                Thu, Mar 17 at 07:00PM EST
+                {getDateTime(new Date(cardDetail.date).toLocaleString())}
               </div>
             </div>
             <div className="flex flex-col items-end">

@@ -9,14 +9,17 @@ import CreationSuccessModal from '../../createEvent/components/CreationSuccessMo
 import CheckInSuccessModal from '../../checkIn/components/CheckInSuccessModal';
 import { Modal } from '../../../helpers/ModalActions';
 import TicketPurchaseSuccessModal from '../../marketplace/components/TicketPurchaseSuccessModal';
+import { setActiveCard } from '../../../store/store';
 
 const ModalWrapper = ({ style, open, onClose }) => {
   const {
+    dispatch,
     state: { modalType },
   } = useApplicationContext();
   const handleKeyClose = (e) => {
     if (e.key === 'Escape') {
       onClose();
+      dispatch(setActiveCard(null));
     }
   };
   useEffect(() => {

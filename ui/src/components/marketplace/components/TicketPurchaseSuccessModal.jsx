@@ -1,8 +1,12 @@
 import React from 'react';
 import Button from '../../common/Button';
 import checkLogo from '../../../assets/icons/Check.svg';
+import { useApplicationContext } from '../../../context/Application';
 
 const TicketPurchaseSuccessModal = () => {
+  const {
+    state: { activeCard },
+  } = useApplicationContext();
   return (
     <div className="w-96">
       {' '}
@@ -10,8 +14,8 @@ const TicketPurchaseSuccessModal = () => {
         <img className="w-12 animate-pulse" src={checkLogo} alt="React Logo" />
         <p className="font-semibold text-xl">Congratulations!</p>
         <p className="text-center">
-          {`You've`} bought 5 tickets for event <b>Los Angeles Lakers</b>{' '}
-          successfully!.
+          {`You've`} bought {activeCard.ticketCount} tickets for event{' '}
+          <b>{`"${activeCard.name}"`}</b> successfully!
         </p>
         <Button styles="w-full" text="View My Tickets" />
       </div>
