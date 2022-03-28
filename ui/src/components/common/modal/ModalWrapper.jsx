@@ -5,6 +5,10 @@ import CreateEventModal from '../../createEvent/components/CreateEventModal';
 import BuyTicketModal from '../../marketplace/components/BuyTicketModal';
 import CheckInEventModal from '../../checkIn/components/CheckInEventModal';
 import { useApplicationContext } from '../../../context/Application';
+import CreationSuccessModal from '../../createEvent/components/CreationSuccessModal';
+import CheckInSuccessModal from '../../checkIn/components/CheckInSuccessModal';
+import { Modal } from '../../../helpers/ModalActions';
+import TicketPurchaseSuccessModal from '../../marketplace/components/TicketPurchaseSuccessModal';
 
 const ModalWrapper = ({ style, open, onClose }) => {
   const {
@@ -35,12 +39,18 @@ const ModalWrapper = ({ style, open, onClose }) => {
               <>
                 {(() => {
                   switch (modalType) {
-                    case 'create Event':
+                    case Modal.CREATE_EVENT:
                       return <CreateEventModal />;
-                    case 'check In':
+                    case Modal.CHECK_IN:
                       return <CheckInEventModal />;
-                    case 'buy Ticket':
+                    case Modal.MARKETPLACE:
                       return <BuyTicketModal />;
+                    case Modal.SUCCESS_CREATE_EVENT:
+                      return <CreationSuccessModal />;
+                    case Modal.SUCCESS_CHECK_IN:
+                      return <CheckInSuccessModal />;
+                    case Modal.SUCCESS_MARKETPLACE:
+                      return <TicketPurchaseSuccessModal />;
                     default:
                       return <></>;
                   }

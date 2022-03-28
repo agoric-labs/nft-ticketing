@@ -1,12 +1,17 @@
 import React from 'react';
+import { useApplicationContext } from '../../../context/Application';
+import { Modal } from '../../../helpers/ModalActions';
 // import CheckInCard from '../../checkIn/components/CheckInCard';
 import { tickets, images } from '../../../images';
+import { setModalType } from '../../../store/store';
 import Button from '../../common/Button';
 import ModalBottomDetail from '../../common/modal/ModalBottomDetail';
 import ModalTopDetail from '../../common/modal/ModalTopDetail';
 
 const CreateEventModal = () => {
   const cardDetail = tickets[0];
+  const { dispatch } = useApplicationContext();
+
   return (
     <>
       <h1 className="text-2xl font-semibold text-center">Create New Event</h1>
@@ -25,7 +30,13 @@ const CreateEventModal = () => {
               );
             })}
           </div>
-          <Button styles="w-full" text="Create" />
+          <Button
+            styles="w-full"
+            text="Create"
+            onClick={() => {
+              dispatch(setModalType(Modal.SUCCESS_CREATE_EVENT));
+            }}
+          />
         </div>
       </div>
     </>

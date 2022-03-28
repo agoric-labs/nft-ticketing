@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
+
 // import axios from 'axios';
 import { nanoid } from 'nanoid';
 import Button from '../common/Button';
 import Input from '../common/InputField';
 // import DateTimeField from './common/DateTimeField';
-import { makeValue } from '../../utils/amount';
+// import { makeValue } from '../../utils/amount';
 import AttributeSelectorForm from './components/AttributeSelectorForm';
 import { setModalType, setOpenModal } from '../../store/store';
 import { useApplicationContext } from '../../context/Application';
+import { Modal } from '../../helpers/ModalActions';
 // import { setAddFormLoader, setCreationSnackbar } from '../store/store';
 // import { useApplicationContext } from '../context/Application';
 
-function CreateTicketForm({ tokenDisplayInfo }) {
+function CreateTicketForm() {
   const { dispatch } = useApplicationContext();
-
+  const [error, setError] = useState('');
   const [Form, setForm] = useState({
     id: '',
     name: '',
@@ -22,68 +24,77 @@ function CreateTicketForm({ tokenDisplayInfo }) {
     dateTime: '',
     Tickets: 0,
   });
-  const handleInputChange = (event) => {
-    ({ ...Form, [event.target.name]: event.target.value });
-  };
+  // const handleInputChange = (event) => {
+  //   console.log('name:', event.target.name);
+  //   setForm({ ...Form, [event.target.name]: event.target.value });
+  // };
   // const [price, setPrice] = useState(null);
-  const [attributes, setAttributes] = useState([
+  const [eventDetails, setEventDetails] = useState([
     { ticketType: '', ticketCount: 0, ticketPrice: 0 },
   ]);
   const handleRemoveAttribute = (index) => {
-    const temp = attributes;
+    const temp = eventDetails;
     temp.splice(index, 1);
-    setAttributes([...temp]);
+    setEventDetails([...temp]);
   };
 
   const handleAddAttribute = () => {
-    setAttributes([...attributes, { display_type: '', name: '', value: '' }]);
+    setEventDetails([
+      ...eventDetails,
+      { ticketType: '', ticketCount: 0, ticketPrice: 0 },
+    ]);
   };
 
   const handleAttributeChange = (e, index) => {
     const { name, value } = e.target;
-    const temp = attributes;
+    const temp = eventDetails;
     console.log(e.target.value, e.target.name);
     temp[index][name] = value;
-    setAttributes([...temp]);
+    setEventDetails([...temp]);
   };
   const handleSubmit = async () => {
-    dispatch(setModalType('create Event'));
-    dispatch(setOpenModal(true));
+    console.log('Form:', Form);
+    console.log('eventDetails:', eventDetails);
+    if (
+      Form.name === '' ||
+      Form.dateTime === null ||
+      Form.image === '' ||
+      eventDetails.length === 0
+    ) {
+      setError('* All fields are required');
+      return;
+    }
     try {
-      console.log(tokenDisplayInfo);
-      console.log(setAttributes);
-      console.log(makeValue);
-      console.log(nanoid);
-      const amount = makeValue(Form.price, tokenDisplayInfo);
       const id = nanoid();
+      const ticketCount = eventDetails
+        .map((item) => item.ticketCount)
+        .reduce(
+          (prev, current) => parseInt(prev, 10) + parseInt(current, 10),
+          0,
+        );
       const cardDetails = {
         id,
         name: Form.name,
-        price: amount,
         image: Form.image,
         dateTime: Form.dateTime,
-        description: Form.description,
-        attributes,
+        ticketsSold: 0,
+        ticketCount,
+        eventDetails,
       };
-      console.log(cardDetails);
+      console.log('cardDetails:', cardDetails);
       setForm({
-        title: '',
+        name: '',
         image: '',
         dateTime: '',
-        price: '',
         ticketsCount: 0,
       });
-      // setAttributes([]);
-      // dispatch(setAddFormLoader(true));
-      // dispatch(setCreationSnackbar(true));
-      // handleNFTMint({ cardDetails });
-    } catch (error) {
-      console.log(error);
+      setEventDetails([]);
+      dispatch(setModalType(Modal.CREATE_EVENT));
+      dispatch(setOpenModal(true));
+    } catch (err) {
+      console.log(err);
     }
   };
-
-  console.log(attributes);
-  console.log(Form);
   return (
     <div className="max-w-3xl mb-8 w-full flex flex-col gap-y-8 mx-auto">
       <Input
@@ -99,7 +110,9 @@ function CreateTicketForm({ tokenDisplayInfo }) {
         type="text"
         label="Event Name"
         value={Form.name}
-        handleChange={handleInputChange}
+        handleChange={(val) => {
+          setForm({ ...Form, name: val });
+        }}
       />
 
       <div>
@@ -108,7 +121,10 @@ function CreateTicketForm({ tokenDisplayInfo }) {
           <input
             name="dateTime"
             value={Form.dateTime}
-            onChange={handleInputChange}
+            onChange={(event) => {
+              console.log('val:', event.target.name);
+              setForm({ ...Form, dateTime: event.target.value });
+            }}
             type="datetime-local"
             className="w-full h-12 pl-4 outline-none pr-4 focus:outline-none text-primaryLight"
           />
@@ -125,7 +141,7 @@ function CreateTicketForm({ tokenDisplayInfo }) {
           <div className="pl-12">Ticket Price</div>
         </div>
         <AttributeSelectorForm
-          attributes={attributes}
+          attributes={eventDetails}
           handleAttributeChange={handleAttributeChange}
           handleRemoveAttribute={handleRemoveAttribute}
         />
@@ -137,6 +153,7 @@ function CreateTicketForm({ tokenDisplayInfo }) {
         </button>
       </div>
       <Button onClick={handleSubmit} text="Create" styles="w-full mt-auto" />
+      <p className="text-red-500">{error}</p>
     </div>
   );
 }

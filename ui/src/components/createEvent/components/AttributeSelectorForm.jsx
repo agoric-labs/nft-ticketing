@@ -24,7 +24,7 @@ export default function AttributeSelectorForm({
                   className="outline-none rounded-md border-alternativeLight border bg-white text-primary focus:outline-none w-full h-12 pl-4 "
                   placeholder={'Enter Ticket Type Name'}
                   value={attribute.name}
-                  name={'ticketName'}
+                  name={'ticketType'}
                   onChange={(e) => handleAttributeChange(e, index)}
                 />
               </div>
@@ -46,6 +46,7 @@ export default function AttributeSelectorForm({
                   className="outline-none focus:outline-none w-2/4 h-full rounded-md"
                   placeholder="0.00"
                   value={attribute.name}
+                  name={'ticketPrice'}
                   required={true}
                   onChange={(e) => handleAttributeChange(e, index)}
                 />

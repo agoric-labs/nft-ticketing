@@ -1,5 +1,6 @@
 import React from 'react';
 import { useApplicationContext } from '../../../context/Application';
+import { Modal } from '../../../helpers/ModalActions';
 // import Tag from '../assets/icons/tag.png';
 // import User from '../../../assets/icons/user.png';
 import { images } from '../../../images';
@@ -27,7 +28,7 @@ const CheckInCard = ({ cardDetail }) => {
             styles="media-action  absolute left-1/4 bottom-6 w-2/4"
             text="Check In"
             onClick={() => {
-              dispatch(setModalType('check In'));
+              dispatch(setModalType(Modal.CHECK_IN));
               dispatch(setOpenModal(true));
             }}
           />

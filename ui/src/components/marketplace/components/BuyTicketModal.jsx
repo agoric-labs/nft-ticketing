@@ -1,11 +1,15 @@
 import React from 'react';
+import { useApplicationContext } from '../../../context/Application';
+import { Modal } from '../../../helpers/ModalActions';
 // import CheckInCard from '../../checkIn/components/CheckInCard';
 import { tickets, images } from '../../../images';
+import { setModalType } from '../../../store/store';
 import Button from '../../common/Button';
 import ModalBottomDetail from '../../common/modal/ModalBottomDetail';
 import ModalTopDetail from '../../common/modal/ModalTopDetail';
 
 const BuyTicketModal = () => {
+  const { dispatch } = useApplicationContext();
   const cardDetail = tickets[0];
   return (
     <>
@@ -19,7 +23,13 @@ const BuyTicketModal = () => {
               type={'buy Ticket'}
             />
           </div>
-          <Button styles="w-full" text="Check In" />
+          <Button
+            styles="w-full"
+            text="Check In"
+            onClick={() => {
+              dispatch(setModalType(Modal.SUCCESS_MARKETPLACE));
+            }}
+          />
         </div>
       </div>
     </>

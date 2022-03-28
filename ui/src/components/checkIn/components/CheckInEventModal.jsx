@@ -1,11 +1,15 @@
 import React from 'react';
+import { useApplicationContext } from '../../../context/Application';
+import { Modal } from '../../../helpers/ModalActions';
 // import CheckInCard from '../../checkIn/components/CheckInCard';
 import { tickets, images } from '../../../images';
+import { setModalType, setOpenModal } from '../../../store/store';
 import Button from '../../common/Button';
 import ModalBottomDetail from '../../common/modal/ModalBottomDetail';
 import ModalTopDetail from '../../common/modal/ModalTopDetail';
 
 const CheckInEventModal = () => {
+  const { dispatch } = useApplicationContext();
   const cardDetail = tickets[0];
   return (
     <>
@@ -19,7 +23,14 @@ const CheckInEventModal = () => {
               type={'check In'}
             />
           </div>
-          <Button styles="w-full" text="Check In" />
+          <Button
+            styles="w-full"
+            text="Check In"
+            onClick={() => {
+              dispatch(setModalType(Modal.SUCCESS_CHECK_IN));
+              dispatch(setOpenModal(true));
+            }}
+          />
         </div>
       </div>
     </>

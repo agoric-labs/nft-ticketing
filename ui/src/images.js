@@ -26,7 +26,6 @@ export const tickets = [
       { ticketType: 'Bussiness', ticketCount: 100, ticketPrice: 200 },
       { ticketType: 'General Admission', ticketCount: 100, ticketPrice: 200 },
     ],
-    creatorName: 'Agoric',
   },
   {
     id: '4cCuxGrhmw1_ccYnuOIXk',
@@ -41,7 +40,6 @@ export const tickets = [
       { ticketType: 'Bussiness', ticketCount: 100, ticketPrice: 200 },
       { ticketType: 'General Admission', ticketCount: 100, ticketPrice: 200 },
     ],
-    creatorName: 'Agoric',
   },
   {
     id: 'ZnJ8MnhrMlYMkFcJk_pJP',
@@ -56,7 +54,6 @@ export const tickets = [
       { ticketType: 'Bussiness', ticketCount: 100, ticketPrice: 200 },
       { ticketType: 'General Admission', ticketCount: 100, ticketPrice: 200 },
     ],
-    creatorName: 'Agoric',
   },
   {
     id: 'fb8ApBtpIY1Ik9d62ZqFS',
@@ -71,7 +68,6 @@ export const tickets = [
       { ticketType: 'Bussiness', ticketCount: 100, ticketPrice: 200 },
       { ticketType: 'General Admission', ticketCount: 100, ticketPrice: 200 },
     ],
-    creatorName: 'Agoric',
   },
   {
     id: 'J7NrtjDWJnXcbbVfTn7iG',
@@ -86,6 +82,5 @@ export const tickets = [
       { ticketType: 'Bussiness', ticketCount: 100, ticketPrice: 200 },
       { ticketType: 'General Admission', ticketCount: 100, ticketPrice: 200 },
     ],
-    creatorName: 'Agoric',
   },
 ];
