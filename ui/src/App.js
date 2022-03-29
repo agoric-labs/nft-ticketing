@@ -12,10 +12,8 @@ import ModalWrapper from './components/common/modal/ModalWrapper';
 function App() {
   const {
     dispatch,
-    walletP,
     state: { openModal },
   } = useApplicationContext();
-  console.log(walletP);
   useEffect(() => {
     dispatch(setActiveTab(0));
     dispatch(setType('marketplace'));

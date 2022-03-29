@@ -1,11 +1,11 @@
-// Courtesy of https://twitter.com/lrgmnn/status/813635533658144768/
 export const tickets = [
   {
     id: '4cCuxGrhmw1_ccYnuOIXk',
     name: 'Los Angeles Lakers',
+    date: '2022-03-28T22:22',
     image: 'QmfQrwm7PhRVNZrEVzdef39RD4fyjZroJ5sj6n9hLfB8Ga',
-    ticketsSold: 45,
-    ticketsCount: 500,
+    ticketsSold: 0,
+    ticketsCount: 400,
     eventDetails: [
       { ticketType: 'Vip', ticketCount: 100, ticketPrice: 400 },
       { ticketType: 'General', ticketCount: 100, ticketPrice: 50 },
@@ -16,10 +16,10 @@ export const tickets = [
   {
     id: '4cCuxGrhmw1_ccYnuOIXk',
     name: 'Coachella 2022',
+    date: '2022-03-28T22:22',
     image: 'QmfUkXyisB3PHAxzqFeRVp6JQisz5T5fGMAzzyocsEh6QL',
-    salePrice: 99,
-    ticketsSold: 905,
-    ticketsCount: 5000,
+    ticketsSold: 0,
+    ticketsCount: 400,
     eventDetails: [
       { ticketType: 'Vip', ticketCount: 100, ticketPrice: 400 },
       { ticketType: 'General', ticketCount: 100, ticketPrice: 50 },
@@ -30,10 +30,10 @@ export const tickets = [
   {
     id: 'ZnJ8MnhrMlYMkFcJk_pJP',
     name: 'Avril Lavigne Bite Me Canada Tour 2022 with Modsun',
-    image: 'QmUaxj7JNx7ZuaRjX4kS8oakuci4pYspWiwTAK55Eo1neg',
-    salePrice: 99,
-    ticketsSold: 45,
-    ticketsCount: 500,
+    date: '2022-03-28T22:22',
+    image: 'QmZc8BMXPTd1Jh2jkNGPKtEWhtrjK6Dy6328AipQLcKvRt',
+    ticketsSold: 0,
+    ticketsCount: 400,
     eventDetails: [
       { ticketType: 'Vip', ticketCount: 100, ticketPrice: 400 },
       { ticketType: 'General', ticketCount: 100, ticketPrice: 50 },
@@ -44,10 +44,10 @@ export const tickets = [
   {
     id: 'fb8ApBtpIY1Ik9d62ZqFS',
     name: 'After Hours Till Dawn Tour',
+    date: '2022-03-28T22:22',
     image: 'QmWsQ4GgvxkeVEjgQ31ynZuqtx7b7DE9hPMHbzCJJN5mcy',
-    salePrice: 99,
-    ticketsSold: 45,
-    ticketsCount: 500,
+    ticketsSold: 0,
+    ticketsCount: 400,
     eventDetails: [
       { ticketType: 'Vip', ticketCount: 100, ticketPrice: 400 },
       { ticketType: 'General', ticketCount: 100, ticketPrice: 50 },
@@ -58,10 +58,10 @@ export const tickets = [
   {
     id: 'J7NrtjDWJnXcbbVfTn7iG',
     name: 'Monster Jam',
+    date: '2022-03-28T22:22',
     image: 'QmPVdPutqiNyJjd74eVpnfwUV4XZKLZBbBpyKqqDmampFy',
-    salePrice: 99,
-    ticketsSold: 45,
-    ticketsCount: 500,
+    ticketsSold: 0,
+    ticketsCount: 400,
     eventDetails: [
       { ticketType: 'Vip', ticketCount: 100, ticketPrice: 400 },
       { ticketType: 'General', ticketCount: 100, ticketPrice: 50 },

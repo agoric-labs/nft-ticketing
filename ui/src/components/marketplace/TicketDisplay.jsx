@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useApplicationContext } from '../../context/Application';
 import { getFilteredList } from '../../helpers/searchBar';
-import { tickets } from '../../tickets';
+// import { tickets } from '../../tickets';
 import TicketCard from './components/TicketCard';
 
 const TicketDisplay = () => {
   const {
-    state: { searchInput, searchOption },
+    state: { searchInput, searchOption, availableCards },
   } = useApplicationContext();
   const [eventList, setEventList] = useState([]);
   useEffect(() => {
-    setEventList(getFilteredList(tickets, searchInput, searchOption));
-  }, [searchInput, searchOption]);
+    setEventList(getFilteredList(availableCards, searchInput, searchOption));
+  }, [searchInput, searchOption, availableCards]);
   return (
     <div className="w-full">
       {eventList.map((ticket, i) => (

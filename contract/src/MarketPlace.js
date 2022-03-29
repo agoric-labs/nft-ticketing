@@ -38,11 +38,10 @@ import { AmountMath } from '@agoric/ertp';
  */
 const start = (zcf) => {
   // set the initial state of the notifier
-  const { brands, auctionItemsCreator } = zcf.getTerms();
+  const { brands, tickets } = zcf.getTerms();
   const zoe = zcf.getZoeService();
 
-  let availableOffers = AmountMath.make(brands.Asset, harden([]));
-
+  let availableOffers = AmountMath.make(brands.Asset, harden(tickets));
   const { notifier: availableOfferNotifier, updater: availableOfferUpdater } =
     makeNotifierKit();
 
@@ -270,90 +269,90 @@ const start = (zcf) => {
     return offerId;
   };
 
-  const updateNotfiersOnWalletOffersAtSeller = async ({
-    checkConditon = 'accept',
-    offerId,
-    walletP,
-    cardOfferAmount,
-  }) => {
-    // CMT (hussain.rizvi@robor.systems): wallet offer notifier that provides updates about change in offer status.
-    const walletNotifier = await E(walletP).getOffersNotifier();
-    // CMT (hussain.rizvi@robor.systems): Using the iterator function for notifiers updating the userSaleHistory and available offers.
-    for await (const walletOffers of iterateNotifier(walletNotifier)) {
-      for (const { id, status } of walletOffers) {
-        if (id === offerId) {
-          if (status === 'pending' && checkConditon === 'accept') {
-            availableOffers = AmountMath.add(availableOffers, cardOfferAmount);
-            availableOfferUpdater.updateState(availableOffers);
-            return true;
-          } else if (
-            (status === 'decline' || status === 'rejected') &&
-            checkConditon === 'accept'
-          ) {
-            return false;
-          } else if (status === 'cancel' && checkConditon === 'exit') {
-            availableOffers = AmountMath.subtract(
-              availableOffers,
-              cardOfferAmount,
-            );
-            availableOfferUpdater.updateState(availableOffers);
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  };
+  // const updateNotfiersOnWalletOffersAtSeller = async ({
+  //   checkConditon = 'accept',
+  //   offerId,
+  //   walletP,
+  //   cardOfferAmount,
+  // }) => {
+  //   // CMT (hussain.rizvi@robor.systems): wallet offer notifier that provides updates about change in offer status.
+  //   const walletNotifier = await E(walletP).getOffersNotifier();
+  //   // CMT (hussain.rizvi@robor.systems): Using the iterator function for notifiers updating the userSaleHistory and available offers.
+  //   for await (const walletOffers of iterateNotifier(walletNotifier)) {
+  //     for (const { id, status } of walletOffers) {
+  //       if (id === offerId) {
+  //         if (status === 'pending' && checkConditon === 'accept') {
+  //           availableOffers = AmountMath.add(availableOffers, cardOfferAmount);
+  //           availableOfferUpdater.updateState(availableOffers);
+  //           return true;
+  //         } else if (
+  //           (status === 'decline' || status === 'rejected') &&
+  //           checkConditon === 'accept'
+  //         ) {
+  //           return false;
+  //         } else if (status === 'cancel' && checkConditon === 'exit') {
+  //           availableOffers = AmountMath.subtract(
+  //             availableOffers,
+  //             cardOfferAmount,
+  //           );
+  //           availableOfferUpdater.updateState(availableOffers);
+  //           return true;
+  //         }
+  //       }
+  //     }
+  //   }
+  //   return false;
+  // };
 
-  const updateNotfiersOnWalletOffersAtBuyer = async ({
-    offerId,
-    cardOffer,
-    cardDetail,
-    boughtFor,
-    sellingPrice,
-    walletP,
-  }) => {
-    let amount = {};
-    // CMT (hussain.rizvi@robor.systems): offerAmount to update the available offers notifier.
-    const offerAmount = AmountMath.make(brands.Asset, harden([cardOffer]));
-    // CMT (hussain.rizvi@robor.systems): checking if the cardOffer contains a valid boughtFor variable.
-    if (cardOffer.boughtFor) {
-      amount = { ...cardDetail, boughtFor };
-    } else {
-      amount = cardDetail;
-    }
-    // CMT (hussain.rizvi@robor.systems): Creating the amount that is to be removed from userSaleHistory
-    const NFTAmountForRemoval = AmountMath.make(brands.Asset, harden([amount]));
-    // CMT (hussain.rizvi@robor.systems): Creating the amount that is to be added to the userSaleHistory
-    const NFTAmountForAddition = AmountMath.make(
-      brands.Asset,
-      harden([{ ...cardDetail, boughtFor: sellingPrice }]),
-    );
-    // CMT (hussain.rizvi@robor.systems): wallet offer notifier that provides updates about change in offer status.
-    const walletnotifier = await E(walletP).getOffersNotifier();
-    // CMT (hussain.rizvi@robor.systems): Using the iterator function for notifiers updating the userSaleHistory and available offers.
-    for await (const walletOffers of iterateNotifier(walletnotifier)) {
-      for (const { id, status } of walletOffers) {
-        if (id === offerId) {
-          if (status === 'complete' || status === 'accept') {
-            // eslint-disable-next-line no-await-in-loop
-            await E(auctionItemsCreator).removeFromUserSaleHistory(
-              NFTAmountForRemoval,
-            );
-            // eslint-disable-next-line no-await-in-loop
-            await E(auctionItemsCreator).addToUserSaleHistory(
-              NFTAmountForAddition,
-            );
-            updateAvailableOffers(offerAmount);
-            return true;
-          } else if (status === 'reject') {
-            return false;
-          }
-        }
-      }
-    }
-    return false;
-  };
+  // const updateNotfiersOnWalletOffersAtBuyer = async ({
+  //   offerId,
+  //   cardOffer,
+  //   cardDetail,
+  //   boughtFor,
+  //   sellingPrice,
+  //   walletP,
+  // }) => {
+  //   let amount = {};
+  //   // CMT (hussain.rizvi@robor.systems): offerAmount to update the available offers notifier.
+  //   const offerAmount = AmountMath.make(brands.Asset, harden([cardOffer]));
+  //   // CMT (hussain.rizvi@robor.systems): checking if the cardOffer contains a valid boughtFor variable.
+  //   if (cardOffer.boughtFor) {
+  //     amount = { ...cardDetail, boughtFor };
+  //   } else {
+  //     amount = cardDetail;
+  //   }
+  //   // CMT (hussain.rizvi@robor.systems): Creating the amount that is to be removed from userSaleHistory
+  //   // const NFTAmountForRemoval = AmountMath.make(brands.Asset, harden([amount]));
+  //   // // CMT (hussain.rizvi@robor.systems): Creating the amount that is to be added to the userSaleHistory
+  //   // const NFTAmountForAddition = AmountMath.make(
+  //   //   brands.Asset,
+  //   //   harden([{ ...cardDetail, boughtFor: sellingPrice }]),
+  //   // );
+  //   // CMT (hussain.rizvi@robor.systems): wallet offer notifier that provides updates about change in offer status.
+  //   const walletnotifier = await E(walletP).getOffersNotifier();
+  //   // CMT (hussain.rizvi@robor.systems): Using the iterator function for notifiers updating the userSaleHistory and available offers.
+  //   for await (const walletOffers of iterateNotifier(walletnotifier)) {
+  //     for (const { id, status } of walletOffers) {
+  //       if (id === offerId) {
+  //         if (status === 'complete' || status === 'accept') {
+  //           // eslint-disable-next-line no-await-in-loop
+  //           // await E(auctionItemsCreator).removeFromUserSaleHistory(
+  //           //   NFTAmountForRemoval,
+  //           // );
+  //           // eslint-disable-next-line no-await-in-loop
+  //           // await E(auctionItemsCreator).addToUserSaleHistory(
+  //           //   NFTAmountForAddition,
+  //           // );
+  //           updateAvailableOffers(offerAmount);
+  //           return true;
+  //         } else if (status === 'reject') {
+  //           return false;
+  //         }
+  //       }
+  //     }
+  //   }
+  //   return false;
+  // };
 
   const getSellerSeat = async ({ id }) => {
     const seatNotifier = notifier;
@@ -368,16 +367,15 @@ const start = (zcf) => {
     return true;
   };
 
-  /** @type {SimpleExchangePublicFacet} */
-  const publicFacet = Far('SimpleExchangePublicFacet', {
+  const publicFacet = Far('MarketPlacePublicFacet', {
     makeInvitation: makeExchangeInvitation,
     makeBuyerOffer,
     makeSellerOffer,
     getAvailableOfferNotifier,
     getAvailableOffers,
     updateAvailableOffers,
-    updateNotfiersOnWalletOffersAtBuyer,
-    updateNotfiersOnWalletOffersAtSeller,
+    // updateNotfiersOnWalletOffersAtBuyer,
+    // updateNotfiersOnWalletOffersAtSeller,
     getSellerSeat,
     getNotifier: () => notifier,
   });

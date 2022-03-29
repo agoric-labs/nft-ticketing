@@ -24,28 +24,25 @@ import {
   setTokenDisplayInfo,
   setTokenPetname,
   setTokenPurses,
-  setUserNfts,
-  setUserOffers,
+  // setUserNfts,
+  // setUserOffers,
   setUserCards,
-  setPendingOffers,
+  // setPendingOffers,
 } from '../store/store';
 
 const {
-  INSTANCE_BOARD_ID,
-  INSTALLATION_BOARD_ID,
-  MAIN_CONTRACT_BOARD_INSTANCE_ID,
-  SIMPLE_EXCHANGE_WRAPPER_INSTANCE_BOARD_ID,
+  MARKET_PLACE_INSTANCE_BOARD_ID,
+  MARKET_PLACE_INSTALLATION_BOARD_ID,
   issuerBoardIds: { Card: CARD_ISSUER_BOARD_ID },
   brandBoardIds: { Money: MONEY_BRAND_BOARD_ID, Card: CARD_BRAND_BOARD_ID },
 } = dappConstants;
 
 /* eslint-disable */
 let walletP;
-let publicFacet;
-let publicFacetSimpleExchange;
+let publicFacetMarketPlace;
 /* eslint-enable */
 
-export { walletP, publicFacet, publicFacetSimpleExchange };
+export { walletP, publicFacetMarketPlace };
 
 export const ApplicationContext = createContext();
 
@@ -80,15 +77,28 @@ export default function Provider({ children }) {
         dispatch: ctpDispatch,
         getBootstrap,
       } = makeCapTP(
-        'Card Store',
+        'ticketStore',
         (obj) => socket.send(JSON.stringify(obj)),
         otherSide,
       );
       walletAbort = ctpAbort;
       walletDispatch = ctpDispatch;
       walletP = getBootstrap();
-      //   walletPRef.current = walletP;
+      console.log('walletP', walletP);
+      const zoe = E(walletP).getZoe();
+      const board = E(walletP).getBoard();
+      const marketPlaceContractInstance = await E(board).getValue(
+        MARKET_PLACE_INSTANCE_BOARD_ID,
+      );
+      publicFacetMarketPlace = await E(zoe).getPublicFacet(
+        marketPlaceContractInstance,
+      );
+      const { value: marketPlaceEvents } = await E(
+        publicFacetMarketPlace,
+      ).getAvailableOffers();
+      dispatch(setAvailableCards(marketPlaceEvents || []));
 
+      console.log('facet', publicFacetMarketPlace);
       const processPurses = (purses) => {
         const newTokenPurses = purses.filter(
           ({ brandBoardId }) => brandBoardId === MONEY_BRAND_BOARD_ID,
@@ -113,96 +123,65 @@ export default function Provider({ children }) {
         }
       }
       watchPurses().catch((err) => console.error('got watchPurses err', err));
-      async function watchWallerOffers() {
-        const offerNotifier = E(walletP).getOffersNotifier();
-        try {
-          for await (const offers of iterateNotifier(offerNotifier)) {
-            let pendingOffersArray = offers.filter((offer) => {
-              if (offer.status === 'pending') {
-                if (offer?.proposalTemplate?.give?.Asset) {
-                  return true;
-                }
-              }
-              return false;
-            });
-            pendingOffersArray = pendingOffersArray?.map(
-              (offer) => offer?.proposalTemplate?.give?.Asset?.value[0],
-            );
-            dispatch(setPendingOffers(pendingOffersArray));
-          }
-        } catch (err) {
-          console.log('offers in application: error');
-        }
+      // async function watchWallerOffers() {
+      //   const offerNotifier = E(walletP).getOffersNotifier();
+      //   try {
+      //     for await (const offers of iterateNotifier(offerNotifier)) {
+      //       let pendingOffersArray = offers.filter((offer) => {
+      //         if (offer.status === 'pending') {
+      //           if (offer?.proposalTemplate?.give?.Asset) {
+      //             return true;
+      //           }
+      //         }
+      //         return false;
+      //       });
+      //       pendingOffersArray = pendingOffersArray?.map(
+      //         (offer) => offer?.proposalTemplate?.give?.Asset?.value[0],
+      //       );
+      //       dispatch(setPendingOffers(pendingOffersArray));
+      //     }
+      //   } catch (err) {
+      //     console.log('offers in application: error');
+      //   }
+      // }
+      // watchWallerOffers().catch((err) =>
+      //   console.error('got watchWalletoffer err', err),
+      // );
+      try {
+        const INSTALLATION_BOARD_ID = MARKET_PLACE_INSTALLATION_BOARD_ID;
+        const INSTANCE_BOARD_ID = MARKET_PLACE_INSTALLATION_BOARD_ID;
+        console.log('walletp', walletP);
+        await E(walletP).suggestInstallation(
+          'Installation',
+          INSTALLATION_BOARD_ID,
+        );
+        await E(walletP).suggestInstance('Instance', INSTANCE_BOARD_ID);
+        const cardIssuer = await E(board).getValue(CARD_ISSUER_BOARD_ID);
+        console.log('cardIssuer:', cardIssuer);
+        await E(walletP).suggestIssuer('Card', CARD_ISSUER_BOARD_ID);
+        // await Promise.all([
+        // E(walletP).suggestInstallation('Installation', INSTALLATION_BOARD_ID),
+        // E(walletP).suggestInstance('Instance', INSTANCE_BOARD_ID),
+        // E(walletP).suggestIssuer('Card', CARD_ISSUER_BOARD_ID),
+        // ]);
+      } catch (error) {
+        console.log('error in promise all:', error);
       }
-      watchWallerOffers().catch((err) =>
-        console.error('got watchWalletoffer err', err),
-      );
-      await Promise.all([
-        E(walletP).suggestInstallation('Installation', INSTALLATION_BOARD_ID),
-        E(walletP).suggestInstance('Instance', INSTANCE_BOARD_ID),
-        E(walletP).suggestIssuer('Card', CARD_ISSUER_BOARD_ID),
-      ]);
 
-      const zoe = E(walletP).getZoe();
-      const board = E(walletP).getBoard();
-      const instance = await E(board).getValue(INSTANCE_BOARD_ID);
-      publicFacet = E(zoe).getPublicFacet(instance);
-      const simpleExchangeWrapperInstance = await E(board).getValue(
-        SIMPLE_EXCHANGE_WRAPPER_INSTANCE_BOARD_ID,
-      );
-      publicFacetSimpleExchange = await E(zoe).getPublicFacet(
-        simpleExchangeWrapperInstance,
-      );
       async function watchOffers() {
         const availableOfferNotifier = await E(
-          publicFacetSimpleExchange,
+          publicFacetMarketPlace,
         ).getAvailableOfferNotifier();
 
         for await (const availableOffers of iterateNotifier(
           availableOfferNotifier,
         )) {
-          dispatch(setUserOffers(availableOffers.value || []));
-        }
-
-        const userSaleHistoryNotifier = await E(
-          publicFacet,
-        ).getUserSaleHistoryNotifier();
-
-        for await (const userSaleHistory of iterateNotifier(
-          userSaleHistoryNotifier,
-        )) {
-          dispatch(setUserNfts(userSaleHistory.value));
+          console.log('In MarketPlace', availableOffers.value);
+          dispatch(setAvailableCards(availableOffers.value || []));
         }
       }
       watchOffers().catch((err) => console.log('got watchOffer errs', err));
-
-      async function watchSale() {
-        const userSaleHistoryNotifier = await E(
-          publicFacet,
-        ).getUserSaleHistoryNotifier();
-
-        for await (const userSaleHistory of iterateNotifier(
-          userSaleHistoryNotifier,
-        )) {
-          dispatch(setUserNfts(userSaleHistory.value));
-        }
-      }
-      watchSale().catch((err) => console.log('got watchSale errs', err));
-
-      /*
-       *get the current items for sale in the proposal
-       *Currenly these will me primary marketplace cards
-       */
-      const availableItemsNotifier = E(publicFacet).getAvailableItemsNotifier();
-
-      /* Using the public faucet we get all the current Nfts offered for sale */
-      for await (const cardsAvailableAmount of iterateNotifier(
-        availableItemsNotifier,
-      )) {
-        dispatch(setAvailableCards(cardsAvailableAmount.value));
-      }
     };
-
     const onDisconnect = () => {
       dispatch(setConnected(false));
       walletAbort && walletAbort();
@@ -228,10 +207,8 @@ export default function Provider({ children }) {
         state,
         dispatch,
         walletP,
-        publicFacet,
-        publicFacetSimpleExchange,
+        publicFacetMarketPlace,
         CARD_BRAND_BOARD_ID,
-        MAIN_CONTRACT_BOARD_INSTANCE_ID,
       }}
     >
       {children}
