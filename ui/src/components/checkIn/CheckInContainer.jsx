@@ -11,7 +11,7 @@ const CheckInContainer = () => {
   } = useApplicationContext();
   const [eventList, setEventList] = useState(checkInCards);
   const [page, setPage] = useState(0);
-  const pageLength = 2;
+  const pageLength = 3;
   useEffect(() => {
     setEventList(
       getFilteredList(
@@ -36,11 +36,7 @@ const CheckInContainer = () => {
         total={checkInCards.length}
         onNext={() => {
           console.log('page:', page);
-          if (
-            page === checkInCards.length - 1 ||
-            page + pageLength >= checkInCards.length
-          )
-            return;
+          if (page + pageLength >= checkInCards.length) return;
           setPage((pg) => pg + pageLength);
         }}
         onPrev={() => {
