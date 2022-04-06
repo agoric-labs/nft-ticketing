@@ -12,8 +12,6 @@ import installationConstants from '../ui/src/conf/installationConstants.js';
 
 import { tickets } from './tickets.js';
 
-const PRICE_PER_CARD_IN_MONEY_UNITS = 1n;
-
 // deploy.js runs in an ephemeral Node.js outside of swingset. The
 // spawner runs within ag-solo, so is persistent.  Once the deploy.js
 // script ends, connections to any of its objects are severed.
@@ -85,7 +83,6 @@ export default async function deployApi(homePromise, { pathResolve }) {
 
   // CMT (hussain.rizvi@robor.systems): Fetching the promise of issuer of RUN currency from the board
   const moneyIssuerP = E(home.agoricNames).lookup('issuer', 'RUN');
-
   // CMT (hussain.rizvi@robor.systems): Fetching the promise of brand of RUN currency from the board.
   const moneyBrandP = E(moneyIssuerP).getBrand();
 
@@ -95,44 +92,49 @@ export default async function deployApi(homePromise, { pathResolve }) {
     moneyBrandP,
     E(moneyBrandP).getDisplayInfo(),
   ]);
-  const {
-    issuer: ticketIssuer,
-    mint: ticketMinter,
-    brand: ticketBrand,
-  } = makeIssuerKit('Event Tickets', AssetKind.SET);
-  // CMT (hussain.rizvi@robor.systems): Cards Array from card.js. Hardening it so that it becomes immutable.
 
-  // CMT (hussain.rizvi@robor.systems): Calling the auctionCards function form the contract.js using it's public facet.
-  // The function takes in the required params and creates an instance of the auctionItems contract and returns it's public facet
-  //  and instance.
-  // CMT (hussain.rizvi@robor.systems): Using the publicFacet of contract.js to get the minter for the baseball cards.
   const allTickets = { tickets: harden(tickets) };
+  console.log('allTickets', allTickets);
   console.log('- SUCCESS! contract instance is running on Zoe');
   console.log('Retrieving Board IDs for issuers and brands');
-  const { publicFacet: marketPlaceFacet, instance: marketPlaceInstance } =
-    await E(zoe).startInstance(
-      marketPlaceInstallation,
-      harden({
-        Price: moneyIssuer,
-        Asset: ticketIssuer,
-      }),
-      allTickets,
-    );
-  const availableOffers = await E(marketPlaceFacet).getAvailableOffers();
-  console.log(availableOffers);
+  const {
+    publicFacet: marketPlaceFacet,
+    creatorFacet: marketPlaceCreatorFacet,
+    creatorInvitation,
+    instance: marketPlaceInstance,
+  } = await E(zoe).startInstance(
+    marketPlaceInstallation,
+    harden({
+      Money: moneyIssuer,
+    }),
+    harden({
+      Money: moneyIssuer,
+    }),
+  );
+  console.log(marketPlaceCreatorFacet);
+  console.log(creatorInvitation);
+
+  const { cardBrand, cardIssuer } = await E(marketPlaceFacet).getItemsIssuer();
   // CMT (hussain.rizvi@robor.systems): Storing each important variable on the board and getting their board ids.
+  // CMT (haseeb.asim@robor.systems): Fetching promise of the global issuer for invitations.
+  const invitationIssuerP = E(zoe).getInvitationIssuer();
+  // CMT (haseeb.asim@robor.systems): Fetching promise of invitation brand using invitation issuer.
+  const invitationBrand = await E(invitationIssuerP).getBrand();
+
   const [
     MONEY_BRAND_BOARD_ID,
     MONEY_ISSUER_BOARD_ID,
     CARD_BRAND_BOARD_ID,
     CARD_ISSUER_BOARD_ID,
+    INVITE_BRAND_BOARD_ID,
     MARKET_PLACE_INSTANCE_BOARD_ID,
     MARKET_PLACE_FACET_BOARD_ID,
   ] = await Promise.all([
     E(board).getId(moneyBrand),
     E(board).getId(moneyIssuer),
-    E(board).getId(ticketBrand),
-    E(board).getId(ticketIssuer),
+    E(board).getId(cardBrand),
+    E(board).getId(cardIssuer),
+    E(board).getId(invitationBrand),
     E(board).getId(marketPlaceInstance),
     E(board).getId(marketPlaceFacet),
   ]);
@@ -141,6 +143,7 @@ export default async function deployApi(homePromise, { pathResolve }) {
   console.log(
     `-- MARKET_PLACE_INSTANCE_BOARD_ID: ${MARKET_PLACE_INSTANCE_BOARD_ID}`,
   );
+
   console.log(`-- MARKET_PLACE_FACET_BOARD_ID: ${MARKET_PLACE_FACET_BOARD_ID}`);
   const API_URL = process.env.API_URL || `http://127.0.0.1:${API_PORT || 8000}`;
 
@@ -157,9 +160,10 @@ export default async function deployApi(homePromise, { pathResolve }) {
     },
     API_URL,
     CONTRACT_NAME,
-    MARKET_PLACE_FACET_BOARD_ID,
-    MARKET_PLACE_INSTALLATION_BOARD_ID,
+    INVITE_BRAND_BOARD_ID,
     MARKET_PLACE_INSTANCE_BOARD_ID,
+    MARKET_PLACE_INSTALLATION_BOARD_ID,
+    MARKET_PLACE_FACET_BOARD_ID,
   };
   const defaultsFile = pathResolve(`../ui/src/conf/defaults.js`);
   console.log('writing', defaultsFile);

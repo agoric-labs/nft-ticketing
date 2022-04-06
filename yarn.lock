@@ -1574,10 +1574,36 @@
   dependencies:
     requireindex "~1.1.0"
 
+"@endo/eventual-send@^0.14.4":
+  version "0.14.8"
+  resolved "https://registry.yarnpkg.com/@endo/eventual-send/-/eventual-send-0.14.8.tgz#0d95b5cd7e420219cdd84c43683bfbd0b6cd2ff6"
+  integrity sha512-JIbzzIk1/Z+44O7+IuF5HfMzGu1txOvW5IJKu91syk//MIWU1+XQyPhwQKuWiZ2KX+ADdSPyNZTZjAN2IAE8gQ==
+
+"@endo/marshal@^0.5.4":
+  version "0.5.4"
+  resolved "https://registry.yarnpkg.com/@endo/marshal/-/marshal-0.5.4.tgz#3e96a421afe56846086fcee569be41f80e7e2ec5"
+  integrity sha512-ojcScWANmoiWfFH7iRUak+QOviXVS6Ubznj3fzXPizszjX8/M/67/XSbzbRdLYlevChzEtP60xhbYZPxzJSHRw==
+  dependencies:
+    "@endo/eventual-send" "^0.14.4"
+    "@endo/nat" "^4.1.4"
+    "@endo/promise-kit" "^0.2.33"
+
+"@endo/nat@^4.1.4":
+  version "4.1.8"
+  resolved "https://registry.yarnpkg.com/@endo/nat/-/nat-4.1.8.tgz#2c761c64f124cb610a63bded0c78a306678d6304"
+  integrity sha512-KwNkmw2tS8rDs0V3Q/cgje6JNg2AarSjFimT/hchcxz4BMBHS5mI486/W9QC3yQcxkidqX7GX3sYcD18xu5tBA==
+
 "@endo/netstring@^0.2.8":
   version "0.2.13"
   resolved "https://registry.yarnpkg.com/@endo/netstring/-/netstring-0.2.13.tgz#de0742010998eb373a4ab0a011f1c7a769838075"
   integrity sha512-+Q0pAg+3oA2ZlKth3k7BD+bhKMmVHfcHSWcBiCVg7LFVzrOIiltI9bEk7TJaGSWHTarUoR+vAPZwL/GULan15g==
+
+"@endo/promise-kit@^0.2.33":
+  version "0.2.37"
+  resolved "https://registry.yarnpkg.com/@endo/promise-kit/-/promise-kit-0.2.37.tgz#ef1506a953bbbb02793a33c7f22a6ac07783bea6"
+  integrity sha512-e8jbKRF4nPEvOq1zg/pFcO/wy7/oNdKYBdvC2DPT7WY2Q80BNQVFk9HpLC1WPn9JC+SHJBrXA8gciJCcC4emEQ==
+  dependencies:
+    ses "^0.15.11"
 
 "@endo/static-module-record@^0.6.6":
   version "0.6.12"
@@ -2458,6 +2484,11 @@
   integrity sha512-O3MmRAk6ZuAKa9CHgg0Pr0+lUOqoMLpc9AS4R8ano2auvsg7IE8syF3Xh/NPr26TWklxYcqoEEFdzLLs1fV9PQ==
   dependencies:
     source-map "^0.6.1"
+
+"@types/uuid@8.3.4":
+  version "8.3.4"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-8.3.4.tgz#bd86a43617df0594787d38b735f55c805becf1bc"
+  integrity sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==
 
 "@types/webpack-sources@*":
   version "3.2.0"
@@ -11924,6 +11955,11 @@ ses@^0.15.1, ses@^0.15.7:
   resolved "https://registry.yarnpkg.com/ses/-/ses-0.15.7.tgz#53da049638bb34941befd1eccf34647c950f91a2"
   integrity sha512-WqEanVAU/zMSoR/c/bHrAHTD7wMPm4zQrVCSXuzHxuvq4mM0xdrK/rEgQ35zQh7IyIg2n/aKDJWv3CL1quiJFA==
 
+ses@^0.15.11:
+  version "0.15.11"
+  resolved "https://registry.yarnpkg.com/ses/-/ses-0.15.11.tgz#851cb6a20d8967537075d25bb0185051c28c23db"
+  integrity sha512-lQg6q8/PVf+n18EjP+5Uv1tN9oVQ3br5QxJzPXoAVQleSYnlf20JY9coe7n1B9A6CtIKIHyr6m/TfskcRCufgA==
+
 set-blocking@^2.0.0, set-blocking@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/set-blocking/-/set-blocking-2.0.0.tgz#045f9782d011ae9a6803ddd382b24392b3d890f7"
@@ -13290,15 +13326,23 @@ utils-merge@1.0.1:
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
 
+uuid@8.3.2, uuid@^8.3.0, uuid@^8.3.2:
+  version "8.3.2"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
+  integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
+
 uuid@^3.3.2:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
 
-uuid@^8.3.0, uuid@^8.3.2:
-  version "8.3.2"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
-  integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
+uuidv4@6.2.13:
+  version "6.2.13"
+  resolved "https://registry.yarnpkg.com/uuidv4/-/uuidv4-6.2.13.tgz#8f95ec5ef22d1f92c8e5d4c70b735d1c89572cb7"
+  integrity sha512-AXyzMjazYB3ovL3q051VLH06Ixj//Knx7QnUSi1T//Ie3io6CpsPu9nVMOx5MoLWh6xV0B9J0hIaxungxXUbPQ==
+  dependencies:
+    "@types/uuid" "8.3.4"
+    uuid "8.3.2"
 
 v8-compile-cache-lib@^3.0.0:
   version "3.0.0"

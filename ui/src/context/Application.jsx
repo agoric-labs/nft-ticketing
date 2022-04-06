@@ -20,13 +20,13 @@ import {
   setConnected,
   setOpenEnableAppDialog,
   setAvailableCards,
-  setCardPurse,
-  setTokenDisplayInfo,
-  setTokenPetname,
-  setTokenPurses,
+  // setCardPurse,
+  // setTokenDisplayInfo,
+  // setTokenPetname,
+  // setTokenPurses,
   // setUserNfts,
   // setUserOffers,
-  setUserCards,
+  // setUserCards,
   // setPendingOffers,
 } from '../store/store';
 
@@ -36,7 +36,7 @@ const {
   issuerBoardIds: { Card: CARD_ISSUER_BOARD_ID },
   brandBoardIds: { Money: MONEY_BRAND_BOARD_ID, Card: CARD_BRAND_BOARD_ID },
 } = dappConstants;
-
+console.log(MONEY_BRAND_BOARD_ID);
 /* eslint-disable */
 let walletP;
 let publicFacetMarketPlace;
@@ -53,7 +53,7 @@ export function useApplicationContext() {
 /* eslint-disable complexity, react/prop-types */
 export default function Provider({ children }) {
   const [state, dispatch] = useReducer(reducer, defaultState);
-  const { availableCards } = state;
+  // const { availableCards } = state;
   useEffect(() => {
     // Receive callbacks from the wallet connection.
     const otherSide = Far('otherSide', {
@@ -84,9 +84,12 @@ export default function Provider({ children }) {
       walletAbort = ctpAbort;
       walletDispatch = ctpDispatch;
       walletP = getBootstrap();
-      console.log('walletP', walletP);
       const zoe = E(walletP).getZoe();
       const board = E(walletP).getBoard();
+      console.log(
+        'MARKET_PLACE_INSTANCE_BOARD_ID',
+        MARKET_PLACE_INSTANCE_BOARD_ID.toString(),
+      );
       const marketPlaceContractInstance = await E(board).getValue(
         MARKET_PLACE_INSTANCE_BOARD_ID,
       );
@@ -99,30 +102,30 @@ export default function Provider({ children }) {
       dispatch(setAvailableCards(marketPlaceEvents || []));
 
       console.log('facet', publicFacetMarketPlace);
-      const processPurses = (purses) => {
-        const newTokenPurses = purses.filter(
-          ({ brandBoardId }) => brandBoardId === MONEY_BRAND_BOARD_ID,
-        );
-        const newCardPurse = purses.find(
-          ({ brandBoardId }) => brandBoardId === CARD_BRAND_BOARD_ID,
-        );
+      // const processPurses = (purses) => {
+      //   const newTokenPurses = purses.filter(
+      //     ({ brandBoardId }) => brandBoardId === MONEY_BRAND_BOARD_ID,
+      //   );
+      //   const newCardPurse = purses.find(
+      //     ({ brandBoardId }) => brandBoardId === CARD_BRAND_BOARD_ID,
+      //   );
 
-        dispatch(setTokenPurses(newTokenPurses));
-        dispatch(setTokenDisplayInfo(newTokenPurses[0].displayInfo));
-        dispatch(setTokenPetname(newTokenPurses[0].brandPetname));
-        dispatch(setCardPurse(newCardPurse));
-        dispatch(setUserCards(newCardPurse?.currentAmount?.value));
-        console.log('printing card purse:', newCardPurse);
-        console.log('printing all cards:', availableCards);
-      };
+      //   dispatch(setTokenPurses(newTokenPurses));
+      //   dispatch(setTokenDisplayInfo(newTokenPurses[0].displayInfo));
+      //   dispatch(setTokenPetname(newTokenPurses[0].brandPetname));
+      //   dispatch(setCardPurse(newCardPurse));
+      //   dispatch(setUserCards(newCardPurse?.currentAmount?.value));
+      //   console.log('printing card purse:', newCardPurse);
+      //   console.log('printing all cards:', availableCards);
+      // };
 
-      async function watchPurses() {
-        const pn = E(walletP).getPursesNotifier();
-        for await (const purses of iterateNotifier(pn)) {
-          processPurses(purses);
-        }
-      }
-      watchPurses().catch((err) => console.error('got watchPurses err', err));
+      // async function watchPurses() {
+      //   const pn = E(walletP).getPursesNotifier();
+      //   for await (const purses of iterateNotifier(pn)) {
+      //     processPurses(purses);
+      //   }
+      // }
+      // watchPurses().catch((err) => console.error('got watchPurses err', err));
       // async function watchWallerOffers() {
       //   const offerNotifier = E(walletP).getOffersNotifier();
       //   try {
@@ -148,22 +151,32 @@ export default function Provider({ children }) {
       //   console.error('got watchWalletoffer err', err),
       // );
       try {
-        const INSTALLATION_BOARD_ID = MARKET_PLACE_INSTALLATION_BOARD_ID;
-        const INSTANCE_BOARD_ID = MARKET_PLACE_INSTALLATION_BOARD_ID;
-        console.log('walletp', walletP);
-        await E(walletP).suggestInstallation(
-          'Installation',
-          INSTALLATION_BOARD_ID,
-        );
-        await E(walletP).suggestInstance('Instance', INSTANCE_BOARD_ID);
-        const cardIssuer = await E(board).getValue(CARD_ISSUER_BOARD_ID);
-        console.log('cardIssuer:', cardIssuer);
-        await E(walletP).suggestIssuer('Card', CARD_ISSUER_BOARD_ID);
-        // await Promise.all([
-        // E(walletP).suggestInstallation('Installation', INSTALLATION_BOARD_ID),
-        // E(walletP).suggestInstance('Instance', INSTANCE_BOARD_ID),
-        // E(walletP).suggestIssuer('Card', CARD_ISSUER_BOARD_ID),
-        // ]);
+        // const installationBoardId = MARKET_PLACE_INSTALLATION_BOARD_ID;
+        // // const INSTANCE_BOARD_ID = MARKET_PLACE_INSTALLATION_BOARD_ID;
+        // console.log('walletp', walletP);
+        // await E(walletP).suggestInstallation(
+        //   'Installation',
+        //   installationBoardId,
+        // );
+        // console.log('suggestion 1');
+        // await E(walletP).suggestInstance(
+        //   'Instance',
+        //   MARKET_PLACE_INSTANCE_BOARD_ID,
+        // );
+        // console.log('suggestion 2');
+        // await E(walletP).suggestIssuer('Ticket', CARD_ISSUER_BOARD_ID);
+        // console.log('suggestion 3');
+        await Promise.all([
+          E(walletP).suggestInstallation(
+            'Installation',
+            MARKET_PLACE_INSTALLATION_BOARD_ID,
+          ),
+          E(walletP).suggestInstance(
+            'Instance',
+            MARKET_PLACE_INSTANCE_BOARD_ID,
+          ),
+          E(walletP).suggestIssuer('Event Ticket', CARD_ISSUER_BOARD_ID),
+        ]);
       } catch (error) {
         console.log('error in promise all:', error);
       }
@@ -182,6 +195,7 @@ export default function Provider({ children }) {
       }
       watchOffers().catch((err) => console.log('got watchOffer errs', err));
     };
+
     const onDisconnect = () => {
       dispatch(setConnected(false));
       walletAbort && walletAbort();
@@ -193,6 +207,7 @@ export default function Provider({ children }) {
       walletDispatch && walletDispatch(obj);
       console.log('Response from wallet:', obj);
     };
+
     activateWebSocket({
       onConnect,
       onDisconnect,
