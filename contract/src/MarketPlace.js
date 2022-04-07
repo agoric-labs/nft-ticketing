@@ -10,7 +10,9 @@ import {
   defaultAcceptanceMsg,
   assertProposalShape,
   // assertNatAssetKind,
+  offerTo,
 } from '@agoric/zoe/src/contractSupport/index.js';
+import { E } from '@endo/eventual-send';
 
 /**
  * Sell items in exchange for money. Items may be fungible or
@@ -137,6 +139,42 @@ const start = (zcf) => {
     return zcf.makeInvitation(buy, 'buyer');
   };
 
+  const addItemOnSale = async ({ tickets, invitation, moneyBrand }) => {
+    console.log('creatorInvitation:', invitation);
+    const moneyAmount = AmountMath.make(moneyBrand, 10n);
+    const newCardsForSaleAmount = AmountMath.make(
+      cardBrand,
+      harden([tickets[0]]),
+    );
+    const CardForSalePayment = await E(cardMint).mintPayment(
+      newCardsForSaleAmount,
+    );
+    console.log(CardForSalePayment);
+    const proposal = {
+      give: { Item: newCardsForSaleAmount }, // asset: 3 moola
+      want: { Money: moneyAmount }, // price: 7 simoleans
+    };
+    console.log('ItemBrand', proposal.give.Item.brand);
+    console.log('MoneyBrand', proposal.want.Money.brand);
+    // const paymentKeywordRecord = harden({
+    //   Item: CardForSalePayment,
+    // });
+    // console.log('paymentKeywordRecord', paymentKeywordRecord);
+    const { userSeatPromise: sellerSeatP, deposited } = await offerTo(
+      zcf,
+      invitation,
+      harden({
+        Items: 'Asset',
+        Money: 'Ask',
+      }),
+      proposal,
+      sellerSeat,
+      sellerSeat,
+    );
+    console.log('sellerSeatP', sellerSeatP);
+    console.log('deposited', deposited);
+  };
+
   const publicFacet = Far('SellItemsPublicFacet', {
     getAvailableItems,
     getAvailableItemsNotifier,
@@ -151,6 +189,7 @@ const start = (zcf) => {
 
   const creatorFacet = Far('SellItemsCreatorFacet', {
     makeBuyerInvitation,
+    addItemOnSale,
     getAvailableItems: publicFacet.getAvailableItems,
     getItemsIssuer: publicFacet.getItemsIssuer,
   });

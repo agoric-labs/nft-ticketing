@@ -2,11 +2,10 @@
 /* global process */
 
 // Agoric Dapp api deployment script
-
 import fs from 'fs';
 import { E } from '@agoric/eventual-send';
 import '@agoric/zoe/exported.js';
-import { AmountMath, AssetKind, makeIssuerKit } from '@agoric/ertp';
+import { AmountMath } from '@agoric/ertp';
 
 import installationConstants from '../ui/src/conf/installationConstants.js';
 
@@ -112,7 +111,6 @@ export default async function deployApi(homePromise, { pathResolve }) {
     }),
   );
   console.log(marketPlaceCreatorFacet);
-  console.log(creatorInvitation);
 
   const { cardBrand, cardIssuer } = await E(marketPlaceFacet).getItemsIssuer();
   // CMT (hussain.rizvi@robor.systems): Storing each important variable on the board and getting their board ids.
