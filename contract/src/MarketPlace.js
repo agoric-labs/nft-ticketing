@@ -1,202 +1,162 @@
 // @ts-check
 
-import { assert, details as X } from '@agoric/assert';
 import { Far } from '@endo/marshal';
-import { Nat } from '@agoric/nat';
-import { AmountMath, AssetKind, makeIssuerKit } from '@agoric/ertp';
-import { makeNotifierKit, observeNotifier } from '@agoric/notifier';
+import { makeNotifierKit } from '@agoric/notifier';
+import '@agoric/zoe/exported';
 import {
-  // assertIssuerKeywords,
-  defaultAcceptanceMsg,
+  swap,
+  satisfies,
   assertProposalShape,
-  // assertNatAssetKind,
-  offerTo,
+  assertIssuerKeywords,
 } from '@agoric/zoe/src/contractSupport/index.js';
-import { E } from '@endo/eventual-send';
+import { AssetKind, makeIssuerKit } from '@agoric/ertp';
 
 /**
- * Sell items in exchange for money. Items may be fungible or
- * non-fungible and multiple items may be bought at once. Money must
- * be fungible.
+ * SimpleExchange is an exchange with a simple matching algorithm, which allows
+ * an unlimited number of parties to create new orders or accept existing
+ * orders. The notifier allows callers to find the current list of orders.
+ * https://agoric.com/documentation/zoe/guide/contracts/simple-exchange.html
  *
- * The `pricePerItem` is to be set in the terms. It is expected that all items
- * are sold for the same uniform price.
+ * The SimpleExchange uses Asset and Price as its keywords. The contract treats
+ * the two keywords symmetrically. New offers can be created and existing offers
+ * can be accepted in either direction.
  *
- * The initial offer should be { give: { Items: items } }, accompanied by
- * terms as described above.
- * Buyers use offers that match { want: { Items: items } give: { Money: m } }.
- * The items provided should match particular items that the seller still has
- * available to sell, and the money should be pricePerItem times the number of
- * items requested.
+ * { give: { 'Asset', simoleans(5n) }, want: { 'Price', quatloos(3) } }
+ * { give: { 'Price', quatloos(8) }, want: { 'Asset', simoleans(3n) } }
  *
- * When all the items have been sold, the contract will terminate, triggering
- * the creator's payout. If the creator has an onDemand exit clause, they can
- * exit early to collect their winnings. The remaining items will still be
- * available for sale, but the creator won't be able to collect later earnings.
+ * The Asset is treated as an exact amount to be exchanged, while the
+ * Price is a limit that may be improved on. This simple exchange does
+ * not partially fill orders.
  *
- * @param {ZCF<{pricePerItem: Amount<'nat'>}>} zcf
+ * The publicFacet is returned from the contract.
+ *
+ * @param {ZCF} zcf
  */
+
 const start = (zcf) => {
-  console.log('start');
   const {
     issuer: cardIssuer,
-    mint: cardMint,
+    mint: cardMinter,
     brand: cardBrand,
   } = makeIssuerKit('ticket card', AssetKind.SET);
-  const { issuers, brands } = zcf.getTerms();
-  console.log('issuers', issuers);
-  console.log('brands', brands);
-  // const allKeywords = ['Items', 'Money'];
-  // assertIssuerKeywords(zcf, harden(allKeywords));
-  // assertNatAssetKind(zcf, pricePerItem.brand);
 
-  let sellerSeat;
+  let sellSeats = [];
+  let buySeats = [];
+  // eslint-disable-next-line no-use-before-define
+  const { notifier, updater } = makeNotifierKit(getBookOrders());
 
-  const { notifier: availableItemsNotifier, updater: availableItemsUpdater } =
-    makeNotifierKit();
+  function dropExit(p) {
+    return {
+      want: p.want,
+      give: p.give,
+    };
+  }
+
+  function flattenOrders(seats) {
+    console.log('FlattenOrders-seats:', seats);
+    const activeSeats = seats.filter((s) => !s.hasExited());
+    return activeSeats.map((seat) => {
+      return { sellerSeat: seat, proposal: dropExit(seat.getProposal()) };
+    });
+  }
+
+  function getBookOrders() {
+    return {
+      buys: flattenOrders(buySeats),
+      sells: flattenOrders(sellSeats),
+    };
+  }
+  // Tell the notifier that there has been a change to the book orders
+  function bookOrdersChanged() {
+    updater.updateState(getBookOrders());
+  }
+
+  // If there's an existing offer that this offer is a match for, make the trade
+  // and return the seat for the matched offer. If not, return undefined, so
+  // the caller can know to add the new offer to the book.
+  function swapIfCanTrade(offers, seat) {
+    for (const offer of offers) {
+      const satisfiedBy = (xSeat, ySeat) => {
+        return satisfies(zcf, xSeat, ySeat.getCurrentAllocation());
+      };
+      if (satisfiedBy(offer, seat) && satisfiedBy(seat, offer)) {
+        swap(zcf, seat, offer);
+        // return handle to remove
+        return offer;
+      }
+    }
+    return undefined;
+  }
+
+  // try to swap offerHandle with one of the counterOffers. If it works, remove
+  // the matching offer and return the remaining counterOffers. If there's no
+  // matching offer, add the offerHandle to the coOffers, and return the
+  // unmodified counterOfffers
+  function swapIfCanTradeAndUpdateBook(counterOffers, coOffers, seat) {
+    const offer = swapIfCanTrade(counterOffers, seat);
+
+    if (offer) {
+      // remove the matched offer.
+      counterOffers = counterOffers.filter((value) => value !== offer);
+    } else {
+      // Save the order in the book
+      coOffers.push(seat);
+    }
+    bookOrdersChanged();
+    return counterOffers;
+  }
 
   const sell = (seat) => {
-    sellerSeat = seat;
-    observeNotifier(
-      sellerSeat.getNotifier(),
-      harden({
-        updateState: (sellerSeatAllocation) =>
-          availableItemsUpdater.updateState(
-            sellerSeatAllocation && sellerSeatAllocation.Items,
-          ),
-        finish: (sellerSeatAllocation) => {
-          availableItemsUpdater.finish(
-            sellerSeatAllocation && sellerSeatAllocation.Items,
-          );
-        },
-        fail: (reason) => availableItemsUpdater.fail(reason),
-      }),
-    );
-    return defaultAcceptanceMsg;
-  };
-
-  const getAvailableItems = () => {
-    assert(sellerSeat && !sellerSeat.hasExited(), X`no items are for sale`);
-    return sellerSeat.getAmountAllocated('Items');
-  };
-
-  const getAvailableItemsNotifier = () => availableItemsNotifier;
-
-  const buy = (buyerSeat) => {
-    assertProposalShape(buyerSeat, {
-      want: { Items: null },
-      give: { Money: null },
+    assertProposalShape(seat, {
+      give: { Asset: null },
+      want: { Price: null },
     });
-    const currentItemsForSale = sellerSeat.getAmountAllocated('Items');
-    const providedMoney = buyerSeat.getAmountAllocated('Money');
+    buySeats = swapIfCanTradeAndUpdateBook(buySeats, sellSeats, seat);
+    return 'Order Added';
+  };
 
-    const {
-      want: { Items: wantedItems },
-    } = buyerSeat.getProposal();
-
-    // Check that the wanted items are still for sale.
-    if (!AmountMath.isGTE(currentItemsForSale, wantedItems)) {
-      const rejectMsg = `Some of the wanted items were not available for sale`;
-      throw buyerSeat.fail(new Error(rejectMsg));
+  const buy = (seat) => {
+    assertProposalShape(seat, {
+      give: { Price: null },
+      want: { Asset: null },
+    });
+    sellSeats = swapIfCanTradeAndUpdateBook(sellSeats, buySeats, seat);
+    return 'Order Added';
+  };
+  /** @type {OfferHandler} */
+  const exchangeOfferHandler = (seat) => {
+    // Buy Order
+    if (seat.getProposal().want.Asset) {
+      console.log('running buy orders:', seat.getProposal());
+      return buy(seat);
     }
-    // All items are the same price.
-    const totalCost = AmountMath.make(
-      brands.Money,
-      // pricePerItem.value * Nat(wantedItems.value.length),
-      10n * Nat(wantedItems.value.length),
-    );
-
-    // Check that the money provided to pay for the items is greater than the totalCost.
-    assert(
-      AmountMath.isGTE(providedMoney, totalCost),
-      X`More money (${totalCost}) is required to buy these items`,
-    );
-
-    // Reallocate.
-    sellerSeat.incrementBy(
-      buyerSeat.decrementBy(harden({ Money: providedMoney })),
-    );
-    buyerSeat.incrementBy(
-      sellerSeat.decrementBy(harden({ Items: wantedItems })),
-    );
-    zcf.reallocate(buyerSeat, sellerSeat);
-
-    // The buyer's offer has been processed.
-    buyerSeat.exit();
-
-    if (AmountMath.isEmpty(getAvailableItems())) {
-      zcf.shutdown('All items sold.');
+    // Sell Order
+    if (seat.getProposal().give.Asset) {
+      console.log('running sell orders:', seat.getProposal());
+      return sell(seat);
     }
-    return defaultAcceptanceMsg;
+    // Eject because the offer must be invalid
+    throw seat.fail(
+      new Error(`The proposal did not match either a buy or sell order.`),
+    );
   };
 
-  const makeBuyerInvitation = () => {
-    const itemsAmount = sellerSeat.getAmountAllocated('Items');
-    assert(
-      sellerSeat && !AmountMath.isEmpty(itemsAmount),
-      X`no items are for sale`,
-    );
-    return zcf.makeInvitation(buy, 'buyer');
-  };
+  const makeExchangeInvitation = () =>
+    zcf.makeInvitation(exchangeOfferHandler, 'exchange');
 
-  const addItemOnSale = async ({ tickets, invitation, moneyBrand }) => {
-    console.log('creatorInvitation:', invitation);
-    const moneyAmount = AmountMath.make(moneyBrand, 10n);
-    const newCardsForSaleAmount = AmountMath.make(
-      cardBrand,
-      harden([tickets[0]]),
-    );
-    const CardForSalePayment = await E(cardMint).mintPayment(
-      newCardsForSaleAmount,
-    );
-    console.log(CardForSalePayment);
-    const proposal = {
-      give: { Item: newCardsForSaleAmount }, // asset: 3 moola
-      want: { Money: moneyAmount }, // price: 7 simoleans
-    };
-    console.log('ItemBrand', proposal.give.Item.brand);
-    console.log('MoneyBrand', proposal.want.Money.brand);
-    // const paymentKeywordRecord = harden({
-    //   Item: CardForSalePayment,
-    // });
-    // console.log('paymentKeywordRecord', paymentKeywordRecord);
-    const { userSeatPromise: sellerSeatP, deposited } = await offerTo(
-      zcf,
-      invitation,
-      harden({
-        Items: 'Asset',
-        Money: 'Ask',
-      }),
-      proposal,
-      sellerSeat,
-      sellerSeat,
-    );
-    console.log('sellerSeatP', sellerSeatP);
-    console.log('deposited', deposited);
-  };
-
-  const publicFacet = Far('SellItemsPublicFacet', {
-    getAvailableItems,
-    getAvailableItemsNotifier,
+  const publicFacet = Far('MarketPlacePublicFacet', {
+    updateNotifier: bookOrdersChanged,
+    makeInvitation: makeExchangeInvitation,
+    getNotifier: () => notifier,
     getItemsIssuer: () =>
       harden({
         cardIssuer,
         cardBrand,
-        cardMint,
+        cardMinter,
       }),
-    makeBuyerInvitation,
   });
-
-  const creatorFacet = Far('SellItemsCreatorFacet', {
-    makeBuyerInvitation,
-    addItemOnSale,
-    getAvailableItems: publicFacet.getAvailableItems,
-    getItemsIssuer: publicFacet.getItemsIssuer,
-  });
-
-  const creatorInvitation = zcf.makeInvitation(sell, 'seller');
-
-  return harden({ creatorFacet, creatorInvitation, publicFacet });
+  bookOrdersChanged();
+  return harden({ publicFacet });
 };
 
 harden(start);

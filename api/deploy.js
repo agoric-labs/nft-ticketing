@@ -5,7 +5,7 @@
 import fs from 'fs';
 import { E } from '@agoric/eventual-send';
 import '@agoric/zoe/exported.js';
-import { AmountMath } from '@agoric/ertp';
+import { AmountMath, AssetKind, makeIssuerKit } from '@agoric/ertp';
 
 import installationConstants from '../ui/src/conf/installationConstants.js';
 
@@ -96,27 +96,17 @@ export default async function deployApi(homePromise, { pathResolve }) {
   console.log('allTickets', allTickets);
   console.log('- SUCCESS! contract instance is running on Zoe');
   console.log('Retrieving Board IDs for issuers and brands');
-  const {
-    publicFacet: marketPlaceFacet,
-    creatorFacet: marketPlaceCreatorFacet,
-    creatorInvitation,
-    instance: marketPlaceInstance,
-  } = await E(zoe).startInstance(
-    marketPlaceInstallation,
-    harden({
-      Money: moneyIssuer,
-    }),
-    harden({
-      Money: moneyIssuer,
-    }),
-  );
-  console.log(marketPlaceCreatorFacet);
 
+  const { publicFacet: marketPlaceFacet, instance: marketPlaceInstance } =
+    await E(zoe).startInstance(
+      marketPlaceInstallation,
+      harden({ Price: moneyIssuer }),
+    );
   const { cardBrand, cardIssuer } = await E(marketPlaceFacet).getItemsIssuer();
   // CMT (hussain.rizvi@robor.systems): Storing each important variable on the board and getting their board ids.
-  // CMT (haseeb.asim@robor.systems): Fetching promise of the global issuer for invitations.
+  // CMT (hussain.rizvi@robor.systems): Fetching promise of the global issuer for invitations.
   const invitationIssuerP = E(zoe).getInvitationIssuer();
-  // CMT (haseeb.asim@robor.systems): Fetching promise of invitation brand using invitation issuer.
+  // CMT (hussain.rizvi@robor.systems): Fetching promise of invitation brand using invitation issuer.
   const invitationBrand = await E(invitationIssuerP).getBrand();
 
   const [
