@@ -20,13 +20,13 @@ import {
   setConnected,
   setOpenEnableAppDialog,
   setAvailableCards,
-  // setCardPurse,
-  // setTokenDisplayInfo,
-  // setTokenPetname,
-  // setTokenPurses,
+  setCardPurse,
+  setTokenDisplayInfo,
+  setTokenPetname,
+  setTokenPurses,
+  setUserCards,
   // setUserNfts,
   // setUserOffers,
-  // setUserCards,
   // setPendingOffers,
 } from '../store/store';
 
@@ -101,30 +101,30 @@ export default function Provider({ children }) {
       ).getAvailableEvents();
       dispatch(setAvailableCards(marketPlaceEvents || []));
       console.log('facet', publicFacetMarketPlace);
-      // const processPurses = (purses) => {
-      //   const newTokenPurses = purses.filter(
-      //     ({ brandBoardId }) => brandBoardId === MONEY_BRAND_BOARD_ID,
-      //   );
-      //   const newCardPurse = purses.find(
-      //     ({ brandBoardId }) => brandBoardId === CARD_BRAND_BOARD_ID,
-      //   );
+      const processPurses = (purses) => {
+        const newTokenPurses = purses.filter(
+          ({ brandBoardId }) => brandBoardId === MONEY_BRAND_BOARD_ID,
+        );
+        const newCardPurse = purses.find(
+          ({ brandBoardId }) => brandBoardId === CARD_BRAND_BOARD_ID,
+        );
+        dispatch(setTokenPurses(newTokenPurses));
+        dispatch(setTokenDisplayInfo(newTokenPurses[0].displayInfo));
+        dispatch(setTokenPetname(newTokenPurses[0].brandPetname));
+        dispatch(setCardPurse(newCardPurse));
+        dispatch(setUserCards(newCardPurse?.currentAmount?.value || []));
+        //   console.log('printing card purse:', newCardPurse);
+        //   console.log('printing all cards:', availableCards);
+      };
 
-      //   dispatch(setTokenPurses(newTokenPurses));
-      //   dispatch(setTokenDisplayInfo(newTokenPurses[0].displayInfo));
-      //   dispatch(setTokenPetname(newTokenPurses[0].brandPetname));
-      //   dispatch(setCardPurse(newCardPurse));
-      //   dispatch(setUserCards(newCardPurse?.currentAmount?.value));
-      //   console.log('printing card purse:', newCardPurse);
-      //   console.log('printing all cards:', availableCards);
-      // };
+      async function watchPurses() {
+        const pn = E(walletP).getPursesNotifier();
+        for await (const purses of iterateNotifier(pn)) {
+          processPurses(purses);
+        }
+      }
+      watchPurses().catch((err) => console.error('got watchPurses err', err));
 
-      // async function watchPurses() {
-      //   const pn = E(walletP).getPursesNotifier();
-      //   for await (const purses of iterateNotifier(pn)) {
-      //     processPurses(purses);
-      //   }
-      // }
-      // watchPurses().catch((err) => console.error('got watchPurses err', err));
       // async function watchWallerOffers() {
       //   const offerNotifier = E(walletP).getOffersNotifier();
       //   try {

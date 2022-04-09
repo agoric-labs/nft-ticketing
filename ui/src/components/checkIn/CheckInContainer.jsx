@@ -1,31 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { useApplicationContext } from '../../context/Application';
 import { getFilteredList } from '../../helpers/searchBar';
-import { checkInCards } from '../../tickets';
 import CheckInCard from './components/CheckInCard';
 import Pagination from '../common/Pagination';
 
 const CheckInContainer = () => {
   const {
-    state: { searchInput, searchOption },
+    state: { searchInput, searchOption, userCards },
   } = useApplicationContext();
-  const [eventList, setEventList] = useState(checkInCards);
+  const [eventList, setEventList] = useState(userCards);
   const [page, setPage] = useState(0);
-  const pageLength = 3;
+  const pageLength = 9;
+
   useEffect(() => {
+    console.log('userCards:', userCards);
     setEventList(
       getFilteredList(
-        checkInCards,
+        userCards,
         searchInput,
         searchOption,
         page,
         page + pageLength,
       ),
     );
-  }, [searchInput, searchOption, page]);
+  }, [searchInput, searchOption, page, userCards]);
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2  lg:grid-cols-3 gap-8 mb-5">
+      <div className="grid grid-cols-1 md:grid-cols-2  lg:grid-cols-3 gap-8 mb-9">
         {eventList?.map((item, i) => (
           <CheckInCard key={i} cardDetail={item} type={'Buy Product'} />
         ))}
@@ -33,10 +34,10 @@ const CheckInContainer = () => {
       <Pagination
         page={page}
         pageLength={pageLength}
-        total={checkInCards.length}
+        total={userCards.length}
         onNext={() => {
           console.log('page:', page);
-          if (page + pageLength >= checkInCards.length) return;
+          if (page + pageLength >= userCards.length) return;
           setPage((pg) => pg + pageLength);
         }}
         onPrev={() => {
