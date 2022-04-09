@@ -96,11 +96,10 @@ export default function Provider({ children }) {
       publicFacetMarketPlace = await E(zoe).getPublicFacet(
         marketPlaceContractInstance,
       );
-      const { value: marketPlaceEvents } = await E(
+      const { marketPlaceEvents } = await E(
         publicFacetMarketPlace,
-      ).getAvailableOffers();
+      ).getAvailableEvents();
       dispatch(setAvailableCards(marketPlaceEvents || []));
-
       console.log('facet', publicFacetMarketPlace);
       // const processPurses = (purses) => {
       //   const newTokenPurses = purses.filter(
@@ -151,21 +150,20 @@ export default function Provider({ children }) {
       //   console.error('got watchWalletoffer err', err),
       // );
       try {
-        // const installationBoardId = MARKET_PLACE_INSTALLATION_BOARD_ID;
-        // // const INSTANCE_BOARD_ID = MARKET_PLACE_INSTALLATION_BOARD_ID;
-        // console.log('walletp', walletP);
-        // await E(walletP).suggestInstallation(
-        //   'Installation',
-        //   installationBoardId,
-        // );
-        // console.log('suggestion 1');
-        // await E(walletP).suggestInstance(
-        //   'Instance',
-        //   MARKET_PLACE_INSTANCE_BOARD_ID,
-        // );
-        // console.log('suggestion 2');
-        // await E(walletP).suggestIssuer('Ticket', CARD_ISSUER_BOARD_ID);
-        // console.log('suggestion 3');
+        const installationBoardId = MARKET_PLACE_INSTALLATION_BOARD_ID;
+        console.log('walletp', walletP);
+        await E(walletP).suggestInstallation(
+          'Installation',
+          installationBoardId,
+        );
+        console.log('suggestion 1');
+        await E(walletP).suggestInstance(
+          'Instance',
+          MARKET_PLACE_INSTANCE_BOARD_ID,
+        );
+        console.log('suggestion 2');
+        await E(walletP).suggestIssuer('Ticket', CARD_ISSUER_BOARD_ID);
+        console.log('suggestion 3');
         await Promise.all([
           E(walletP).suggestInstallation(
             'Installation',

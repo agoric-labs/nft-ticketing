@@ -39,12 +39,14 @@ const start = (zcf) => {
     mint: cardMinter,
     brand: cardBrand,
   } = makeIssuerKit('ticket card', AssetKind.SET);
-
+  const { tickets } = zcf.getTerms();
+  let marketPlaceEvents = tickets;
   let sellSeats = [];
   let buySeats = [];
   // eslint-disable-next-line no-use-before-define
   const { notifier, updater } = makeNotifierKit(getBookOrders());
-
+  const { notifier: availabeEventsNotifier, updater: updateAvailableEvents } =
+    makeNotifierKit(marketPlaceEvents);
   function dropExit(p) {
     return {
       want: p.want,
@@ -148,6 +150,11 @@ const start = (zcf) => {
     updateNotifier: bookOrdersChanged,
     makeInvitation: makeExchangeInvitation,
     getNotifier: () => notifier,
+    getAvailableEvents: () => ({
+      availabeEventsNotifier,
+      updateAvailableEvents,
+      marketPlaceEvents,
+    }),
     getItemsIssuer: () =>
       harden({
         cardIssuer,

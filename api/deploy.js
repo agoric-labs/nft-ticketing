@@ -5,8 +5,7 @@
 import fs from 'fs';
 import { E } from '@agoric/eventual-send';
 import '@agoric/zoe/exported.js';
-import { AmountMath, AssetKind, makeIssuerKit } from '@agoric/ertp';
-
+import { mintTickets } from './utils/cardMint.js';
 import installationConstants from '../ui/src/conf/installationConstants.js';
 
 import { tickets } from './tickets.js';
@@ -55,6 +54,7 @@ export default async function deployApi(homePromise, { pathResolve }) {
     // have a one-to-one bidirectional mapping. If a value is added a
     // second time, the original id is just returned.
     board,
+    wallet,
   } = home;
 
   // To get the backend of our dapp up and running, first we need to
@@ -101,13 +101,28 @@ export default async function deployApi(homePromise, { pathResolve }) {
     await E(zoe).startInstance(
       marketPlaceInstallation,
       harden({ Price: moneyIssuer }),
+      allTickets,
     );
-  const { cardBrand, cardIssuer } = await E(marketPlaceFacet).getItemsIssuer();
+  const { cardBrand, cardIssuer, cardMinter } = await E(
+    marketPlaceFacet,
+  ).getItemsIssuer();
   // CMT (hussain.rizvi@robor.systems): Storing each important variable on the board and getting their board ids.
   // CMT (hussain.rizvi@robor.systems): Fetching promise of the global issuer for invitations.
   const invitationIssuerP = E(zoe).getInvitationIssuer();
   // CMT (hussain.rizvi@robor.systems): Fetching promise of invitation brand using invitation issuer.
   const invitationBrand = await E(invitationIssuerP).getBrand();
+
+  const { availabeEventsNotifier, updateAvailableEvents, events } = await E(
+    marketPlaceFacet,
+  ).getAvailableEvents();
+  console.log('events:', events);
+  await mintTickets({
+    wallet,
+    cardBrand,
+    cardMinter,
+    tickets,
+    cardIssuer,
+  });
 
   const [
     MONEY_BRAND_BOARD_ID,
