@@ -55,6 +55,7 @@ export default async function deployApi(homePromise, { pathResolve }) {
     // second time, the original id is just returned.
     board,
     wallet,
+    TimerService,
   } = home;
 
   // To get the backend of our dapp up and running, first we need to
@@ -96,33 +97,21 @@ export default async function deployApi(homePromise, { pathResolve }) {
   console.log('- SUCCESS! contract instance is running on Zoe');
   console.log('Retrieving Board IDs for issuers and brands');
 
-  const { publicFacet: marketPlaceFacet, instance: marketPlaceInstance } =
-    await E(zoe).startInstance(
-      marketPlaceInstallation,
-      harden({ Price: moneyIssuer }),
-      allTickets,
-    );
-  const { cardBrand, cardIssuer, cardMinter } = await E(
-    marketPlaceFacet,
-  ).getItemsIssuer();
+  const {
+    publicFacet: marketPlaceFacet,
+    creatorFacet: marketPlaceCreatorFacet,
+    instance: marketPlaceInstance,
+  } = await E(zoe).startInstance(
+    marketPlaceInstallation,
+    harden({ Price: moneyIssuer }),
+    allTickets,
+  );
+  const { cardBrand, cardIssuer } = await E(marketPlaceFacet).getItemsIssuer();
   // CMT (hussain.rizvi@robor.systems): Storing each important variable on the board and getting their board ids.
   // CMT (hussain.rizvi@robor.systems): Fetching promise of the global issuer for invitations.
   const invitationIssuerP = E(zoe).getInvitationIssuer();
   // CMT (hussain.rizvi@robor.systems): Fetching promise of invitation brand using invitation issuer.
   const invitationBrand = await E(invitationIssuerP).getBrand();
-
-  // const { availabeEventsNotifier, updateAvailableEvents, marketPlaceEvents } =
-  //   await E(marketPlaceFacet).getAvailableEvents();
-  // console.log('events:', marketPlaceEvents);
-
-  await mintTickets({
-    wallet,
-    cardBrand,
-    cardMinter,
-    tickets,
-    cardIssuer,
-  });
-
   const [
     MONEY_BRAND_BOARD_ID,
     MONEY_ISSUER_BOARD_ID,
@@ -174,4 +163,20 @@ export default async function deployApi(homePromise, { pathResolve }) {
 export default ${JSON.stringify(dappConstants, undefined, 2)};
 `;
   await fs.promises.writeFile(defaultsFile, defaultsContents);
+  console.log('startTimer');
+  await E(home.localTimerService).delay(60000n);
+  console.log('endTimer');
+  const walletP = await E(wallet).getScopedBridge(
+    'ticketStore',
+    'http://localhost:3000',
+  );
+  await mintTickets({
+    wallet: walletP,
+    cardBrand,
+    tickets,
+    INVITE_BRAND_BOARD_ID,
+    marketPlaceCreatorFacet,
+    board,
+    zoe,
+  });
 }

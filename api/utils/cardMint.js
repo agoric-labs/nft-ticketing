@@ -34,28 +34,54 @@ const parseEventsToSeperateCards = (tickets) => {
 export const mintTickets = async ({
   wallet,
   cardBrand,
-  cardMinter,
   tickets,
-  cardIssuer,
+  INVITE_BRAND_BOARD_ID,
+  marketPlaceCreatorFacet,
+  board,
+  zoe,
 }) => {
   console.log('tickets:', tickets);
   const eventTickets = parseEventsToSeperateCards(tickets);
-  console.log(eventTickets[0]);
-  const newUserCardAmount = AmountMath.make(
-    cardBrand,
-    harden([eventTickets[0]]),
+  const newUserCardAmount = AmountMath.make(cardBrand, harden(eventTickets));
+  const depositFacetId = await E(wallet).getDepositFacetId(
+    INVITE_BRAND_BOARD_ID,
   );
-  const mintedCardPayment = await E(cardMinter).mintPayment(
-    harden(newUserCardAmount),
-  );
-  // const claimedPayment = await E(cardIssuer).claim(mintedCardPayment);
-  console.log('paymentStatus:', await E(cardIssuer).isLive(mintedCardPayment));
-  const cardPurse = E(wallet).getPurse(['ticketStore', 'Ticket']);
+  const depositFacet = await E(board).getValue(depositFacetId);
+  console.log('depositFacet', depositFacet);
+  const invitation = await E(marketPlaceCreatorFacet).makeInvitation();
+  console.log('invitation', invitation);
+  const invitationIssuer = await E(zoe).getInvitationIssuer();
+  console.log('invitation Issuer:', invitationIssuer);
+  const invitationAmount = await E(invitationIssuer).getAmountOf(invitation);
+  console.log('invitationAmount:', invitationAmount);
+
+  const {
+    value: [{ handle }],
+  } = invitationAmount;
+  console.log('handle:', handle);
+  const invitationHandleBoardId = await E(board).getId(handle);
+  console.log(invitationHandleBoardId);
   try {
-    await E(cardPurse).deposit(mintedCardPayment);
+    const offer = {
+      // JSONable ID for this offer.  This is scoped to the origin.
+      id: Date.now(),
+      proposalTemplate: {
+        want: {
+          Token: {
+            pursePetname: ['ticketStore', 'Ticket'],
+            value: newUserCardAmount.value,
+          },
+        },
+      }, // Tell the wallet that we're handling the offer result.
+      dappContext: true,
+    };
+
+    const updatedOffer = { ...offer, invitationHandleBoardId };
+    await E(depositFacet).receive(invitation);
+    const offerId = await E(wallet).addOffer(updatedOffer);
+    console.log(offerId);
   } catch (err) {
     console.log('error:', err);
   }
-  // await E(depositFaucet).receive(claimedPayment);
   return 'success';
 };
