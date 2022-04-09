@@ -164,12 +164,21 @@ export default ${JSON.stringify(dappConstants, undefined, 2)};
 `;
   await fs.promises.writeFile(defaultsFile, defaultsContents);
   console.log('startTimer');
-  await E(home.localTimerService).delay(60000n);
   console.log('endTimer');
   const walletP = await E(wallet).getScopedBridge(
     'ticketStore',
     'http://localhost:3000',
   );
+  await E(walletP).suggestInstallation(
+    'Installation',
+    MARKET_PLACE_INSTALLATION_BOARD_ID,
+  );
+  console.log('suggestion 1');
+  await E(walletP).suggestInstance('Instance', MARKET_PLACE_INSTANCE_BOARD_ID);
+  console.log('suggestion 2');
+  await E(walletP).suggestIssuer('Ticket', CARD_ISSUER_BOARD_ID);
+  console.log('suggestion 3');
+  await E(home.localTimerService).delay(5000n);
   await mintTickets({
     wallet: walletP,
     cardBrand,
