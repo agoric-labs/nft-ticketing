@@ -111,17 +111,17 @@ export default async function deployApi(homePromise, { pathResolve }) {
   // CMT (hussain.rizvi@robor.systems): Fetching promise of invitation brand using invitation issuer.
   const invitationBrand = await E(invitationIssuerP).getBrand();
 
-  const { availabeEventsNotifier, updateAvailableEvents, marketPlaceEvents } =
-    await E(marketPlaceFacet).getAvailableEvents();
-  console.log('events:', marketPlaceEvents);
+  // const { availabeEventsNotifier, updateAvailableEvents, marketPlaceEvents } =
+  //   await E(marketPlaceFacet).getAvailableEvents();
+  // console.log('events:', marketPlaceEvents);
 
-  // await mintTickets({
-  //   wallet,
-  //   cardBrand,
-  //   cardMinter,
-  //   tickets,
-  //   cardIssuer,
-  // });
+  await mintTickets({
+    wallet,
+    cardBrand,
+    cardMinter,
+    tickets,
+    cardIssuer,
+  });
 
   const [
     MONEY_BRAND_BOARD_ID,

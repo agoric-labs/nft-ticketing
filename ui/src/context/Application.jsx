@@ -96,7 +96,7 @@ export default function Provider({ children }) {
       publicFacetMarketPlace = await E(zoe).getPublicFacet(
         marketPlaceContractInstance,
       );
-      const { marketPlaceEvents } = await E(
+      const { availabeEventsNotifier, marketPlaceEvents } = await E(
         publicFacetMarketPlace,
       ).getAvailableEvents();
       dispatch(setAvailableCards(marketPlaceEvents || []));
@@ -149,6 +149,17 @@ export default function Provider({ children }) {
       // watchWallerOffers().catch((err) =>
       //   console.error('got watchWalletoffer err', err),
       // );
+      async function watchMarketPlaceEvents() {
+        for await (const availableOffers of iterateNotifier(
+          availabeEventsNotifier,
+        )) {
+          console.log('In MarketPlace', availableOffers);
+          dispatch(setAvailableCards(availableOffers || []));
+        }
+      }
+      watchMarketPlaceEvents().catch((err) =>
+        console.log('got watchMarketPlaceEvents errs', err),
+      );
       try {
         const installationBoardId = MARKET_PLACE_INSTALLATION_BOARD_ID;
         console.log('walletp', walletP);
@@ -178,20 +189,6 @@ export default function Provider({ children }) {
       } catch (error) {
         console.log('error in promise all:', error);
       }
-
-      async function watchOffers() {
-        const availableOfferNotifier = await E(
-          publicFacetMarketPlace,
-        ).getAvailableOfferNotifier();
-
-        for await (const availableOffers of iterateNotifier(
-          availableOfferNotifier,
-        )) {
-          console.log('In MarketPlace', availableOffers.value);
-          dispatch(setAvailableCards(availableOffers.value || []));
-        }
-      }
-      watchOffers().catch((err) => console.log('got watchOffer errs', err));
     };
 
     const onDisconnect = () => {
