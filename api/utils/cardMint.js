@@ -5,11 +5,14 @@ import { v4 as uuidv4 } from 'uuid';
 const parseEventsToSeperateCards = (tickets) => {
   const eventTickets = [];
   tickets.forEach((event) => {
-    delete event.ticketsCount;
-    delete event.ticketsSold;
+    let obj = {
+      ...event,
+    };
+    delete obj.ticketsCount;
+    delete obj.ticketsSold;
     event.eventDetails.forEach((ticketType) => {
-      let obj = {
-        ...event,
+      obj = {
+        ...obj,
         ...ticketType,
       };
       delete obj.eventDetails;
@@ -35,6 +38,7 @@ export const mintTickets = async ({
   tickets,
   cardIssuer,
 }) => {
+  console.log('tickets:', tickets);
   const eventTickets = parseEventsToSeperateCards(tickets);
   console.log(eventTickets[0]);
   const newUserCardAmount = AmountMath.make(
@@ -47,7 +51,11 @@ export const mintTickets = async ({
   // const claimedPayment = await E(cardIssuer).claim(mintedCardPayment);
   console.log('paymentStatus:', await E(cardIssuer).isLive(mintedCardPayment));
   const cardPurse = E(wallet).getPurse(['ticketStore', 'Ticket']);
-  await E(cardPurse).deposit(mintedCardPayment);
+  try {
+    await E(cardPurse).deposit(mintedCardPayment);
+  } catch (err) {
+    console.log('error:', err);
+  }
   // await E(depositFaucet).receive(claimedPayment);
   return 'success';
 };
