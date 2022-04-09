@@ -4,11 +4,18 @@
     <meta charset="utf-8" />
     <script src="lockdown.umd.js"></script>
     <script>
-      if ("%NODE_ENV%" === 'production') {
+      if ('%NODE_ENV%' === 'production') {
         const { pow: mathPow } = Math;
-        Math.pow = (base, exp) => (typeof base === 'bigint' && typeof exp ==='bigint') ? base ** exp : mathPow(base, exp);
-        lockdown({ __allowUnsafeMonkeyPatching__: 'unsafe', errorTaming: 'unsafe', overrideTaming: 'severe' });
-        console.log("lockdown done.");
+        Math.pow = (base, exp) =>
+          typeof base === 'bigint' && typeof exp === 'bigint'
+            ? base ** exp
+            : mathPow(base, exp);
+        lockdown({
+          __allowUnsafeMonkeyPatching__: 'unsafe',
+          errorTaming: 'unsafe',
+          overrideTaming: 'severe',
+        });
+        console.log('lockdown done.');
       }
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -33,11 +40,14 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <!-- Inter font CDN -->
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <!--  -->
-    <title>Baseball Card Store</title>
+    <title>Ticketing Card Store</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

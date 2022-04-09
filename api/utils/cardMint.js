@@ -46,9 +46,8 @@ export const mintTickets = async ({
   );
   // const claimedPayment = await E(cardIssuer).claim(mintedCardPayment);
   console.log('paymentStatus:', await E(cardIssuer).isLive(mintedCardPayment));
-  await E(E(wallet).getPurse(['ticketStore', 'Ticket'])).deposit(
-    mintedCardPayment,
-  );
+  const cardPurse = E(wallet).getPurse(['ticketStore', 'Ticket']);
+  await E(cardPurse).deposit(mintedCardPayment);
   // await E(depositFaucet).receive(claimedPayment);
   return 'success';
 };
