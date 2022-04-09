@@ -44,7 +44,7 @@ const TicketDisplay = () => {
             total={availableCards.length}
             onNext={() => {
               console.log('page:', page);
-              if (page === availableCards.length - 1) return;
+              if (page + pageLength >= availableCards.length) return;
               setPage((pg) => pg + pageLength);
             }}
             onPrev={() => {
