@@ -173,11 +173,8 @@ export default ${JSON.stringify(dappConstants, undefined, 2)};
     'Installation',
     MARKET_PLACE_INSTALLATION_BOARD_ID,
   );
-  console.log('suggestion 1');
   await E(walletP).suggestInstance('Instance', MARKET_PLACE_INSTANCE_BOARD_ID);
-  console.log('suggestion 2');
   await E(walletP).suggestIssuer('Ticket', CARD_ISSUER_BOARD_ID);
-  console.log('suggestion 3');
   await E(home.localTimerService).delay(5000n);
   await mintTickets({
     wallet: walletP,

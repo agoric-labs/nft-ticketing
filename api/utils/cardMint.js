@@ -47,20 +47,14 @@ export const mintTickets = async ({
     INVITE_BRAND_BOARD_ID,
   );
   const depositFacet = await E(board).getValue(depositFacetId);
-  console.log('depositFacet', depositFacet);
   const invitation = await E(marketPlaceCreatorFacet).makeInvitation();
-  console.log('invitation', invitation);
   const invitationIssuer = await E(zoe).getInvitationIssuer();
-  console.log('invitation Issuer:', invitationIssuer);
   const invitationAmount = await E(invitationIssuer).getAmountOf(invitation);
-  console.log('invitationAmount:', invitationAmount);
 
   const {
     value: [{ handle }],
   } = invitationAmount;
-  console.log('handle:', handle);
   const invitationHandleBoardId = await E(board).getId(handle);
-  console.log(invitationHandleBoardId);
   try {
     const offer = {
       // JSONable ID for this offer.  This is scoped to the origin.
@@ -78,8 +72,7 @@ export const mintTickets = async ({
 
     const updatedOffer = { ...offer, invitationHandleBoardId };
     await E(depositFacet).receive(invitation);
-    const offerId = await E(wallet).addOffer(updatedOffer);
-    console.log(offerId);
+    await E(wallet).addOffer(updatedOffer);
   } catch (err) {
     console.log('error:', err);
   }

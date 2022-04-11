@@ -112,7 +112,7 @@ export default function Provider({ children }) {
         dispatch(setTokenDisplayInfo(newTokenPurses[0].displayInfo));
         dispatch(setTokenPetname(newTokenPurses[0].brandPetname));
         dispatch(setCardPurse(newCardPurse));
-        dispatch(setUserCards(newCardPurse?.currentAmount?.value || []));
+        dispatch(setUserCards(newCardPurse?.currentAmount?.value));
         //   console.log('printing card purse:', newCardPurse);
         //   console.log('printing all cards:', availableCards);
       };
