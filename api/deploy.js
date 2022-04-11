@@ -5,10 +5,11 @@
 import fs from 'fs';
 import { E } from '@agoric/eventual-send';
 import '@agoric/zoe/exported.js';
-import { mintTickets } from './utils/cardMint.js';
+import { mintTickets } from './src/cardMint.js';
 import installationConstants from '../ui/src/conf/installationConstants.js';
 
 import { tickets } from './tickets.js';
+import { addToSale } from './src/addTicketsToSale.js';
 
 // deploy.js runs in an ephemeral Node.js outside of swingset. The
 // spawner runs within ag-solo, so is persistent.  Once the deploy.js
@@ -55,7 +56,6 @@ export default async function deployApi(homePromise, { pathResolve }) {
     // second time, the original id is just returned.
     board,
     wallet,
-    TimerService,
   } = home;
 
   // To get the backend of our dapp up and running, first we need to
@@ -163,26 +163,30 @@ export default async function deployApi(homePromise, { pathResolve }) {
 export default ${JSON.stringify(dappConstants, undefined, 2)};
 `;
   await fs.promises.writeFile(defaultsFile, defaultsContents);
-  console.log('startTimer');
-  console.log('endTimer');
-  const walletP = await E(wallet).getScopedBridge(
-    'ticketStore',
-    'http://localhost:3000',
-  );
-  await E(walletP).suggestInstallation(
-    'Installation',
-    MARKET_PLACE_INSTALLATION_BOARD_ID,
-  );
-  await E(walletP).suggestInstance('Instance', MARKET_PLACE_INSTANCE_BOARD_ID);
-  await E(walletP).suggestIssuer('Ticket', CARD_ISSUER_BOARD_ID);
-  await E(home.localTimerService).delay(5000n);
-  await mintTickets({
-    wallet: walletP,
-    cardBrand,
-    tickets,
-    INVITE_BRAND_BOARD_ID,
-    marketPlaceCreatorFacet,
-    board,
+  // const walletP = await E(wallet).getScopedBridge(
+  //   'ticketStore',
+  //   'http://localhost:3000',
+  // );
+  // await E(walletP).suggestInstallation(
+  //   'Installation',
+  //   MARKET_PLACE_INSTALLATION_BOARD_ID,
+  // );
+  // await E(walletP).suggestInstance('Instance', MARKET_PLACE_INSTANCE_BOARD_ID);
+  // await E(walletP).suggestIssuer('Ticket', CARD_ISSUER_BOARD_ID);
+  // await E(home.localTimerService).delay(5000n);
+  // await mintTickets({
+  //   wallet: walletP,
+  //   cardBrand,
+  //   tickets,
+  //   INVITE_BRAND_BOARD_ID,
+  //   marketPlaceCreatorFacet,
+  //   board,
+  //   zoe,
+  // });
+  await addToSale({
+    wallet,
     zoe,
+    board,
+    marketPlaceCreatorFacet,
   });
 }
