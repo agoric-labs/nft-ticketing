@@ -3,38 +3,34 @@ import { E } from '@agoric/eventual-send';
  * This function should be called when the user puts a card
  * which he own on sale in the secondary marketplace
  */
-const getSellerSeat = async ({
-  cardOffer,
-  cardDetail,
-  sellingPrice,
-  publicFacet,
-  publicFacetMarketPlace,
-  cardPurse,
-  tokenPurses,
+
+const buyEventTicket = async ({
+  activeCard,
   walletP,
-  setLoading,
-  onClose,
-  dispatch,
+  publicFacetMarketPlace,
+  tokenPurses,
+  cardPurse,
 }) => {
+  tokenPurses = tokenPurses.reverse();
   let invitation;
   try {
     invitation = await E(publicFacetMarketPlace).makeInvitation();
   } catch (e) {
-    console.error('Could not make seller invitation', e);
+    console.error('Could not make buyer invitation', e);
   }
-  console.log('cardDetail in app:', cardDetail);
+  console.log('invitation Successful:', invitation);
   const id = Date.now();
   const proposalTemplate = {
-    give: {
+    want: {
       Asset: {
         pursePetname: cardPurse.pursePetname,
-        value: harden([cardDetail]),
+        value: harden([activeCard]),
       },
     },
-    want: {
+    give: {
       Price: {
         pursePetname: tokenPurses[0].pursePetname,
-        value: sellingPrice,
+        value: BigInt(activeCard.ticketPrice) * 1000000n,
       },
     },
     exit: { onDemand: null },
@@ -45,6 +41,6 @@ const getSellerSeat = async ({
   } catch (e) {
     console.error('Could not add sell offer to wallet', e);
   }
+  console.log('offerId:', id);
 };
-
-export { getSellerSeat };
+export { buyEventTicket };

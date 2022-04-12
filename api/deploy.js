@@ -185,7 +185,6 @@ export default ${JSON.stringify(dappConstants, undefined, 2)};
   });
   await addToSale({
     wallet,
-    walletP,
     zoe,
     marketPlaceFacet,
     moneyBrand,

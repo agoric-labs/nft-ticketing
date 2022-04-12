@@ -8,7 +8,7 @@ import Button from '../../common/Button';
 import ModalBottomDetail from '../../common/modal/ModalBottomDetail';
 import ModalTopDetail from '../../common/modal/ModalTopDetail';
 
-const BuyTicketModal = () => {
+const BuyTicketModal = ({ purchaseTickets }) => {
   const {
     dispatch,
     state: { activeCard },
@@ -37,6 +37,7 @@ const BuyTicketModal = () => {
             text="Check In"
             onClick={() => {
               dispatch(setModalType(Modal.SUCCESS_MARKETPLACE));
+              purchaseTickets();
             }}
           />
         </div>

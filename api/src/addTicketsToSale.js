@@ -10,7 +10,11 @@ export const addToSale = async ({
   // Will change this step before code goes for production.
   // will fetch purses from walletp notifier.
   const newTokenPurses = await E(wallet).getPurse('Agoric RUN currency');
-  const newCardPurse = await E(wallet).getPurse(['ticketStore', 'Ticket', '7']);
+  const newCardPurse = await E(wallet).getPurse([
+    'ticketStore',
+    'Ticket',
+    '11',
+  ]);
   const cardAmount = await E(newCardPurse).getCurrentAmount();
   const { brand: cardBrand, value: cardValue } = cardAmount;
   const withdrawedTicketPayment = await E(newCardPurse).withdraw(
@@ -36,8 +40,8 @@ export const addToSale = async ({
   console.log('payment:', payments);
   const invitation = await E(marketPlaceFacet).makeInvitation();
   console.log('invitation:', invitation);
-  const userSeat = await E(zoe).offer(invitation, proposal, payments);
-  console.log('userSeat', userSeat);
-  const bookOrders = await E(marketPlaceFacet).getBookOrders();
-  console.log('bookOrders', bookOrders);
+  // const userSeat = await E(zoe).offer(invitation, proposal, payments);
+  // console.log('userSeat', userSeat);
+  // const bookOrders = await E(marketPlaceFacet).getBookOrders();
+  // console.log('bookOrders', bookOrders);
 };

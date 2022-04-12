@@ -8,16 +8,31 @@ import { setActiveTab, setOpenModal, setType } from './store/store';
 import MainContainer from './components/mainContainer/MainContainer';
 import Footer from './components/common/Footer';
 import ModalWrapper from './components/common/modal/ModalWrapper';
+import Main from './services/main';
 
 function App() {
   const {
     dispatch,
-    state: { openModal },
+    state: {
+      activeCard,
+      walletP,
+      publicFacetMarketPlace,
+      tokenPurses,
+      cardPurse,
+      openModal,
+    },
   } = useApplicationContext();
   useEffect(() => {
     dispatch(setActiveTab(0));
     dispatch(setType('marketplace'));
   }, []);
+  const { purchaseTickets } = Main(
+    activeCard,
+    walletP,
+    publicFacetMarketPlace,
+    tokenPurses,
+    cardPurse,
+  );
   return (
     <div className="relative w-full h-full">
       <NavBar />
@@ -25,6 +40,7 @@ function App() {
       <ModalWrapper
         open={openModal}
         onClose={() => dispatch(setOpenModal(false))}
+        purchaseTickets={purchaseTickets}
       ></ModalWrapper>
       <Footer />
     </div>

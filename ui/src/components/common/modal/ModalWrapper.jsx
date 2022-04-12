@@ -11,7 +11,7 @@ import { Modal } from '../../../helpers/ModalActions';
 import TicketPurchaseSuccessModal from '../../marketplace/components/TicketPurchaseSuccessModal';
 import { setActiveCard } from '../../../store/store';
 
-const ModalWrapper = ({ style, open, onClose }) => {
+const ModalWrapper = ({ style, open, onClose, purchaseTickets }) => {
   const {
     dispatch,
     state: { modalType },
@@ -47,7 +47,9 @@ const ModalWrapper = ({ style, open, onClose }) => {
                     case Modal.CHECK_IN:
                       return <CheckInEventModal />;
                     case Modal.MARKETPLACE:
-                      return <BuyTicketModal />;
+                      return (
+                        <BuyTicketModal purchaseTickets={purchaseTickets} />
+                      );
                     case Modal.SUCCESS_CREATE_EVENT:
                       return <CreationSuccessModal />;
                     case Modal.SUCCESS_CHECK_IN:
