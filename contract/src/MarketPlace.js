@@ -132,6 +132,7 @@ const start = async (zcf) => {
   };
   /** @type {OfferHandler} */
   const exchangeOfferHandler = (seat) => {
+    console.log('Inside Exchange offer handler:', seat.getProposal());
     // Buy Order
     if (seat.getProposal().want.Asset) {
       console.log('running buy orders:', seat.getProposal());

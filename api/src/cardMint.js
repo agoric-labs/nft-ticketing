@@ -87,6 +87,7 @@ export const mintTicketsWithFacetToWallet = async ({
   board,
   cardMinter,
 }) => {
+  console.log('start mint');
   const eventTickets = parseEventsToSeperateCards(tickets);
   const newUserCardAmount = AmountMath.make(cardBrand, harden(eventTickets));
   const depositFacetId = await E(walletP).getDepositFacetId(
@@ -96,6 +97,7 @@ export const mintTicketsWithFacetToWallet = async ({
   const cardPayment = await E(cardMinter).mintPayment(newUserCardAmount);
   try {
     await E(depositFacet).receive(cardPayment);
+    console.log('end mint');
   } catch (e) {
     console.log('Error in depositing through facet', e);
   }

@@ -7,38 +7,35 @@ export const addToSale = async ({
   marketPlaceFacet,
   moneyBrand,
 }) => {
+  // Will change this step before code goes for production.
+  // will fetch purses from walletp notifier.
   const newTokenPurses = await E(wallet).getPurse('Agoric RUN currency');
-  const newCardPurse = await E(wallet).getPurse(['ticketStore', 'Ticket']);
-  console.log('Token Purses', newTokenPurses);
-  console.log('newCardPurse', newCardPurse);
-  const { brand: cardBrand, value: cardValue } = await E(
-    newCardPurse,
-  ).getCurrentAmount();
-  console.log('cardValue:', cardValue);
-  console.log('cardBrand:', cardBrand);
-  const invitation = await E(marketPlaceFacet).makeInvitation();
+  const newCardPurse = await E(wallet).getPurse(['ticketStore', 'Ticket', '7']);
+  const cardAmount = await E(newCardPurse).getCurrentAmount();
+  const { brand: cardBrand, value: cardValue } = cardAmount;
   const withdrawedTicketPayment = await E(newCardPurse).withdraw(
-    AmountMath.make(cardBrand, harden(cardValue)),
+    AmountMath.make(cardBrand, harden([cardValue[0]])),
   );
   console.log('withdrawedTicketPayment:', withdrawedTicketPayment);
   // console.log("cardValue[0]);
+  const moneyBrand2 = await E(newTokenPurses).getAllegedBrand();
+  console.log(`${moneyBrand} === ${moneyBrand2}`, moneyBrand === moneyBrand2);
   const proposal = {
     give: {
-      Asset: {
-        brand: cardBrand,
-        value: cardValue,
-      },
+      Asset: AmountMath.make(cardBrand, harden([cardValue[0]])),
     },
     want: {
-      Price: {
-        brand: moneyBrand,
-        value: BigInt(cardValue[0].ticketPrice) * 1000000n,
-      },
+      Price: AmountMath.make(
+        moneyBrand,
+        BigInt(cardValue[0].ticketPrice) * 1000000n,
+      ),
     },
   }; // Tell the wallet that we're handling the offer result.
   console.log('offer:', proposal);
-  const payments = { Asset: withdrawedTicketPayment };
-  console.log(payments);
+  const payments = harden({ Asset: withdrawedTicketPayment });
+  console.log('payment:', payments);
+  const invitation = await E(marketPlaceFacet).makeInvitation();
+  console.log('invitation:', invitation);
   const userSeat = await E(zoe).offer(invitation, proposal, payments);
   console.log('userSeat', userSeat);
   const bookOrders = await E(marketPlaceFacet).getBookOrders();
