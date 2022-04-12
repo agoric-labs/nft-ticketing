@@ -36,14 +36,14 @@ import { AmountMath, AssetKind, makeIssuerKit } from '@agoric/ertp';
  */
 
 const start = async (zcf) => {
-  // const {
-  //   issuer: cardIssuer,
-  //   mint: cardMinter,
-  //   brand: cardBrand,
-  // } = makeIssuerKit('ticket card', AssetKind.SET);
-  const zcfMint = await zcf.makeZCFMint('TicketCard', AssetKind.SET);
-  const { issuer: cardIssuer, brand: cardBrand } =
-    await zcfMint.getIssuerRecord();
+  const {
+    issuer: cardIssuer,
+    mint: cardMinter,
+    brand: cardBrand,
+  } = makeIssuerKit('TicketCard', AssetKind.SET);
+  // const zcfMint = await zcf.makeZCFMint('TicketCard', AssetKind.SET);
+  // const { issuer: cardIssuer, brand: cardBrand } =
+  //   await zcfMint.getIssuerRecord();
   const { tickets } = zcf.getTerms();
   let marketPlaceEvents = tickets;
   let sellSeats = [];
@@ -151,32 +151,34 @@ const start = async (zcf) => {
   const makeExchangeInvitation = async () =>
     zcf.makeInvitation(exchangeOfferHandler, 'exchange');
 
-  const mintPayment = async (seat) => {
-    console.log('seat in mintPayment', seat);
-    const proposal = await E(seat).getProposal();
-    console.log('proposal', proposal.want.Token.value);
-    const amount = AmountMath.make(
-      proposal.want.Token.brand,
-      proposal.want.Token.value,
-    );
-    console.log('amount', amount);
-    // // Synchronously mint and allocate amount to seat.
-    zcfMint.mintGains(harden({ Token: amount }), seat);
-    // // Exit the seat so that the user gets a payout.
-    seat.exit();
-    // // Since the user is getting the payout through Zoe, we can
-    // // return anything here. Let's return some helpful instructions.
-    return 'Offer completed. You should receive a payment from Zoe';
-  };
-  const creatorFacet = Far('creatorFacet', {
-    // The creator of the instance can send invitations to anyone
-    // they wish to.
-    makeInvitation: () => zcf.makeInvitation(mintPayment, 'mint a payment'),
-  });
+  // const mintPayment = async (seat) => {
+  //   console.log('seat in mintPayment', seat);
+  //   const proposal = await E(seat).getProposal();
+  //   console.log('proposal', proposal.want.Token.value);
+  //   const amount = AmountMath.make(
+  //     proposal.want.Token.brand,
+  //     proposal.want.Token.value,
+  //   );
+  //   console.log('amount', amount);
+  //   // // Synchronously mint and allocate amount to seat.
+  //   zcfMint.mintGains(harden({ Token: amount }), seat);
+  //   // // Exit the seat so that the user gets a payout.
+  //   seat.exit();
+  //   // // Since the user is getting the payout through Zoe, we can
+  //   // // return anything here. Let's return some helpful instructions.
+  //   return 'Offer completed. You should receive a payment from Zoe';
+  // };
+  // const creatorFacet = Far('creatorFacet', {
+  //   // The creator of the instance can send invitations to anyone
+  //   // they wish to.
+  //   makeInvitation: () => zcf.makeInvitation(mintPayment, 'mint a payment'),
+  // });
+
   const publicFacet = Far('MarketPlacePublicFacet', {
     updateNotifier: bookOrdersChanged,
     makeInvitation: makeExchangeInvitation,
     getNotifier: () => notifier,
+    getBookOrders,
     getAvailableEvents: () => ({
       availabeEventsNotifier,
       updateAvailableEvents,
@@ -185,11 +187,12 @@ const start = async (zcf) => {
     getItemsIssuer: () =>
       harden({
         cardIssuer,
+        cardMinter,
         cardBrand,
       }),
   });
   bookOrdersChanged();
-  return harden({ publicFacet, creatorFacet });
+  return harden({ publicFacet });
 };
 
 harden(start);

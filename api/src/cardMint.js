@@ -31,7 +31,7 @@ const parseEventsToSeperateCards = (tickets) => {
   return eventTickets;
 };
 
-export const mintTickets = async ({
+export const mintTicketsWithOfferToWallet = async ({
   wallet,
   cardBrand,
   tickets,
@@ -77,4 +77,26 @@ export const mintTickets = async ({
     console.log('error:', err);
   }
   return 'success';
+};
+
+export const mintTicketsWithFacetToWallet = async ({
+  tickets,
+  cardBrand,
+  walletP,
+  CARD_BRAND_BOARD_ID,
+  board,
+  cardMinter,
+}) => {
+  const eventTickets = parseEventsToSeperateCards(tickets);
+  const newUserCardAmount = AmountMath.make(cardBrand, harden(eventTickets));
+  const depositFacetId = await E(walletP).getDepositFacetId(
+    CARD_BRAND_BOARD_ID,
+  );
+  const depositFacet = await E(board).getValue(depositFacetId);
+  const cardPayment = await E(cardMinter).mintPayment(newUserCardAmount);
+  try {
+    await E(depositFacet).receive(cardPayment);
+  } catch (e) {
+    console.log('Error in depositing through facet', e);
+  }
 };
