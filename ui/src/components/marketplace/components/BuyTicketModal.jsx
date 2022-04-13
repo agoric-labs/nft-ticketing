@@ -34,7 +34,7 @@ const BuyTicketModal = ({ purchaseTickets }) => {
           </div>
           <Button
             styles="w-full"
-            text="Check In"
+            text="Buy Ticket"
             onClick={() => {
               dispatch(setModalType(Modal.SUCCESS_MARKETPLACE));
               purchaseTickets();

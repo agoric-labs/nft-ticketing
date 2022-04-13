@@ -19,10 +19,12 @@ const TicketCard = ({ cardDetail }) => {
   const [selectedTicketInMenu, setSelectedTicketInMenu] = useState({});
   const [error, setError] = useState('');
   const image = `${ipfsUrl + cardDetail.image}`;
-
+  useEffect(() => {
+    setTicketCount(0);
+  }, [selectedTicket]);
   useEffect(() => {
     setTotalPrice(parseInt(selectedTicket.ticketPrice * ticketCount, 10));
-  }, [selectedTicket, ticketCount]);
+  }, [ticketCount]);
   const handleIncrementCount = () => {
     if (!selectedTicket.ticketType) {
       setError('Select a ticket type first');
