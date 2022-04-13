@@ -24,7 +24,7 @@ const CheckInContainer = () => {
       ),
     );
   }, [searchInput, searchOption, page, userCards]);
-  return (
+  return eventList.length > 0 ? (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2  lg:grid-cols-3 gap-8 mb-9">
         {eventList?.map((item, i) => (
@@ -46,6 +46,10 @@ const CheckInContainer = () => {
         }}
       />
     </>
+  ) : (
+    <div className="flex justify-center items-center">
+      <h3>No card in wallet to check In</h3>
+    </div>
   );
 };
 

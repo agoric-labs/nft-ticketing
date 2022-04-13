@@ -41,6 +41,7 @@ const start = async (zcf) => {
     mint: cardMinter,
     brand: cardBrand,
   } = makeIssuerKit('TicketCard', AssetKind.SET);
+  zcf.saveIssuer(cardIssuer, 'Asset');
   // const zcfMint = await zcf.makeZCFMint('TicketCard', AssetKind.SET);
   // const { issuer: cardIssuer, brand: cardBrand } =
   //   await zcfMint.getIssuerRecord();
@@ -152,6 +153,10 @@ const start = async (zcf) => {
   const makeExchangeInvitation = async () =>
     zcf.makeInvitation(exchangeOfferHandler, 'exchange');
 
+  const creatorInvitation = zcf.makeInvitation(
+    exchangeOfferHandler,
+    'sellOffer',
+  );
   // const mintPayment = async (seat) => {
   //   console.log('seat in mintPayment', seat);
   //   const proposal = await E(seat).getProposal();
@@ -193,7 +198,7 @@ const start = async (zcf) => {
       }),
   });
   bookOrdersChanged();
-  return harden({ publicFacet });
+  return harden({ publicFacet, creatorInvitation });
 };
 
 harden(start);

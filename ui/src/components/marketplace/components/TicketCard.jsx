@@ -19,6 +19,7 @@ const TicketCard = ({ cardDetail }) => {
   const [selectedTicketInMenu, setSelectedTicketInMenu] = useState({});
   const [error, setError] = useState('');
   const image = `${ipfsUrl + cardDetail.image}`;
+
   useEffect(() => {
     setTotalPrice(parseInt(selectedTicket.ticketPrice * ticketCount, 10));
   }, [selectedTicket, ticketCount]);
@@ -28,8 +29,13 @@ const TicketCard = ({ cardDetail }) => {
       return;
     }
     setError('');
-    const ticketsLeft = cardDetail.ticketsCount - cardDetail.ticketsSold;
-    if (ticketCount === ticketsLeft) return;
+    const ticketsLeft = selectedTicket.ticketCount - cardDetail.ticketsSold;
+    if (ticketCount === ticketsLeft) {
+      setError(
+        `Only ${selectedTicket.ticketCount} tickets for ${selectedTicket.ticketType} section are left`,
+      );
+      return;
+    }
     setTicketCount(ticketCount + 1);
   };
   const handleDecrementCount = () => {
@@ -121,16 +127,19 @@ const TicketCard = ({ cardDetail }) => {
                     className={`bg-no-repeat cursor-pointer rounded-md w-full h-12 px-3.5 text-lg outline-none focus:outline-none font-normal border-alternativeLight border bg-white text-primaryLight`}
                   >
                     <option hidden>Ticket Type</option>
-                    {cardDetail?.eventDetails?.map((item, i) => (
-                      <option
-                        type="text"
-                        key={i}
-                        value={item.ticketType}
-                        className="text-lg text-black"
-                      >
-                        {item.ticketType}
-                      </option>
-                    ))}
+                    {cardDetail?.eventDetails?.map((item, i) => {
+                      const optionValue = `${item.ticketType}  -  ${item.ticketPrice}.00 RUN`;
+                      return (
+                        <option
+                          type="text"
+                          key={i}
+                          value={item.ticketType}
+                          className="text-lg text-black"
+                        >
+                          {optionValue}
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
 

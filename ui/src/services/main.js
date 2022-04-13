@@ -1,13 +1,13 @@
 import { buyEventTicket } from './marketPlace';
 
 const Main = (
-  state,
+  activeCard,
   walletP,
   publicFacetMarketPlace,
   tokenPurses,
   cardPurse,
 ) => {
-  const { activeCard } = state;
+  // const { activeCard } = state;
   const purchaseTickets = async () => {
     await buyEventTicket({
       activeCard,

@@ -86,97 +86,102 @@ export default function Provider({ children }) {
       walletP = getBootstrap();
       const zoe = E(walletP).getZoe();
       const board = E(walletP).getBoard();
-      console.log(
-        'MARKET_PLACE_INSTANCE_BOARD_ID',
-        MARKET_PLACE_INSTANCE_BOARD_ID.toString(),
-      );
-      const marketPlaceContractInstance = await E(board).getValue(
-        MARKET_PLACE_INSTANCE_BOARD_ID,
-      );
-      publicFacetMarketPlace = await E(zoe).getPublicFacet(
-        marketPlaceContractInstance,
-      );
-      const { availabeEventsNotifier, marketPlaceEvents } = await E(
-        publicFacetMarketPlace,
-      ).getAvailableEvents();
-      dispatch(setAvailableCards(marketPlaceEvents || []));
-      console.log('facet', publicFacetMarketPlace);
-      const processPurses = (purses) => {
-        const newTokenPurses = purses.filter(
-          ({ brandBoardId }) => brandBoardId === MONEY_BRAND_BOARD_ID,
-        );
-        const newCardPurse = purses.find(
-          ({ brandBoardId }) => brandBoardId === CARD_BRAND_BOARD_ID,
-        );
-        dispatch(setTokenPurses(newTokenPurses));
-        dispatch(setTokenDisplayInfo(newTokenPurses[0].displayInfo));
-        dispatch(setTokenPetname(newTokenPurses[0].brandPetname));
-        dispatch(setCardPurse(newCardPurse));
-        dispatch(setUserCards(newCardPurse?.currentAmount?.value));
-        //   console.log('printing card purse:', newCardPurse);
-        //   console.log('printing all cards:', availableCards);
-      };
-
-      async function watchPurses() {
-        const pn = E(walletP).getPursesNotifier();
-        for await (const purses of iterateNotifier(pn)) {
-          processPurses(purses);
-        }
-      }
-      watchPurses().catch((err) => console.error('got watchPurses err', err));
-
-      // async function watchWallerOffers() {
-      //   const offerNotifier = E(walletP).getOffersNotifier();
-      //   try {
-      //     for await (const offers of iterateNotifier(offerNotifier)) {
-      //       let pendingOffersArray = offers.filter((offer) => {
-      //         if (offer.status === 'pending') {
-      //           if (offer?.proposalTemplate?.give?.Asset) {
-      //             return true;
-      //           }
-      //         }
-      //         return false;
-      //       });
-      //       pendingOffersArray = pendingOffersArray?.map(
-      //         (offer) => offer?.proposalTemplate?.give?.Asset?.value[0],
-      //       );
-      //       dispatch(setPendingOffers(pendingOffersArray));
-      //     }
-      //   } catch (err) {
-      //     console.log('offers in application: error');
-      //   }
-      // }
-      // watchWallerOffers().catch((err) =>
-      //   console.error('got watchWalletoffer err', err),
-      // );
-      async function watchMarketPlaceEvents() {
-        for await (const availableOffers of iterateNotifier(
-          availabeEventsNotifier,
-        )) {
-          console.log('In MarketPlace', availableOffers);
-          dispatch(setAvailableCards(availableOffers || []));
-        }
-      }
-      watchMarketPlaceEvents().catch((err) =>
-        console.log('got watchMarketPlaceEvents errs', err),
-      );
       try {
-        const installationBoardId = MARKET_PLACE_INSTALLATION_BOARD_ID;
-        console.log('walletp', walletP);
-        await E(walletP).suggestInstallation(
-          'Installation',
-          installationBoardId,
+        console.log(
+          'MARKET_PLACE_INSTANCE_BOARD_ID',
+          MARKET_PLACE_INSTANCE_BOARD_ID.toString(),
         );
-        console.log('suggestion 1');
-        await E(walletP).suggestInstance(
-          'Instance',
+        const marketPlaceContractInstance = await E(board).getValue(
           MARKET_PLACE_INSTANCE_BOARD_ID,
         );
-        console.log('suggestion 2');
-        await E(walletP).suggestIssuer('Ticket', CARD_ISSUER_BOARD_ID);
-        console.log('suggestion 3');
-      } catch (error) {
-        console.log('error in promise all:', error);
+        publicFacetMarketPlace = await E(zoe).getPublicFacet(
+          marketPlaceContractInstance,
+        );
+        const { availabeEventsNotifier, marketPlaceEvents } = await E(
+          publicFacetMarketPlace,
+        ).getAvailableEvents();
+        dispatch(setAvailableCards(marketPlaceEvents || []));
+        console.log('facet', publicFacetMarketPlace);
+
+        const processPurses = (purses) => {
+          const newTokenPurses = purses.filter(
+            ({ brandBoardId }) => brandBoardId === MONEY_BRAND_BOARD_ID,
+          );
+          const newCardPurse = purses.find(
+            ({ brandBoardId }) => brandBoardId === CARD_BRAND_BOARD_ID,
+          );
+          dispatch(setTokenPurses(newTokenPurses));
+          dispatch(setTokenDisplayInfo(newTokenPurses[0].displayInfo));
+          dispatch(setTokenPetname(newTokenPurses[0].brandPetname));
+          dispatch(setCardPurse(newCardPurse));
+          dispatch(setUserCards(newCardPurse?.currentAmount?.value));
+          //   console.log('printing card purse:', newCardPurse);
+          //   console.log('printing all cards:', availableCards);
+        };
+
+        async function watchPurses() {
+          const pn = E(walletP).getPursesNotifier();
+          for await (const purses of iterateNotifier(pn)) {
+            processPurses(purses);
+          }
+        }
+        watchPurses().catch((err) => console.error('got watchPurses err', err));
+
+        // async function watchWallerOffers() {
+        //   const offerNotifier = E(walletP).getOffersNotifier();
+        //   try {
+        //     for await (const offers of iterateNotifier(offerNotifier)) {
+        //       let pendingOffersArray = offers.filter((offer) => {
+        //         if (offer.status === 'pending') {
+        //           if (offer?.proposalTemplate?.give?.Asset) {
+        //             return true;
+        //           }
+        //         }
+        //         return false;
+        //       });
+        //       pendingOffersArray = pendingOffersArray?.map(
+        //         (offer) => offer?.proposalTemplate?.give?.Asset?.value[0],
+        //       );
+        //       dispatch(setPendingOffers(pendingOffersArray));
+        //     }
+        //   } catch (err) {
+        //     console.log('offers in application: error');
+        //   }
+        // }
+        // watchWallerOffers().catch((err) =>
+        //   console.error('got watchWalletoffer err', err),
+        // );
+        async function watchMarketPlaceEvents() {
+          for await (const availableOffers of iterateNotifier(
+            availabeEventsNotifier,
+          )) {
+            console.log('In MarketPlace', availableOffers);
+            dispatch(setAvailableCards(availableOffers || []));
+          }
+        }
+        watchMarketPlaceEvents().catch((err) =>
+          console.log('got watchMarketPlaceEvents errs', err),
+        );
+        try {
+          const installationBoardId = MARKET_PLACE_INSTALLATION_BOARD_ID;
+          console.log('walletp', walletP);
+          await E(walletP).suggestInstallation(
+            'Installation',
+            installationBoardId,
+          );
+          console.log('suggestion 1');
+          await E(walletP).suggestInstance(
+            'Instance',
+            MARKET_PLACE_INSTANCE_BOARD_ID,
+          );
+          console.log('suggestion 2');
+          await E(walletP).suggestIssuer('Ticket', CARD_ISSUER_BOARD_ID);
+          console.log('suggestion 3');
+        } catch (error) {
+          console.log('error in promise all:', error);
+        }
+      } catch (e) {
+        console.log('error in application', e);
       }
     };
 
