@@ -25,16 +25,19 @@ import {
   setTokenPetname,
   setTokenPurses,
   setUserCards,
+  setInvitationPurse,
   // setUserNfts,
   // setUserOffers,
   // setPendingOffers,
 } from '../store/store';
+// import { mintTicketsWithOfferToWallet } from '../helpers/cardMint.js';
 
 const {
   MARKET_PLACE_INSTANCE_BOARD_ID,
   MARKET_PLACE_INSTALLATION_BOARD_ID,
   issuerBoardIds: { Card: CARD_ISSUER_BOARD_ID },
   brandBoardIds: { Money: MONEY_BRAND_BOARD_ID, Card: CARD_BRAND_BOARD_ID },
+  INVITE_BRAND_BOARD_ID,
 } = dappConstants;
 console.log(MONEY_BRAND_BOARD_ID);
 /* eslint-disable */
@@ -53,7 +56,7 @@ export function useApplicationContext() {
 /* eslint-disable complexity, react/prop-types */
 export default function Provider({ children }) {
   const [state, dispatch] = useReducer(reducer, defaultState);
-  // const { availableCards } = state;
+  const { invitationPurse } = state;
   useEffect(() => {
     // Receive callbacks from the wallet connection.
     const otherSide = Far('otherSide', {
@@ -111,11 +114,17 @@ export default function Provider({ children }) {
           const newCardPurse = purses.find(
             ({ brandBoardId }) => brandBoardId === CARD_BRAND_BOARD_ID,
           );
+          const zoeInvitationPurse = purses.find(
+            ({ brandBoardId }) => brandBoardId === INVITE_BRAND_BOARD_ID,
+          );
           dispatch(setTokenPurses(newTokenPurses));
           dispatch(setTokenDisplayInfo(newTokenPurses[0].displayInfo));
           dispatch(setTokenPetname(newTokenPurses[0].brandPetname));
           dispatch(setCardPurse(newCardPurse));
           dispatch(setUserCards(newCardPurse?.currentAmount?.value));
+          dispatch(
+            setInvitationPurse(zoeInvitationPurse?.currentAmount?.value),
+          );
           //   console.log('printing card purse:', newCardPurse);
           //   console.log('printing all cards:', availableCards);
         };
@@ -158,6 +167,20 @@ export default function Provider({ children }) {
           )) {
             console.log('In MarketPlace', availableOffers);
             dispatch(setAvailableCards(availableOffers || []));
+            const minted = await E(publicFacetMarketPlace).setInitialMinted();
+            if (availableOffers.length > 0 && !minted) {
+              // await mintTicketsWithOfferToWallet({
+              //   walletP,
+              //   cardBrand: cardPurse?.currentAmount?.brand,
+              //   tickets: availableOffers,
+              //   INVITE_BRAND_BOARD_ID,
+              //   invitation: invitationPurse,
+              //   board,
+              //   zoe,
+              // });
+              // await E(publicFacetMarketPlace).setInitialMinted();
+              console.log('invitation Purse:', invitationPurse);
+            }
           }
         }
         watchMarketPlaceEvents().catch((err) =>
@@ -176,7 +199,7 @@ export default function Provider({ children }) {
             MARKET_PLACE_INSTANCE_BOARD_ID,
           );
           console.log('suggestion 2');
-          await E(walletP).suggestIssuer('Ticket', CARD_ISSUER_BOARD_ID);
+          await E(walletP).suggestIssuer('Event Tickets', CARD_ISSUER_BOARD_ID);
           console.log('suggestion 3');
         } catch (error) {
           console.log('error in promise all:', error);

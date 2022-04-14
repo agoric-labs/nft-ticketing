@@ -5,10 +5,12 @@
 import fs from 'fs';
 import { E } from '@agoric/eventual-send';
 import '@agoric/zoe/exported.js';
-import { mintTicketsWithFacetToWallet } from './src/cardMint.js';
 import installationConstants from '../ui/src/conf/installationConstants.js';
-
 import { tickets } from './tickets.js';
+import {
+  mintTicketsWithFacetToWallet,
+  mintTicketsWithOfferToWallet,
+} from './src/cardMint.js';
 import { addToSale } from './src/addTicketsToSale.js';
 
 // deploy.js runs in an ephemeral Node.js outside of swingset. The
@@ -99,6 +101,7 @@ export default async function deployApi(homePromise, { pathResolve }) {
 
   const {
     creatorInvitation,
+    creatorFacet: marketPlaceCreatorFacet,
     publicFacet: marketPlaceFacet,
     instance: marketPlaceInstance,
   } = await E(zoe).startInstance(
@@ -106,6 +109,7 @@ export default async function deployApi(homePromise, { pathResolve }) {
     harden({ Price: moneyIssuer }),
     allTickets,
   );
+  console.log('instance done');
   const { cardBrand, cardIssuer } = await E(marketPlaceFacet).getItemsIssuer();
   // CMT (hussain.rizvi@robor.systems): Storing each important variable on the board and getting their board ids.
   // CMT (hussain.rizvi@robor.systems): Fetching promise of the global issuer for invitations.
@@ -164,29 +168,25 @@ export default ${JSON.stringify(dappConstants, undefined, 2)};
 `;
   await fs.promises.writeFile(defaultsFile, defaultsContents);
   const walletP = await E(wallet).getBridge();
-  const depositFacetId = await E(walletP).getDepositFacetId(
-    INVITE_BRAND_BOARD_ID,
+  // // const depositFacetId = await E(walletP).getDepositFacetId(
+  // //   INVITE_BRAND_BOARD_ID,
+  // // );
+  // // const depositFacet = await E(board).getValue(depositFacetId);
+  // // await E(depositFacet).receive(creatorInvitation);
+  await E(walletP).suggestInstallation(
+    'Installation',
+    MARKET_PLACE_INSTALLATION_BOARD_ID,
   );
-  const depositFacet = await E(board).getValue(depositFacetId);
-  await E(depositFacet).receive(creatorInvitation);
-  // await E(walletP).suggestInstallation(
-  //   'Installation',
-  //   MARKET_PLACE_INSTALLATION_BOARD_ID,
-  // );
-  // await E(walletP).suggestInstance('Instance', MARKET_PLACE_INSTANCE_BOARD_ID);
-  // await E(walletP).suggestIssuer('Ticket', CARD_ISSUER_BOARD_ID);
-  // await mintTicketsWithFacetToWallet({
-  //   tickets,
-  //   cardBrand,
-  //   walletP,
-  //   CARD_BRAND_BOARD_ID,
-  //   board,
-  //   cardMinter,
-  // });
-  // await addToSale({
-  //   wallet,
-  //   zoe,
-  //   marketPlaceFacet,
-  //   moneyBrand,
-  // });
+  await E(walletP).suggestInstance('Instance', MARKET_PLACE_INSTANCE_BOARD_ID);
+  await E(walletP).suggestIssuer('Event Tickets', CARD_ISSUER_BOARD_ID);
+  await E(cardIssuer).makeEmptyPurse();
+  await mintTicketsWithOfferToWallet({
+    walletP,
+    cardBrand,
+    tickets,
+    INVITE_BRAND_BOARD_ID,
+    creatorInvitation,
+    board,
+    zoe,
+  });
 }

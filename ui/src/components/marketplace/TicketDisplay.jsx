@@ -3,7 +3,6 @@ import { useApplicationContext } from '../../context/Application';
 import { getFilteredList } from '../../helpers/searchBar';
 import Loader from '../common/Loader';
 import Pagination from '../common/Pagination';
-// import { tickets } from '../../tickets';
 import TicketCard from './components/TicketCard';
 
 const TicketDisplay = () => {
