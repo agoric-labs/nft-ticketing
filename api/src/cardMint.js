@@ -38,6 +38,7 @@ export const mintTicketsWithOfferToWallet = async ({
   creatorInvitation,
   board,
   zoe,
+  marketPlaceCreatorFacet,
 }) => {
   console.log('tickets:', tickets);
   const eventTickets = parseEventsToSeperateCards(tickets);
@@ -46,16 +47,14 @@ export const mintTicketsWithOfferToWallet = async ({
     INVITE_BRAND_BOARD_ID,
   );
   const depositFacet = await E(board).getValue(depositFacetId);
-  // const invitation = await E(marketPlaceCreatorFacet).makeInvitation();
   const invitationIssuer = await E(zoe).getInvitationIssuer();
   const invitationAmount = await E(invitationIssuer).getAmountOf(
     creatorInvitation,
   );
 
   const {
-    value: [{ handle, creatorFacet }],
+    value: [{ handle }],
   } = invitationAmount;
-  console.log('creatorFacet : ', creatorFacet);
   const invitationHandleBoardId = await E(board).getId(handle);
   try {
     const offer = {
@@ -64,7 +63,7 @@ export const mintTicketsWithOfferToWallet = async ({
       proposalTemplate: {
         want: {
           Token: {
-            pursePetname: 'Event Tickets',
+            pursePetname: 'Event Tickets2',
             value: newUserCardAmount.value,
           },
         },
@@ -75,6 +74,8 @@ export const mintTicketsWithOfferToWallet = async ({
     const updatedOffer = { ...offer, invitationHandleBoardId };
     await E(depositFacet).receive(creatorInvitation);
     await E(walletP).addOffer(updatedOffer);
+    const invitation = await E(marketPlaceCreatorFacet).makeInvitation();
+    await E(depositFacet).receive(invitation);
   } catch (err) {
     console.log('error:', err);
   }

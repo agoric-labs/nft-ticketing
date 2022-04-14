@@ -168,11 +168,6 @@ export default ${JSON.stringify(dappConstants, undefined, 2)};
 `;
   await fs.promises.writeFile(defaultsFile, defaultsContents);
   const walletP = await E(wallet).getBridge();
-  // // const depositFacetId = await E(walletP).getDepositFacetId(
-  // //   INVITE_BRAND_BOARD_ID,
-  // // );
-  // // const depositFacet = await E(board).getValue(depositFacetId);
-  // // await E(depositFacet).receive(creatorInvitation);
   await E(walletP).suggestInstallation(
     'Installation',
     MARKET_PLACE_INSTALLATION_BOARD_ID,
@@ -188,5 +183,6 @@ export default ${JSON.stringify(dappConstants, undefined, 2)};
     creatorInvitation,
     board,
     zoe,
+    marketPlaceCreatorFacet,
   });
 }
