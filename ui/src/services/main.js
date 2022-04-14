@@ -1,4 +1,4 @@
-import { buyEventTicket } from './marketPlace';
+import { buyEventTickets } from './marketPlace';
 
 const Main = (
   activeCard,
@@ -9,7 +9,7 @@ const Main = (
 ) => {
   // const { activeCard } = state;
   const purchaseTickets = async () => {
-    await buyEventTicket({
+    await buyEventTickets({
       activeCard,
       walletP,
       publicFacetMarketPlace,

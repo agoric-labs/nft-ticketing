@@ -4,7 +4,8 @@ import { E } from '@agoric/eventual-send';
  * which he own on sale in the secondary marketplace
  */
 
-const buyEventTicket = async ({
+const sellEventTickets = async () => {};
+const buyEventTickets = async ({
   activeCard,
   walletP,
   publicFacetMarketPlace,
@@ -43,4 +44,4 @@ const buyEventTicket = async ({
   }
   console.log('offerId:', id);
 };
-export { buyEventTicket };
+export { buyEventTickets, sellEventTickets };

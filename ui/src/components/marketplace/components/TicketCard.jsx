@@ -19,6 +19,7 @@ const TicketCard = ({ cardDetail }) => {
   const [selectedTicketInMenu, setSelectedTicketInMenu] = useState({});
   const [error, setError] = useState('');
   const image = `${ipfsUrl + cardDetail.image}`;
+  console.log('hello');
   useEffect(() => {
     setTicketCount(0);
   }, [selectedTicket]);

@@ -83,9 +83,10 @@ export default function Provider({ children }) {
       );
       walletAbort = ctpAbort;
       walletDispatch = ctpDispatch;
-      walletP = getBootstrap();
+      walletP = await getBootstrap();
       const zoe = E(walletP).getZoe();
       const board = E(walletP).getBoard();
+      console.log('walletP', walletP);
       try {
         console.log(
           'MARKET_PLACE_INSTANCE_BOARD_ID',

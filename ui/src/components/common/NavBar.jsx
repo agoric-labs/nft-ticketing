@@ -5,9 +5,9 @@ import { setActiveTab, setType } from '../../store/store';
 
 const Header = () => {
   const { state, dispatch } = useApplicationContext();
-  const { connected: walletConnected, activeTab } = state;
+  const { connected: walletConnected, approved, activeTab } = state;
   const history = useHistory();
-  const walletStatus = walletConnected ? 'Connected' : 'Not connected';
+  const walletStatus = approved ? 'Connected' : 'Not connected';
   // dispatch(setActiveTab(0));
   useEffect(() => {
     switch (activeTab) {
