@@ -4,7 +4,39 @@ import { E } from '@agoric/eventual-send';
  * which he own on sale in the secondary marketplace
  */
 
-const sellEventTickets = async () => {};
+const sellEventTickets = async ({
+  activeCard,
+  walletP,
+  invitationPurse,
+  tokenPurses,
+  cardPurse,
+}) => {
+  const invitation = invitationPurse;
+  console.log('invitation Successful:', invitation);
+  const id = Date.now();
+  const proposalTemplate = {
+    give: {
+      Asset: {
+        pursePetname: cardPurse.pursePetname,
+        value: harden([activeCard]),
+      },
+    },
+    want: {
+      Price: {
+        pursePetname: tokenPurses[0].pursePetname,
+        value: BigInt(activeCard.ticketPrice) * 1000000n,
+      },
+    },
+    exit: { onDemand: null },
+  };
+  const offerConfig = { id, invitation, proposalTemplate };
+  try {
+    await E(walletP).addOffer(offerConfig);
+  } catch (e) {
+    console.error('Could not add sell offer to wallet', e);
+  }
+  console.log('offerId:', id);
+};
 const buyEventTickets = async ({
   activeCard,
   walletP,

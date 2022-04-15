@@ -173,10 +173,12 @@ export default ${JSON.stringify(dappConstants, undefined, 2)};
     MARKET_PLACE_INSTALLATION_BOARD_ID,
   );
   await E(walletP).suggestInstance('Instance', MARKET_PLACE_INSTANCE_BOARD_ID);
-  await E(walletP).suggestIssuer('Event Tickets', CARD_ISSUER_BOARD_ID);
+  const cardPursePetname = 'Event Tickets';
+  await E(walletP).suggestIssuer(cardPursePetname, CARD_ISSUER_BOARD_ID);
   await E(cardIssuer).makeEmptyPurse();
   await mintTicketsWithOfferToWallet({
     walletP,
+    cardPursePetname,
     cardBrand,
     tickets,
     INVITE_BRAND_BOARD_ID,

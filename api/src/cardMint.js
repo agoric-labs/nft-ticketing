@@ -32,6 +32,7 @@ const parseEventsToSeperateCards = (tickets) => {
 };
 export const mintTicketsWithOfferToWallet = async ({
   walletP,
+  cardPursePetname,
   cardBrand,
   tickets,
   INVITE_BRAND_BOARD_ID,
@@ -63,7 +64,7 @@ export const mintTicketsWithOfferToWallet = async ({
       proposalTemplate: {
         want: {
           Token: {
-            pursePetname: 'Event Tickets2',
+            pursePetname: cardPursePetname,
             value: newUserCardAmount.value,
           },
         },
