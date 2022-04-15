@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 // import axios from 'axios';
-import { nanoid } from 'nanoid';
+import { v4 as uuidv4 } from 'uuid';
 import Button from '../common/Button';
 import Input from '../common/InputField';
 // import DateTimeField from './common/DateTimeField';
@@ -61,7 +61,7 @@ function CreateTicketForm() {
     }
     setError('');
     try {
-      const id = nanoid();
+      const id = uuidv4();
       const ticketCount = eventDetails
         .map((item) => item.ticketCount)
         .reduce(
