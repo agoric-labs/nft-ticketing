@@ -7,12 +7,7 @@ import { E } from '@agoric/eventual-send';
 import '@agoric/zoe/exported.js';
 import installationConstants from '../ui/src/conf/installationConstants.js';
 import { tickets } from './tickets.js';
-import {
-  mintTicketsWithFacetToWallet,
-  mintTicketsWithOfferToWallet,
-  mintTicketsWithOfferToZoe,
-} from './src/cardMint.js';
-import { addToSale } from './src/addTicketsToSale.js';
+import { mintTicketsWithOfferToZoe } from './src/cardMint.js';
 
 // deploy.js runs in an ephemeral Node.js outside of swingset. The
 // spawner runs within ag-solo, so is persistent.  Once the deploy.js
@@ -169,23 +164,26 @@ export default ${JSON.stringify(dappConstants, undefined, 2)};
 `;
   await fs.promises.writeFile(defaultsFile, defaultsContents);
   const walletP = await E(wallet).getBridge();
-  await E(walletP).suggestInstallation(
-    'Installation',
-    MARKET_PLACE_INSTALLATION_BOARD_ID,
+  // await E(walletP).suggestInstallation(
+  //   'Installation',
+  //   MARKET_PLACE_INSTALLATION_BOARD_ID,
+  // );
+  // await E(walletP).suggestInstance('Instance', MARKET_PLACE_INSTANCE_BOARD_ID);
+  // const cardPursePetname = 'Event Tickets';
+  // await E(walletP).suggestIssuer(cardPursePetname, CARD_ISSUER_BOARD_ID);
+  // await E(cardIssuer).makeEmptyPurse();
+  // Depositing an invitation to the wallet.
+  const invitation = await E(marketPlaceCreatorFacet).makeInvitation();
+  const depositFacetId = await E(walletP).getDepositFacetId(
+    INVITE_BRAND_BOARD_ID,
   );
-  await E(walletP).suggestInstance('Instance', MARKET_PLACE_INSTANCE_BOARD_ID);
-  const cardPursePetname = 'Event Tickets2';
-  await E(walletP).suggestIssuer(cardPursePetname, CARD_ISSUER_BOARD_ID);
-  await E(cardIssuer).makeEmptyPurse();
+  const depositFacet = await E(board).getValue(depositFacetId);
+  await E(depositFacet).receive(invitation);
+  // await E(depositFacet).receive(creatorInvitation);
   await mintTicketsWithOfferToZoe({
-    // walletP,
-    moneyBrand,
     cardBrand,
     tickets,
-    // INVITE_BRAND_BOARD_ID,
     creatorInvitation,
-    // board,
     zoe,
-    // marketPlaceCreatorFacet,
   });
 }

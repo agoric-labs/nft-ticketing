@@ -123,7 +123,7 @@ const start = async (zcf) => {
       want: { Asset: null },
     });
     sellSeats = swapIfCanTradeAndUpdateBook(sellSeats, buySeats, seat);
-    return 'Order Added';
+    return zcf.makeInvitation(exchangeOfferHandler, 'sellOffer');
   };
   /** @type {OfferHandler} */
   const exchangeOfferHandler = (seat) => {
@@ -143,7 +143,11 @@ const start = async (zcf) => {
       new Error(`The proposal did not match either a buy or sell order.`),
     );
   };
-
+  const creatorFacet = Far('creatorFacet', {
+    // The creator of the instance can send invitations to anyone
+    // they wish to.
+    makeInvitation: () => zcf.makeInvitation(exchangeOfferHandler, 'sellOffer'),
+  });
   const mintPayment = async (seat) => {
     console.log('seat in mintPayment', seat);
     const proposal = await E(seat).getProposal();
@@ -157,16 +161,9 @@ const start = async (zcf) => {
     zcfMint.mintGains(harden({ Token: amount }), seat);
     // Exit the seat so that the user can get a payout.
     seat.exit();
-    return 'successfully minted payment';
+    return creatorFacet;
   };
   const creatorInvitation = zcf.makeInvitation(mintPayment, 'mint a payment');
-
-  const creatorFacet = Far('creatorFacet', {
-    // The creator of the instance can send invitations to anyone
-    // they wish to.
-    makeInvitation: () => zcf.makeInvitation(exchangeOfferHandler, 'sellOffer'),
-  });
-
   const publicFacet = Far('MarketPlacePublicFacet', {
     updateNotifier: bookOrdersChanged,
     getNotifier: () => notifier,

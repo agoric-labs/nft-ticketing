@@ -124,10 +124,12 @@ export const mintTicketsWithOfferToZoe = async ({
     console.log('making Offer');
     const userSeat = await E(zoe).offer(creatorInvitation, proposal);
     console.log('userSeat', userSeat);
+    // This has the creatorFacet
+    const offerResult = await E(userSeat).getOfferResult();
+    console.log('offerResult:', offerResult);
+    // This has cardPayment to put on sale.
     const userPayout = await E(userSeat).getPayout('Asset');
     console.log('userPayout', userPayout);
-    // const invitation = await E(marketPlaceCreatorFacet).makeInvitation();
-    // await E(depositFacet).receive(invitation);
   } catch (err) {
     console.log('error:', err);
   }
