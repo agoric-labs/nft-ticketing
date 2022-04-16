@@ -13,29 +13,29 @@ const sellEventTickets = async ({
 }) => {
   const invitation = invitationPurse;
   console.log('invitation Successful:', invitation);
-  const id = Date.now();
-  const proposalTemplate = {
-    give: {
-      Asset: {
-        pursePetname: cardPurse.pursePetname,
-        value: harden([activeCard]),
+  const offer = {
+    id: Date.now(),
+    proposalTemplate: {
+      give: {
+        Asset: {
+          pursePetname: cardPurse.pursePetname,
+          value: harden([activeCard]),
+        },
       },
-    },
-    want: {
-      Price: {
-        pursePetname: tokenPurses[0].pursePetname,
-        value: BigInt(activeCard.ticketPrice) * 1000000n,
+      want: {
+        Price: {
+          pursePetname: tokenPurses[0].pursePetname,
+          value: BigInt(activeCard.ticketPrice) * 1000000n,
+        },
       },
+      exit: { onDemand: null },
     },
-    exit: { onDemand: null },
   };
-  const offerConfig = { id, invitation, proposalTemplate };
   try {
-    await E(walletP).addOffer(offerConfig);
+    await E(walletP).addOffer(offer);
   } catch (e) {
     console.error('Could not add sell offer to wallet', e);
   }
-  console.log('offerId:', id);
 };
 const buyEventTickets = async ({
   activeCard,

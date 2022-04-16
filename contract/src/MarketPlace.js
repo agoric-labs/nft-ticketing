@@ -40,6 +40,7 @@ const start = async (zcf) => {
   const { issuer: cardIssuer, brand: cardBrand } =
     await zcfMint.getIssuerRecord();
   const { tickets } = zcf.getTerms();
+  await zcf.saveIssuer(cardIssuer, 'Asset');
   let sellSeats = [];
   let buySeats = [];
   // eslint-disable-next-line no-use-before-define
@@ -146,19 +147,17 @@ const start = async (zcf) => {
   const mintPayment = async (seat) => {
     console.log('seat in mintPayment', seat);
     const proposal = await E(seat).getProposal();
-    console.log('proposal', proposal.want.Token.value);
+    console.log('proposal', proposal.want.Asset.value);
     const amount = AmountMath.make(
-      proposal.want.Token.brand,
-      proposal.want.Token.value,
+      proposal.want.Asset.brand,
+      proposal.want.Asset.value,
     );
     console.log('amount', amount);
-    // // Synchronously mint and allocate amount to seat.
+    // Synchronously minting and allocating amount to seat.
     zcfMint.mintGains(harden({ Token: amount }), seat);
-    // // Exit the seat so that the user gets a payout.
+    // Exit the seat so that the user can get a payout.
     seat.exit();
-    // // Since the user is getting the payout through Zoe, we can
-    // // return anything here. Let's return some helpful instructions.
-    return 'Offer completed. You should receive a payment from Zoe';
+    return 'successfully minted payment';
   };
   const creatorInvitation = zcf.makeInvitation(mintPayment, 'mint a payment');
 

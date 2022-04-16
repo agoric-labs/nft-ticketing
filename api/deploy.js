@@ -10,6 +10,7 @@ import { tickets } from './tickets.js';
 import {
   mintTicketsWithFacetToWallet,
   mintTicketsWithOfferToWallet,
+  mintTicketsWithOfferToZoe,
 } from './src/cardMint.js';
 import { addToSale } from './src/addTicketsToSale.js';
 
@@ -173,18 +174,18 @@ export default ${JSON.stringify(dappConstants, undefined, 2)};
     MARKET_PLACE_INSTALLATION_BOARD_ID,
   );
   await E(walletP).suggestInstance('Instance', MARKET_PLACE_INSTANCE_BOARD_ID);
-  const cardPursePetname = 'Event Tickets';
+  const cardPursePetname = 'Event Tickets2';
   await E(walletP).suggestIssuer(cardPursePetname, CARD_ISSUER_BOARD_ID);
   await E(cardIssuer).makeEmptyPurse();
-  await mintTicketsWithOfferToWallet({
-    walletP,
-    cardPursePetname,
+  await mintTicketsWithOfferToZoe({
+    // walletP,
+    moneyBrand,
     cardBrand,
     tickets,
-    INVITE_BRAND_BOARD_ID,
+    // INVITE_BRAND_BOARD_ID,
     creatorInvitation,
-    board,
+    // board,
     zoe,
-    marketPlaceCreatorFacet,
+    // marketPlaceCreatorFacet,
   });
 }
