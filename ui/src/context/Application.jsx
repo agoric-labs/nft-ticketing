@@ -26,11 +26,8 @@ import {
   setTokenPurses,
   setUserCards,
   setInvitationPurse,
-  // setUserNfts,
-  // setUserOffers,
-  // setPendingOffers,
+  setIsSeller,
 } from '../store/store';
-// import { mintTicketsWithOfferToWallet } from '../helpers/cardMint.js';
 
 const {
   MARKET_PLACE_INSTANCE_BOARD_ID,
@@ -125,8 +122,13 @@ export default function Provider({ children }) {
           dispatch(
             setInvitationPurse(zoeInvitationPurse?.currentAmount?.value),
           );
-          //   console.log('printing card purse:', newCardPurse);
-          //   console.log('printing all cards:', availableCards);
+          if (
+            zoeInvitationPurse?.currentAmount?.value.length > 0 &&
+            zoeInvitationPurse?.currentAmount?.value[0].description ===
+              'mint a payment'
+          ) {
+            dispatch(setIsSeller(true));
+          }
         };
 
         async function watchPurses() {
@@ -137,30 +139,6 @@ export default function Provider({ children }) {
         }
         watchPurses().catch((err) => console.error('got watchPurses err', err));
 
-        // async function watchWallerOffers() {
-        //   const offerNotifier = E(walletP).getOffersNotifier();
-        //   try {
-        //     for await (const offers of iterateNotifier(offerNotifier)) {
-        //       let pendingOffersArray = offers.filter((offer) => {
-        //         if (offer.status === 'pending') {
-        //           if (offer?.proposalTemplate?.give?.Asset) {
-        //             return true;
-        //           }
-        //         }
-        //         return false;
-        //       });
-        //       pendingOffersArray = pendingOffersArray?.map(
-        //         (offer) => offer?.proposalTemplate?.give?.Asset?.value[0],
-        //       );
-        //       dispatch(setPendingOffers(pendingOffersArray));
-        //     }
-        //   } catch (err) {
-        //     console.log('offers in application: error');
-        //   }
-        // }
-        // watchWallerOffers().catch((err) =>
-        //   console.error('got watchWalletoffer err', err),
-        // );
         async function watchMarketPlaceEvents() {
           for await (const availableOffers of iterateNotifier(
             availabeEventsNotifier,

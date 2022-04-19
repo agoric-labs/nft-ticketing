@@ -7,7 +7,6 @@ import { E } from '@agoric/eventual-send';
 import '@agoric/zoe/exported.js';
 import installationConstants from '../ui/src/conf/installationConstants.js';
 import { tickets } from './tickets.js';
-import { mintTicketsWithOfferToZoe } from './src/cardMint.js';
 
 // deploy.js runs in an ephemeral Node.js outside of swingset. The
 // spawner runs within ag-solo, so is persistent.  Once the deploy.js
@@ -112,6 +111,7 @@ export default async function deployApi(homePromise, { pathResolve }) {
   const invitationIssuerP = E(zoe).getInvitationIssuer();
   // CMT (hussain.rizvi@robor.systems): Fetching promise of invitation brand using invitation issuer.
   const invitationBrand = await E(invitationIssuerP).getBrand();
+
   const [
     MONEY_BRAND_BOARD_ID,
     MONEY_ISSUER_BOARD_ID,
@@ -129,6 +129,14 @@ export default async function deployApi(homePromise, { pathResolve }) {
     E(board).getId(marketPlaceInstance),
     E(board).getId(marketPlaceFacet),
   ]);
+
+  const walletP = await E(wallet).getBridge();
+  const depositFacetId = await E(walletP).getDepositFacetId(
+    INVITE_BRAND_BOARD_ID,
+  );
+  // Depositing creator Invitation to contract deployer's wallet.
+  const depositFacet = await E(board).getValue(depositFacetId);
+  await E(depositFacet).receive(creatorInvitation);
 
   console.log(`-- Contract Name: ${CONTRACT_NAME}`);
   console.log(
@@ -163,10 +171,4 @@ export default async function deployApi(homePromise, { pathResolve }) {
 export default ${JSON.stringify(dappConstants, undefined, 2)};
 `;
   await fs.promises.writeFile(defaultsFile, defaultsContents);
-  const walletP = await E(wallet).getBridge();
-  const depositFacetId = await E(walletP).getDepositFacetId(
-    INVITE_BRAND_BOARD_ID,
-  );
-  const depositFacet = await E(board).getValue(depositFacetId);
-  await E(depositFacet).receive(creatorInvitation);
 }
