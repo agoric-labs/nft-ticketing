@@ -11,7 +11,7 @@ import {
   assertIssuerKeywords,
   depositToSeat,
 } from '@agoric/zoe/src/contractSupport/index.js';
-import { AmountMath, AssetKind, makeIssuerKit } from '@agoric/ertp';
+import { AmountMath, AssetKind } from '@agoric/ertp';
 
 /**
  * SimpleExchange is an exchange with a simple matching algorithm, which allows
@@ -43,6 +43,7 @@ const start = async (zcf) => {
   await zcf.saveIssuer(cardIssuer, 'Asset');
   let sellSeats = [];
   let buySeats = [];
+  let minted = false;
   // eslint-disable-next-line no-use-before-define
   const { notifier, updater } = makeNotifierKit(getBookOrders());
   const { notifier: availabeEventsNotifier, updater: updateAvailableEvents } =
@@ -149,6 +150,7 @@ const start = async (zcf) => {
     makeInvitation: () => zcf.makeInvitation(exchangeOfferHandler, 'sellOffer'),
   });
   const mintPayment = async (seat) => {
+    if (minted) return 'Already minted';
     console.log('seat in mintPayment', seat);
     const proposal = await E(seat).getProposal();
     console.log('proposal', proposal.want.Asset.value);
@@ -177,6 +179,12 @@ const start = async (zcf) => {
         cardIssuer,
         cardBrand,
       }),
+    getMinted: () => minted,
+    setMinted: () => {
+      minted = true;
+      console.log('creatorInvitation', creatorInvitation);
+      return minted;
+    },
   });
   bookOrdersChanged();
   return harden({ publicFacet, creatorFacet, creatorInvitation });

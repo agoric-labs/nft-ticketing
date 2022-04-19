@@ -2,9 +2,9 @@ import { AmountMath } from '@agoric/ertp';
 import { E } from '@agoric/eventual-send';
 import { v4 as uuidv4 } from 'uuid';
 
-const parseEventsToSeperateCards = (tickets) => {
+const parseEventsToSeperateCards = (events) => {
   const eventTickets = [];
-  tickets.forEach((event) => {
+  events.forEach((event) => {
     let obj = {
       ...event,
     };
@@ -68,58 +68,64 @@ export const mintTicketsWithOfferToZoe = async ({
   return 'success';
 };
 
-// export const mintTicketsWithOfferToWallet = async ({
-//   walletP,
-//   cardBrand,
-//   tickets,
-//   cardPursePetname,
-//   INVITE_BRAND_BOARD_ID,
-//   creatorInvitation,
-//   board,
-//   zoe,
-//   marketPlaceCreatorFacet,
-// }) => {
-//   console.log('tickets:', tickets);
-//   const eventTickets = parseEventsToSeperateCards(tickets);
-//   const newUserCardAmount = AmountMath.make(cardBrand, harden(eventTickets));
-//   const depositFacetId = await E(walletP).getDepositFacetId(
-//     INVITE_BRAND_BOARD_ID,
-//   );
-//   const depositFacet = await E(board).getValue(depositFacetId);
-//   const invitationIssuer = await E(zoe).getInvitationIssuer();
-//   const invitationAmount = await E(invitationIssuer).getAmountOf(
-//     creatorInvitation,
-//   );
+export const mintTicketsWithOfferToWallet = async ({
+  walletP,
+  cardBrand,
+  tickets,
+  cardPursePetname,
+  marketPlaceContractInstance,
+  // INVITE_BRAND_BOARD_ID,
+  // creatorInvitation,
+  // board,
+  // zoe,
+  // marketPlaceCreatorFacet,
+}) => {
+  console.log('tickets:', tickets);
+  const eventTickets = parseEventsToSeperateCards(tickets);
+  const newUserCardAmount = AmountMath.make(cardBrand, harden(eventTickets));
+  // const depositFacetId = await E(walletP).getDepositFacetId(
+  //   INVITE_BRAND_BOARD_ID,
+  // );
+  // const depositFacet = await E(board).getValue(depositFacetId);
+  // const invitationIssuer = await E(zoe).getInvitationIssuer();
+  // const invitationAmount = await E(invitationIssuer).getAmountOf(
+  //   creatorInvitation,
+  // );
 
-//   const {
-//     value: [{ handle }],
-//   } = invitationAmount;
-//   const invitationHandleBoardId = await E(board).getId(handle);
-//   try {
-//     const offer = {
-//       // JSONable ID for this offer.  This is scoped to the origin.
-//       id: Date.now(),
-//       proposalTemplate: {
-//         want: {
-//           Token: {
-//             pursePetname: cardPursePetname,
-//             value: newUserCardAmount.value,
-//           },
-//         },
-//       }, // Tell the wallet that we're handling the offer result.
-//       dappContext: true,
-//     };
+  // const {
+  //   value: [{ handle }],
+  // } = invitationAmount;
+  // const invitationHandleBoardId = await E(board).getId(handle);
+  try {
+    const offer = {
+      // JSONable ID for this offer.  This is scoped to the origin.
+      id: Date.now(),
+      invitationQuery: {
+        instance: marketPlaceContractInstance,
+        description: 'marketPlace contract',
+      },
+      proposalTemplate: {
+        want: {
+          Asset: {
+            pursePetname: cardPursePetname,
+            value: newUserCardAmount.value,
+          },
+        },
+      }, // Tell the wallet that we're handling the offer result.
+      dappContext: true,
+    };
 
-//     const updatedOffer = { ...offer, invitationHandleBoardId };
-//     await E(depositFacet).receive(creatorInvitation);
-//     await E(walletP).addOffer(updatedOffer);
-//     const invitation = await E(marketPlaceCreatorFacet).makeInvitation();
-//     await E(depositFacet).receive(invitation);
-//   } catch (err) {
-//     console.log('error:', err);
-//   }
-//   return 'success';
-// };
+    const updatedOffer = { ...offer };
+    // await E(depositFacet).receive(creatorInvitation);
+    await E(walletP).addOffer(updatedOffer);
+    // const invitation = await E(marketPlaceCreatorFacet).makeInvitation();
+    // await E(depositFacet).receive(invitation);
+  } catch (err) {
+    console.log('error:', err);
+  }
+  return 'success';
+};
+
 // export const mintTicketsWithFacetToWallet = async ({
 //   tickets,
 //   cardBrand,

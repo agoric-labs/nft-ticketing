@@ -28,6 +28,7 @@ import {
   setInvitationPurse,
   setIsSeller,
 } from '../store/store';
+import { mintTicketsWithOfferToWallet } from '../services/cardMint.js';
 
 const {
   MARKET_PLACE_INSTANCE_BOARD_ID,
@@ -53,7 +54,7 @@ export function useApplicationContext() {
 /* eslint-disable complexity, react/prop-types */
 export default function Provider({ children }) {
   const [state, dispatch] = useReducer(reducer, defaultState);
-  const { invitationPurse } = state;
+  const { invitationPurse, cardPurse } = state;
   useEffect(() => {
     // Receive callbacks from the wallet connection.
     const otherSide = Far('otherSide', {
@@ -145,18 +146,16 @@ export default function Provider({ children }) {
           )) {
             console.log('In MarketPlace', availableOffers);
             dispatch(setAvailableCards(availableOffers || []));
-            const minted = await E(publicFacetMarketPlace).setInitialMinted();
+            const minted = await E(publicFacetMarketPlace).getMinted();
             if (availableOffers.length > 0 && !minted) {
-              // await mintTicketsWithOfferToWallet({
-              //   walletP,
-              //   cardBrand: cardPurse?.currentAmount?.brand,
-              //   tickets: availableOffers,
-              //   INVITE_BRAND_BOARD_ID,
-              //   invitation: invitationPurse,
-              //   board,
-              //   zoe,
-              // });
-              // await E(publicFacetMarketPlace).setInitialMinted();
+              await mintTicketsWithOfferToWallet({
+                walletP,
+                cardBrand: cardPurse?.currentAmount?.brand,
+                tickets: availableOffers,
+                cardPursePetname: cardPurse?.pursePetname,
+                marketPlaceContractInstance,
+              });
+              await E(publicFacetMarketPlace).setMinted();
               console.log('invitation Purse:', invitationPurse);
             }
           }
