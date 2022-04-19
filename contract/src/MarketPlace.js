@@ -158,7 +158,7 @@ const start = async (zcf) => {
     );
     console.log('amount', amount);
     // Synchronously minting and allocating amount to seat.
-    zcfMint.mintGains(harden({ Token: amount }), seat);
+    zcfMint.mintGains(harden({ Asset: amount }), seat);
     // Exit the seat so that the user can get a payout.
     seat.exit();
     return creatorFacet;

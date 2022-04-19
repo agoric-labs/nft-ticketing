@@ -164,26 +164,9 @@ export default ${JSON.stringify(dappConstants, undefined, 2)};
 `;
   await fs.promises.writeFile(defaultsFile, defaultsContents);
   const walletP = await E(wallet).getBridge();
-  // await E(walletP).suggestInstallation(
-  //   'Installation',
-  //   MARKET_PLACE_INSTALLATION_BOARD_ID,
-  // );
-  // await E(walletP).suggestInstance('Instance', MARKET_PLACE_INSTANCE_BOARD_ID);
-  // const cardPursePetname = 'Event Tickets';
-  // await E(walletP).suggestIssuer(cardPursePetname, CARD_ISSUER_BOARD_ID);
-  // await E(cardIssuer).makeEmptyPurse();
-  // Depositing an invitation to the wallet.
-  const invitation = await E(marketPlaceCreatorFacet).makeInvitation();
   const depositFacetId = await E(walletP).getDepositFacetId(
     INVITE_BRAND_BOARD_ID,
   );
   const depositFacet = await E(board).getValue(depositFacetId);
-  await E(depositFacet).receive(invitation);
-  // await E(depositFacet).receive(creatorInvitation);
-  await mintTicketsWithOfferToZoe({
-    cardBrand,
-    tickets,
-    creatorInvitation,
-    zoe,
-  });
+  await E(depositFacet).receive(creatorInvitation);
 }
