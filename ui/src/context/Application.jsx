@@ -42,7 +42,9 @@ console.log(MONEY_BRAND_BOARD_ID);
 let walletP;
 let publicFacetMarketPlace;
 /* eslint-enable */
-
+let marketPlaceInstanceForQuery;
+let cardBrand;
+let moneyBrand;
 export { walletP, publicFacetMarketPlace };
 
 export const ApplicationContext = createContext();
@@ -54,7 +56,7 @@ export function useApplicationContext() {
 /* eslint-disable complexity, react/prop-types */
 export default function Provider({ children }) {
   const [state, dispatch] = useReducer(reducer, defaultState);
-  const { invitationPurse, cardPurse } = state;
+  const { cardPurse, availableCards } = state;
   useEffect(() => {
     // Receive callbacks from the wallet connection.
     const otherSide = Far('otherSide', {
@@ -96,6 +98,7 @@ export default function Provider({ children }) {
         const marketPlaceContractInstance = await E(board).getValue(
           MARKET_PLACE_INSTANCE_BOARD_ID,
         );
+        marketPlaceInstanceForQuery = marketPlaceContractInstance;
         publicFacetMarketPlace = await E(zoe).getPublicFacet(
           marketPlaceContractInstance,
         );
@@ -109,9 +112,12 @@ export default function Provider({ children }) {
           const newTokenPurses = purses.filter(
             ({ brandBoardId }) => brandBoardId === MONEY_BRAND_BOARD_ID,
           );
+          cardBrand = E(board).getValue(CARD_BRAND_BOARD_ID);
           const newCardPurse = purses.find(
             ({ brandBoardId }) => brandBoardId === CARD_BRAND_BOARD_ID,
           );
+          moneyBrand = E(board).getValue(MONEY_BRAND_BOARD_ID);
+
           const zoeInvitationPurse = purses.find(
             ({ brandBoardId }) => brandBoardId === INVITE_BRAND_BOARD_ID,
           );
@@ -146,18 +152,6 @@ export default function Provider({ children }) {
           )) {
             console.log('In MarketPlace', availableOffers);
             dispatch(setAvailableCards(availableOffers || []));
-            const minted = await E(publicFacetMarketPlace).getMinted();
-            if (availableOffers.length > 0 && !minted) {
-              await mintTicketsWithOfferToWallet({
-                walletP,
-                cardBrand: cardPurse?.currentAmount?.brand,
-                tickets: availableOffers,
-                cardPursePetname: cardPurse?.pursePetname,
-                marketPlaceContractInstance,
-              });
-              await E(publicFacetMarketPlace).setMinted();
-              console.log('invitation Purse:', invitationPurse);
-            }
           }
         }
         watchMarketPlaceEvents().catch((err) =>
@@ -206,6 +200,49 @@ export default function Provider({ children }) {
     return deactivateWebSocket;
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      const minted = await E(publicFacetMarketPlace).getMinted();
+      console.log(
+        'will Run:',
+        availableCards.length > 0,
+        !minted,
+        marketPlaceInstanceForQuery,
+        cardBrand,
+        cardPurse,
+      );
+      if (
+        availableCards.length > 0 &&
+        !minted &&
+        marketPlaceInstanceForQuery &&
+        cardBrand &&
+        moneyBrand &&
+        cardPurse
+      ) {
+        cardBrand = await cardBrand;
+        await E(publicFacetMarketPlace).setMinted();
+        if (minted) return;
+        console.log('Running mintTicketsWithOfferToWallet');
+        const params = {
+          walletP,
+          cardBrand,
+          moneyBrand,
+          tickets: availableCards,
+          cardPursePetname: cardPurse?.pursePetname,
+          marketPlaceContractInstance: marketPlaceInstanceForQuery,
+        };
+        console.log('params:', params);
+        const result = await mintTicketsWithOfferToWallet(params);
+        console.log('mintTicketsWithOfferToWallet', result);
+      }
+    })();
+  }, [
+    availableCards,
+    marketPlaceInstanceForQuery,
+    cardBrand,
+    moneyBrand,
+    cardPurse,
+  ]);
   return (
     <ApplicationContext.Provider
       value={{

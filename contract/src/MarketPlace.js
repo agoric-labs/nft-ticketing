@@ -149,18 +149,20 @@ const start = async (zcf) => {
     // they wish to.
     makeInvitation: () => zcf.makeInvitation(exchangeOfferHandler, 'sellOffer'),
   });
+  // const invitationMakers = Far('invitation makers', {
+  //   sellOffer: zcf.makeInvitation(exchangeOfferHandler, 'sellOffer'),
+  // });
   const mintPayment = async (seat) => {
-    if (minted) return 'Already minted';
     console.log('seat in mintPayment', seat);
     const proposal = await E(seat).getProposal();
-    console.log('proposal', proposal.want.Asset.value);
+    console.log('proposal', proposal.want.Token.value);
     const amount = AmountMath.make(
-      proposal.want.Asset.brand,
-      proposal.want.Asset.value,
+      proposal.want.Token.brand,
+      proposal.want.Token.value,
     );
     console.log('amount', amount);
     // Synchronously minting and allocating amount to seat.
-    zcfMint.mintGains(harden({ Asset: amount }), seat);
+    zcfMint.mintGains(harden({ Token: amount }), seat);
     // Exit the seat so that the user can get a payout.
     seat.exit();
     return creatorFacet;
@@ -181,8 +183,8 @@ const start = async (zcf) => {
       }),
     getMinted: () => minted,
     setMinted: () => {
+      console.log('setMinted');
       minted = true;
-      console.log('creatorInvitation', creatorInvitation);
       return minted;
     },
   });

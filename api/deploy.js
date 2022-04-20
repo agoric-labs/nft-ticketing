@@ -136,7 +136,10 @@ export default async function deployApi(homePromise, { pathResolve }) {
   );
   // Depositing creator Invitation to contract deployer's wallet.
   const depositFacet = await E(board).getValue(depositFacetId);
+  console.log('creatorInvitation', creatorInvitation);
   await E(depositFacet).receive(creatorInvitation);
+  // const invitation = await E(marketPlaceCreatorFacet).makeInvitation();
+  // await E(depositFacet).receive(invitation);
 
   console.log(`-- Contract Name: ${CONTRACT_NAME}`);
   console.log(
