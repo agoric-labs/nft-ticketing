@@ -203,14 +203,6 @@ export default function Provider({ children }) {
   useEffect(() => {
     (async () => {
       const minted = await E(publicFacetMarketPlace).getMinted();
-      console.log(
-        'will Run:',
-        availableCards.length > 0,
-        !minted,
-        marketPlaceInstanceForQuery,
-        cardBrand,
-        cardPurse,
-      );
       if (
         availableCards.length > 0 &&
         !minted &&
@@ -222,7 +214,6 @@ export default function Provider({ children }) {
         cardBrand = await cardBrand;
         await E(publicFacetMarketPlace).setMinted();
         if (minted) return;
-        console.log('Running mintTicketsWithOfferToWallet');
         const params = {
           walletP,
           cardBrand,

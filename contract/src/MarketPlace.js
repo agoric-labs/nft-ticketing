@@ -149,9 +149,9 @@ const start = async (zcf) => {
     // they wish to.
     makeInvitation: () => zcf.makeInvitation(exchangeOfferHandler, 'sellOffer'),
   });
-  // const invitationMakers = Far('invitation makers', {
-  //   sellOffer: zcf.makeInvitation(exchangeOfferHandler, 'sellOffer'),
-  // });
+  const invitationMakers = Far('invitation makers', {
+    sellOffer: () => zcf.makeInvitation(exchangeOfferHandler, 'sellOffer'),
+  });
   const mintPayment = async (seat) => {
     console.log('seat in mintPayment', seat);
     const proposal = await E(seat).getProposal();
@@ -160,12 +160,11 @@ const start = async (zcf) => {
       proposal.want.Token.brand,
       proposal.want.Token.value,
     );
-    console.log('amount', amount);
     // Synchronously minting and allocating amount to seat.
     zcfMint.mintGains(harden({ Token: amount }), seat);
     // Exit the seat so that the user can get a payout.
     seat.exit();
-    return creatorFacet;
+    return invitationMakers;
   };
   const creatorInvitation = zcf.makeInvitation(mintPayment, 'mint a payment');
   const publicFacet = Far('MarketPlacePublicFacet', {
