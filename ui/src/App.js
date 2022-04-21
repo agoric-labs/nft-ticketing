@@ -26,6 +26,7 @@ function App() {
     dispatch(setActiveTab(0));
     dispatch(setType('marketplace'));
   }, []);
+  console.log('component rerendering');
   const { purchaseTickets } = Main(
     activeCard,
     walletP,

@@ -29,6 +29,7 @@ import {
   setIsSeller,
 } from '../store/store';
 import { mintTicketsWithOfferToWallet } from '../services/cardMint.js';
+import { handleInitialMintingOffer } from '../helpers/wallet.js';
 
 const {
   MARKET_PLACE_INSTANCE_BOARD_ID,
@@ -202,30 +203,15 @@ export default function Provider({ children }) {
 
   useEffect(() => {
     (async () => {
-      const minted = await E(publicFacetMarketPlace).getMinted();
-      if (
-        availableCards.length > 0 &&
-        !minted &&
-        marketPlaceInstanceForQuery &&
-        cardBrand &&
-        moneyBrand &&
-        cardPurse
-      ) {
-        cardBrand = await cardBrand;
-        await E(publicFacetMarketPlace).setMinted();
-        if (minted) return;
-        const params = {
-          walletP,
-          cardBrand,
-          moneyBrand,
-          tickets: availableCards,
-          cardPursePetname: cardPurse?.pursePetname,
-          marketPlaceContractInstance: marketPlaceInstanceForQuery,
-        };
-        console.log('params:', params);
-        const result = await mintTicketsWithOfferToWallet(params);
-        console.log('mintTicketsWithOfferToWallet', result);
-      }
+      const params = {
+        walletP,
+        cardBrand,
+        tickets: availableCards,
+        cardPursePetname: cardPurse?.pursePetname,
+        marketPlaceContractInstance: marketPlaceInstanceForQuery,
+        publicFacetMarketPlace,
+      };
+      await handleInitialMintingOffer(params);
     })();
   }, [
     availableCards,

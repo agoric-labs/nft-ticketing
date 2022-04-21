@@ -34,7 +34,6 @@ const parseEventsToSeperateCards = (events) => {
 export const mintTicketsWithOfferToWallet = async ({
   walletP,
   cardBrand,
-  moneyBrand,
   tickets,
   cardPursePetname,
   marketPlaceContractInstance,
@@ -63,33 +62,6 @@ export const mintTicketsWithOfferToWallet = async ({
     };
     offerId = await E(walletP).addOffer(offer);
     console.log('offerId:', offerId);
-
-    // Sell Proposal.
-    const ContinuedOffer = {
-      // JSONable ID for this offer.  This is scoped to the origin.
-      id: Date.now(),
-      continuingInvitation: {
-        priorOfferId: offerId,
-        description: 'sellOffer',
-      },
-      proposalTemplate: {
-        want: {
-          Price: {
-            pursePetname: 'Agoric RUN currency',
-            value: AmountMath.make(moneyBrand, 10n),
-          },
-        },
-        give: {
-          Asset: {
-            pursePetname: cardPursePetname,
-            value: newUserCardAmount.value,
-          },
-        },
-      }, // Tell the wallet that we're handling the offer result.
-      dappContext: true,
-    };
-    offerId = await E(walletP).addOffer(ContinuedOffer);
-    console.log('secondOfferCompleted:', offerId);
   } catch (err) {
     console.log('error in mintTicketsWithOfferToWallet:', err);
   }
