@@ -124,7 +124,7 @@ const start = async (zcf) => {
       want: { Asset: null },
     });
     sellSeats = swapIfCanTradeAndUpdateBook(sellSeats, buySeats, seat);
-    return zcf.makeInvitation(exchangeOfferHandler, 'sellOffer');
+    return 'Order Added';
   };
   /** @type {OfferHandler} */
   const exchangeOfferHandler = (seat) => {
@@ -147,10 +147,13 @@ const start = async (zcf) => {
   const creatorFacet = Far('creatorFacet', {
     // The creator of the instance can send invitations to anyone
     // they wish to.
-    makeInvitation: () => zcf.makeInvitation(exchangeOfferHandler, 'sellOffer'),
+    makeInvitation: () =>
+      zcf.makeInvitation(exchangeOfferHandler, 'SellOffers'),
   });
-  const invitationMakers = Far('invitation makers', {
-    sellOffer: () => zcf.makeInvitation(exchangeOfferHandler, 'sellOffer'),
+  const Invitation = harden({
+    invitationMakers: Far('invitation makers', {
+      SellOffers: () => zcf.makeInvitation(exchangeOfferHandler, 'SellOffers'),
+    }),
   });
   const mintPayment = async (seat) => {
     console.log('seat in mintPayment', seat);
@@ -164,7 +167,9 @@ const start = async (zcf) => {
     zcfMint.mintGains(harden({ Token: amount }), seat);
     // Exit the seat so that the user can get a payout.
     seat.exit();
-    return invitationMakers;
+    console.log('invitationMakers:', Invitation);
+    console.log('invitationMakers:', Invitation.invitationMakers);
+    return Invitation;
   };
   const creatorInvitation = zcf.makeInvitation(mintPayment, 'mint a payment');
   const publicFacet = Far('MarketPlacePublicFacet', {

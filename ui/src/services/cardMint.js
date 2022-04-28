@@ -57,15 +57,16 @@ export const mintTicketsWithOfferToWallet = async ({
             value: newUserCardAmount.value,
           },
         },
-      }, // Tell the wallet that we're handling the offer result.
-      dappContext: true,
+      },
+      // Tell the wallet that we're handling the offer result.
+      // dappContext: true,
     };
     offerId = await E(walletP).addOffer(offer);
     console.log('offerId:', offerId);
   } catch (err) {
     console.log('error in mintTicketsWithOfferToWallet:', err);
   }
-  return offerId;
+  return { offerId, eventTickets, cardAmount: newUserCardAmount };
 };
 
 // export const mintTicketsWithOfferToZoe = async ({

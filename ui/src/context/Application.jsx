@@ -1,7 +1,4 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-// import 'json5';
-// import 'utils/installSESLockdown';
-
 import { makeCapTP, E } from '@agoric/captp';
 import { makeAsyncIterableFromNotifier as iterateNotifier } from '@agoric/notifier';
 import { Far } from '@agoric/marshal';
@@ -28,8 +25,7 @@ import {
   setInvitationPurse,
   setIsSeller,
 } from '../store/store';
-import { mintTicketsWithOfferToWallet } from '../services/cardMint.js';
-import { handleInitialMintingOffer } from '../helpers/wallet.js';
+import { handleInitialOffers } from '../helpers/wallet.js';
 
 const {
   MARKET_PLACE_INSTANCE_BOARD_ID,
@@ -210,8 +206,10 @@ export default function Provider({ children }) {
         cardPursePetname: cardPurse?.pursePetname,
         marketPlaceContractInstance: marketPlaceInstanceForQuery,
         publicFacetMarketPlace,
+        MARKET_PLACE_INSTANCE_BOARD_ID,
+        MARKET_PLACE_INSTALLATION_BOARD_ID,
       };
-      await handleInitialMintingOffer(params);
+      await handleInitialOffers(params);
     })();
   }, [
     availableCards,
