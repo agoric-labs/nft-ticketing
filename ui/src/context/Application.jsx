@@ -103,6 +103,9 @@ export default function Provider({ children }) {
           publicFacetMarketPlace,
         ).getAvailableEvents();
         dispatch(setAvailableCards(marketPlaceEvents || []));
+
+        const orderBookNotifier = await E(publicFacetMarketPlace).getNotifier();
+        console.log('eventsNotifier:', orderBookNotifier);
         console.log('facet', publicFacetMarketPlace);
 
         const processPurses = (purses) => {
@@ -153,6 +156,15 @@ export default function Provider({ children }) {
         }
         watchMarketPlaceEvents().catch((err) =>
           console.log('got watchMarketPlaceEvents errs', err),
+        );
+        async function watchMarketPlaceOffers() {
+          for await (const orders of iterateNotifier(orderBookNotifier)) {
+            console.log('offers in marketplace', orders);
+            // dispatch(setAvailableCards(availableOffers || []));
+          }
+        }
+        watchMarketPlaceOffers().catch((err) =>
+          console.log('got watchMarketPlaceOffers errs', err),
         );
         try {
           const installationBoardId = MARKET_PLACE_INSTALLATION_BOARD_ID;
@@ -206,9 +218,9 @@ export default function Provider({ children }) {
         cardPursePetname: cardPurse?.pursePetname,
         marketPlaceContractInstance: marketPlaceInstanceForQuery,
         publicFacetMarketPlace,
-        MARKET_PLACE_INSTANCE_BOARD_ID,
-        MARKET_PLACE_INSTALLATION_BOARD_ID,
       };
+      console.log(params);
+      // if (params.tickets.length === 0) return;
       await handleInitialOffers(params);
     })();
   }, [

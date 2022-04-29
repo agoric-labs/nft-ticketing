@@ -8,8 +8,6 @@ import {
   swap,
   satisfies,
   assertProposalShape,
-  assertIssuerKeywords,
-  depositToSeat,
 } from '@agoric/zoe/src/contractSupport/index.js';
 import { AmountMath, AssetKind } from '@agoric/ertp';
 
@@ -150,11 +148,11 @@ const start = async (zcf) => {
     makeInvitation: () =>
       zcf.makeInvitation(exchangeOfferHandler, 'SellOffers'),
   });
-  const Invitation = harden({
-    invitationMakers: Far('invitation makers', {
-      SellOffers: () => zcf.makeInvitation(exchangeOfferHandler, 'SellOffers'),
-    }),
+
+  const invitationMakers = Far('invitation makers', {
+    PutOnSale: () => zcf.makeInvitation(exchangeOfferHandler, 'PutOnSale'),
   });
+
   const mintPayment = async (seat) => {
     console.log('seat in mintPayment', seat);
     const proposal = await E(seat).getProposal();
@@ -167,9 +165,7 @@ const start = async (zcf) => {
     zcfMint.mintGains(harden({ Token: amount }), seat);
     // Exit the seat so that the user can get a payout.
     seat.exit();
-    console.log('invitationMakers:', Invitation);
-    console.log('invitationMakers:', Invitation.invitationMakers);
-    return Invitation;
+    return harden({ invitationMakers });
   };
   const creatorInvitation = zcf.makeInvitation(mintPayment, 'mint a payment');
   const publicFacet = Far('MarketPlacePublicFacet', {

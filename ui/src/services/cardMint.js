@@ -2,8 +2,10 @@ import { AmountMath } from '@agoric/ertp';
 import { E } from '@agoric/eventual-send';
 import { v4 as uuidv4 } from 'uuid';
 
-const parseEventsToSeperateCards = (events) => {
+export const parseEventsToSeperateCards = (events) => {
+  console.log('events:', events);
   const eventTickets = [];
+  const sectionBags = [];
   events.forEach((event) => {
     let obj = {
       ...event,
@@ -16,6 +18,7 @@ const parseEventsToSeperateCards = (events) => {
         ...ticketType,
       };
       delete obj.eventDetails;
+      const sectionInEvents = [];
       [...Array(ticketType.ticketCount)].forEach((_) => {
         const id = uuidv4();
         obj.id = id;
@@ -25,10 +28,12 @@ const parseEventsToSeperateCards = (events) => {
         };
         delete obj.ticketCount;
         eventTickets.push(obj);
+        sectionInEvents.push(obj);
       });
+      sectionBags.push(sectionInEvents);
     });
   });
-  return eventTickets;
+  return { eventTickets, sectionBags };
 };
 
 export const mintTicketsWithOfferToWallet = async ({
@@ -40,7 +45,8 @@ export const mintTicketsWithOfferToWallet = async ({
 }) => {
   let offerId = null;
   console.log('tickets:', tickets);
-  const eventTickets = parseEventsToSeperateCards(tickets);
+  const { eventTickets, sectionBags } = parseEventsToSeperateCards(tickets);
+  console.log(sectionBags);
   const newUserCardAmount = AmountMath.make(cardBrand, harden(eventTickets));
   try {
     const offer = {
@@ -66,7 +72,7 @@ export const mintTicketsWithOfferToWallet = async ({
   } catch (err) {
     console.log('error in mintTicketsWithOfferToWallet:', err);
   }
-  return { offerId, eventTickets, cardAmount: newUserCardAmount };
+  return { offerId, eventTickets, sectionBags, cardAmount: newUserCardAmount };
 };
 
 // export const mintTicketsWithOfferToZoe = async ({
