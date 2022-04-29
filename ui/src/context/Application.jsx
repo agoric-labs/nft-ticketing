@@ -26,6 +26,7 @@ import {
   setIsSeller,
 } from '../store/store';
 import { handleInitialOffers } from '../helpers/wallet.js';
+// import { parseEventsToSeperateCards } from '../services/cardMint.js';
 
 const {
   MARKET_PLACE_INSTANCE_BOARD_ID,
@@ -221,6 +222,11 @@ export default function Provider({ children }) {
       };
       console.log(params);
       // if (params.tickets.length === 0) return;
+      // const { eventTickets, sectionBags } = parseEventsToSeperateCards(
+      //   params.tickets,
+      // );
+      // console.log(eventTickets);
+      // console.log('sectionBags:', sectionBags);
       await handleInitialOffers(params);
     })();
   }, [

@@ -1,43 +1,51 @@
+// import { AmountMath } from '@agoric/ertp';
 import { E } from '@agoric/eventual-send';
-/*
- * This function should be called when the user puts a card
- * which he own on sale in the secondary marketplace
- */
 
-const sellEventTickets = async ({
-  activeCard,
+export const addToSale = async ({
   walletP,
-  invitationPurse,
-  tokenPurses,
-  cardPurse,
+  cardPursePetname,
+  offerId,
+  // cardBrand,
+  sectionBags,
 }) => {
-  const invitation = invitationPurse;
-  console.log('invitation Successful:', invitation);
-  const offer = {
-    id: Date.now(),
-    proposalTemplate: {
-      give: {
-        Asset: {
-          pursePetname: cardPurse.pursePetname,
-          value: harden([activeCard]),
-        },
-      },
-      want: {
-        Price: {
-          pursePetname: tokenPurses[0].pursePetname,
-          value: BigInt(activeCard.ticketPrice) * 1000000n,
-        },
-      },
-      exit: { onDemand: null },
-    },
-  };
   try {
-    await E(walletP).addOffer(offer);
+    sectionBags.forEach((sectionInEvents) => {
+      console.log('Section in event:', sectionInEvents);
+      const totalPrice = sectionInEvents.length * sectionInEvents.ticketPrice;
+      console.log('TotalPrice:', totalPrice);
+      console.log('sectionInEvents:', sectionInEvents);
+      const offer = {
+        // JSONable ID for this offer.  This is scoped to the origin.
+        id: Date.now(),
+        continuingInvitation: {
+          priorOfferId: offerId,
+          description: 'PutOnSale',
+        },
+        proposalTemplate: {
+          want: {
+            Price: {
+              pursePetname: 'Agoric RUN currency',
+              value: BigInt(totalPrice) * 1000000n,
+            },
+          },
+          give: {
+            Asset: {
+              pursePetname: cardPursePetname,
+              value: sectionInEvents,
+            },
+          },
+        }, // Tell the wallet that we're handling the offer result.
+        // dappContext: true,
+      };
+      console.log('offer In add to Sale:', offer);
+      offerId = E(walletP).addOffer(offer);
+    });
   } catch (e) {
-    console.error('Could not add sell offer to wallet', e);
+    console.log('error in continuingInvitation:', e);
   }
 };
-const buyEventTickets = async ({
+
+export const buyEventTickets = async ({
   activeCard,
   walletP,
   publicFacetMarketPlace,
@@ -76,4 +84,3 @@ const buyEventTickets = async ({
   }
   console.log('offerId:', id);
 };
-export { buyEventTickets, sellEventTickets };
