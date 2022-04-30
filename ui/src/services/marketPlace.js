@@ -1,22 +1,24 @@
 // import { AmountMath } from '@agoric/ertp';
 import { E } from '@agoric/eventual-send';
+import { v4 as uuidv4 } from 'uuid';
 
 export const addToSale = async ({
   walletP,
   cardPursePetname,
+  tokenPursePetname,
   offerId,
-  // cardBrand,
   sectionBags,
 }) => {
   try {
-    sectionBags.forEach((sectionInEvents) => {
+    sectionBags.forEach(async (sectionInEvents) => {
       console.log('Section in event:', sectionInEvents);
-      const totalPrice = sectionInEvents.length * sectionInEvents.ticketPrice;
+      const totalPrice =
+        sectionInEvents.length * sectionInEvents[0].ticketPrice;
       console.log('TotalPrice:', totalPrice);
       console.log('sectionInEvents:', sectionInEvents);
       const offer = {
         // JSONable ID for this offer.  This is scoped to the origin.
-        id: Date.now(),
+        id: uuidv4(),
         continuingInvitation: {
           priorOfferId: offerId,
           description: 'PutOnSale',
@@ -24,7 +26,7 @@ export const addToSale = async ({
         proposalTemplate: {
           want: {
             Price: {
-              pursePetname: 'Agoric RUN currency',
+              pursePetname: tokenPursePetname,
               value: BigInt(totalPrice) * 1000000n,
             },
           },
@@ -38,7 +40,7 @@ export const addToSale = async ({
         // dappContext: true,
       };
       console.log('offer In add to Sale:', offer);
-      offerId = E(walletP).addOffer(offer);
+      offerId = await E(walletP).addOffer(offer);
     });
   } catch (e) {
     console.log('error in continuingInvitation:', e);

@@ -31,7 +31,7 @@ import { handleInitialOffers } from '../helpers/wallet.js';
 const {
   MARKET_PLACE_INSTANCE_BOARD_ID,
   MARKET_PLACE_INSTALLATION_BOARD_ID,
-  issuerBoardIds: { Card: CARD_ISSUER_BOARD_ID },
+  issuerBoardIds: { Card: CARD_ISSUER_BOARD_ID, Money: MONEY_ISSUER_BOARD_ID },
   brandBoardIds: { Money: MONEY_BRAND_BOARD_ID, Card: CARD_BRAND_BOARD_ID },
   INVITE_BRAND_BOARD_ID,
 } = dappConstants;
@@ -54,7 +54,7 @@ export function useApplicationContext() {
 /* eslint-disable complexity, react/prop-types */
 export default function Provider({ children }) {
   const [state, dispatch] = useReducer(reducer, defaultState);
-  const { cardPurse, availableCards } = state;
+  const { cardPurse, availableCards, tokenPurses } = state;
   useEffect(() => {
     // Receive callbacks from the wallet connection.
     const otherSide = Far('otherSide', {
@@ -122,6 +122,8 @@ export default function Provider({ children }) {
           const zoeInvitationPurse = purses.find(
             ({ brandBoardId }) => brandBoardId === INVITE_BRAND_BOARD_ID,
           );
+          console.log(MONEY_ISSUER_BOARD_ID);
+          console.log('newTokenPurses', newTokenPurses);
           dispatch(setTokenPurses(newTokenPurses));
           dispatch(setTokenDisplayInfo(newTokenPurses[0].displayInfo));
           dispatch(setTokenPetname(newTokenPurses[0].brandPetname));
@@ -217,16 +219,11 @@ export default function Provider({ children }) {
         cardBrand,
         tickets: availableCards,
         cardPursePetname: cardPurse?.pursePetname,
+        tokenPursePetname: tokenPurses[0]?.pursePetname,
         marketPlaceContractInstance: marketPlaceInstanceForQuery,
         publicFacetMarketPlace,
       };
       console.log(params);
-      // if (params.tickets.length === 0) return;
-      // const { eventTickets, sectionBags } = parseEventsToSeperateCards(
-      //   params.tickets,
-      // );
-      // console.log(eventTickets);
-      // console.log('sectionBags:', sectionBags);
       await handleInitialOffers(params);
     })();
   }, [
@@ -235,6 +232,7 @@ export default function Provider({ children }) {
     cardBrand,
     moneyBrand,
     cardPurse,
+    tokenPurses,
   ]);
   return (
     <ApplicationContext.Provider

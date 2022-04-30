@@ -1,7 +1,7 @@
 import { E } from '@agoric/captp';
 import { AmountMath } from '@agoric/ertp';
 import { makeAsyncIterableFromNotifier as iterateNotifier } from '@agoric/notifier';
-import { addToSale } from '../services/addTicketsToSale';
+import { addToSale } from '../services/marketPlace.js';
 import { mintTicketsWithOfferToWallet } from '../services/cardMint';
 
 export const waitForOfferBeingAccepted = async ({ walletP, offerId }) => {
@@ -26,12 +26,12 @@ export const handleInitialOffers = async (params) => {
     const minted = await E(params.publicFacetMarketPlace).getMinted();
     if (
       !(
-        params.tickets.length > 0 &&
+        params?.tickets.length > 0 &&
         !minted &&
-        params.marketPlaceContractInstance &&
-        params.cardBrand &&
-        params.cardPursePetname &&
-        params.walletP
+        params?.marketPlaceContractInstance &&
+        params?.cardBrand &&
+        params?.cardPursePetname &&
+        params?.walletP
       )
     )
       return;
@@ -43,15 +43,17 @@ export const handleInitialOffers = async (params) => {
     console.log(eventTickets);
     const result = await waitForOfferBeingAccepted({ offerId, ...params });
     console.log('result form waiting:', result);
-    params.tickets.forEach((event) => {
+
+    params.tickets.forEach(async (event) => {
       console.log('event:', event);
       const cardAmount = AmountMath.make(params.cardBrand, harden([event]));
-      addToSale({
+      await addToSale({
         ...params,
         offerId,
         cardAmount,
         sectionBags,
       });
+      console.log('add to sale successful');
     });
   } catch (err) {
     console.log('error in handleInitialOffers');
