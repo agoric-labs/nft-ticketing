@@ -23,11 +23,9 @@ export const waitForOfferBeingAccepted = async ({ walletP, offerId }) => {
 
 export const handleInitialOffers = async (params) => {
   try {
-    const minted = await E(params.publicFacetMarketPlace).getMinted();
     if (
       !(
         params?.tickets.length > 0 &&
-        !minted &&
         params?.marketPlaceContractInstance &&
         params?.cardBrand &&
         params?.cardPursePetname &&
@@ -35,26 +33,23 @@ export const handleInitialOffers = async (params) => {
       )
     )
       return;
-    params.cardBrand = await params.cardBrand;
+    const minted = await E(params.publicFacetMarketPlace).getMinted();
     await E(params.publicFacetMarketPlace).setMinted();
+    console.log('Is minted:', minted);
     if (minted) return;
+    params.cardBrand = await params.cardBrand;
+    console.log('Running mintTicketsWithOfferToWallet');
     const { offerId, eventTickets, sectionBags } =
       await mintTicketsWithOfferToWallet(params);
     console.log(eventTickets);
     const result = await waitForOfferBeingAccepted({ offerId, ...params });
     console.log('result form waiting:', result);
-
-    params.tickets.forEach(async (event) => {
-      console.log('event:', event);
-      const cardAmount = AmountMath.make(params.cardBrand, harden([event]));
-      await addToSale({
-        ...params,
-        offerId,
-        cardAmount,
-        sectionBags,
-      });
-      console.log('add to sale successful');
+    await addToSale({
+      ...params,
+      offerId,
+      sectionBags,
     });
+    console.log('add to sale successful');
   } catch (err) {
     console.log('error in handleInitialOffers');
   }

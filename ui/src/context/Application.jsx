@@ -54,7 +54,7 @@ export function useApplicationContext() {
 /* eslint-disable complexity, react/prop-types */
 export default function Provider({ children }) {
   const [state, dispatch] = useReducer(reducer, defaultState);
-  const { cardPurse, availableCards, tokenPurses } = state;
+  const { cardPurse, availableCards, tokenPurses, isSeller } = state;
   useEffect(() => {
     // Receive callbacks from the wallet connection.
     const otherSide = Far('otherSide', {
@@ -213,6 +213,7 @@ export default function Provider({ children }) {
   }, []);
 
   useEffect(() => {
+    if (!isSeller) return;
     (async () => {
       const params = {
         walletP,
@@ -233,6 +234,7 @@ export default function Provider({ children }) {
     moneyBrand,
     cardPurse,
     tokenPurses,
+    isSeller,
   ]);
   return (
     <ApplicationContext.Provider

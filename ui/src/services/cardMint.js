@@ -7,8 +7,11 @@ export const parseEventsToSeperateCards = (events) => {
   const eventTickets = [];
   const sectionBags = [];
   events.forEach((event) => {
+    const eventId = uuidv4();
+
     let obj = {
       ...event,
+      eventId,
     };
     delete obj.ticketsCount;
     delete obj.ticketsSold;
@@ -19,12 +22,14 @@ export const parseEventsToSeperateCards = (events) => {
       };
       delete obj.eventDetails;
       const sectionInEvents = [];
+      const sectionId = uuidv4();
       [...Array(ticketType.ticketCount)].forEach((_) => {
         const id = uuidv4();
         obj.id = id;
         obj = {
           ...obj,
           id: uuidv4(),
+          sectionId,
         };
         delete obj.ticketCount;
         eventTickets.push(obj);
