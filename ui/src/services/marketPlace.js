@@ -86,3 +86,41 @@ export const buyEventTickets = async ({
   }
   console.log('offerId:', id);
 };
+
+export const mapSellingOffersToEvents = async (orders) => {
+  const events = orders.sells.map((offer) => {
+    // Consist of list of tickets in a section of an event
+    const sectionBag = offer.proposal.give.Asset.value[0];
+    return {
+      eventId: sectionBag[0].eventId,
+      sectionId: sectionBag[0].sectionId,
+      sectionTickets: sectionBag,
+      sellerSeat: offer.sellerSeat,
+      ticketType: sectionBag[0].ticketType,
+      ticketCount: sectionBag.length,
+      ticketPrice: sectionBag[0].ticketPrice,
+    };
+  });
+  const eventMap = {};
+  events.forEach((offer) => {
+    if (!Array.isArray(eventMap[offer.eventId])) eventMap[offer.eventId] = [];
+    eventMap[offer.eventId].push(offer);
+  });
+  const eventList = Object.values(eventMap);
+  const formatedEventList = eventList.map((event) => {
+    let totalTicket = 0;
+    event.forEach((section) => {
+      totalTicket += section.ticketCount;
+    });
+    return {
+      id: event[0].eventId,
+      name: event[0].sectionTickets[0].name,
+      date: event[0].sectionTickets[0].date,
+      image: event[0].sectionTickets[0].image,
+      ticketsSold: 0,
+      ticketsCount: totalTicket,
+      eventDetails: event,
+    };
+  });
+  return formatedEventList;
+};

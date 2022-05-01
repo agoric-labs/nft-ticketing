@@ -1,4 +1,4 @@
-import { buyEventTickets } from './marketPlace';
+import { buyEventTickets, mapSellingOffersToEvents } from './marketPlace';
 
 const Main = (
   activeCard,
@@ -18,7 +18,11 @@ const Main = (
     });
   };
 
-  return { purchaseTickets };
+  const fetchEventsOnSale = async (sectionBags) => {
+    await mapSellingOffersToEvents({ sectionBags });
+  };
+
+  return { purchaseTickets, fetchEventsOnSale };
 };
 
 export default Main;

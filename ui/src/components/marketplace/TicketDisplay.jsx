@@ -14,6 +14,7 @@ const TicketDisplay = () => {
   } = useApplicationContext();
   const [eventList, setEventList] = useState([]);
   useEffect(() => {
+    console.log('available Cards in:', availableCards);
     setEventList(
       getFilteredList(
         availableCards,

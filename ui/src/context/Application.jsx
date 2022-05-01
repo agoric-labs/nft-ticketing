@@ -26,6 +26,7 @@ import {
   setIsSeller,
 } from '../store/store';
 import { handleInitialOffers } from '../helpers/wallet.js';
+import { mapSellingOffersToEvents } from '../services/marketPlace.js';
 // import { parseEventsToSeperateCards } from '../services/cardMint.js';
 
 const {
@@ -100,7 +101,7 @@ export default function Provider({ children }) {
         publicFacetMarketPlace = await E(zoe).getPublicFacet(
           marketPlaceContractInstance,
         );
-        const { availabeEventsNotifier, marketPlaceEvents } = await E(
+        const { marketPlaceEvents } = await E(
           publicFacetMarketPlace,
         ).getAvailableEvents();
         dispatch(setAvailableCards(marketPlaceEvents || []));
@@ -149,21 +150,22 @@ export default function Provider({ children }) {
         }
         watchPurses().catch((err) => console.error('got watchPurses err', err));
 
-        async function watchMarketPlaceEvents() {
-          for await (const availableOffers of iterateNotifier(
-            availabeEventsNotifier,
-          )) {
-            console.log('In MarketPlace', availableOffers);
-            dispatch(setAvailableCards(availableOffers || []));
-          }
-        }
-        watchMarketPlaceEvents().catch((err) =>
-          console.log('got watchMarketPlaceEvents errs', err),
-        );
+        // async function watchMarketPlaceEvents() {
+        //   for await (const availableOffers of iterateNotifier(
+        //     availabeEventsNotifier,
+        //   )) {
+        //     console.log('In MarketPlace', availableOffers);
+        //     dispatch(setAvailableCards(availableOffers || []));
+        //   }
+        // }
+        // watchMarketPlaceEvents().catch((err) =>
+        //   console.log('got watchMarketPlaceEvents errs', err),
+        // );
         async function watchMarketPlaceOffers() {
           for await (const orders of iterateNotifier(orderBookNotifier)) {
-            console.log('offers in marketplace', orders);
-            // dispatch(setAvailableCards(availableOffers || []));
+            const formatedEventList = await mapSellingOffersToEvents(orders);
+            console.log('offers in marketplace', formatedEventList);
+            dispatch(setAvailableCards(formatedEventList || []));
           }
         }
         watchMarketPlaceOffers().catch((err) =>

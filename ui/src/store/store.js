@@ -44,6 +44,7 @@ export const {
     tokenPurses: [],
     invitationPurse: [],
     availableCards: [],
+    eventOffers: [],
     error: {},
     message: null,
     boughtCard: false,
