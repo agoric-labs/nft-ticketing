@@ -90,7 +90,7 @@ export const buyEventTickets = async ({
 export const mapSellingOffersToEvents = async (orders) => {
   const events = orders.sells.map((offer) => {
     // Consist of list of tickets in a section of an event
-    const sectionBag = offer.proposal.give.Asset.value[0];
+    const sectionBag = offer.proposal.give.Asset.value;
     return {
       eventId: sectionBag[0].eventId,
       sectionId: sectionBag[0].sectionId,

@@ -163,6 +163,7 @@ export default function Provider({ children }) {
         // );
         async function watchMarketPlaceOffers() {
           for await (const orders of iterateNotifier(orderBookNotifier)) {
+            console.log('offers in marketplace:', orders);
             const formatedEventList = await mapSellingOffersToEvents(orders);
             console.log('offers in marketplace', formatedEventList);
             dispatch(setAvailableCards(formatedEventList || []));
