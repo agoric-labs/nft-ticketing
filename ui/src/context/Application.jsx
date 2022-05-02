@@ -194,8 +194,10 @@ export default function Provider({ children }) {
           for await (const orders of iterateNotifier(orderBookNotifier)) {
             console.log('offers in marketplace:', orders);
             let formatedEventList = [];
-            if (orders?.sells?.length > 0)
+            if (orders?.sells?.length > 0) {
+              console.log('inside sell');
               formatedEventList = await mapSellingOffersToEvents(orders);
+            }
             console.log('offers in marketplace', formatedEventList);
             dispatch(setEventCards(formatedEventList));
           }

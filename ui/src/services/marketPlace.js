@@ -61,7 +61,7 @@ export const buyEventTickets = async ({
       id: uuidv4(),
       continuingInvitation: {
         priorOfferId: previousOfferId,
-        description: 'BuyFromSale',
+        description: 'PutOnSale',
       },
       proposalTemplate: {
         give: {
@@ -86,6 +86,7 @@ export const buyEventTickets = async ({
 };
 
 export const mapSellingOffersToEvents = async (orders) => {
+  console.log('orders:', orders);
   const events = orders.sells.map((offer) => {
     // Consist of list of tickets in a section of an event
     const sectionBag = offer.proposal.give.Asset.value;
@@ -99,11 +100,13 @@ export const mapSellingOffersToEvents = async (orders) => {
       ticketPrice: sectionBag[0].ticketPrice,
     };
   });
+  console.log('events:', events);
   const eventMap = {};
   events.forEach((offer) => {
     if (!Array.isArray(eventMap[offer.eventId])) eventMap[offer.eventId] = [];
     eventMap[offer.eventId].push(offer);
   });
+  console.log('eventMap:', eventMap);
   const eventList = Object.values(eventMap);
   const formatedEventList = eventList.map((event) => {
     let totalTicket = 0;
@@ -120,5 +123,6 @@ export const mapSellingOffersToEvents = async (orders) => {
       eventDetails: event,
     };
   });
+  console.log('formatedEventList:', formatedEventList);
   return formatedEventList;
 };

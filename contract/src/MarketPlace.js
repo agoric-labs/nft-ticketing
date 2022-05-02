@@ -6,7 +6,6 @@ import { E } from '@endo/eventual-send';
 import { makeNotifierKit } from '@agoric/notifier';
 import '@agoric/zoe/exported';
 import {
-  swap,
   satisfies,
   assertProposalShape,
 } from '@agoric/zoe/src/contractSupport/index.js';
@@ -48,7 +47,9 @@ const start = async (zcf) => {
   const { notifier, updater } = makeNotifierKit(getBookOrders());
   const { notifier: availabeEventsNotifier, updater: updateAvailableEvents } =
     makeNotifierKit(tickets);
-  function dropExit(p) {
+  function dropExit(p, a) {
+    console.log('proposal:', p);
+    console.log('currentAllocation:', a);
     return {
       want: p.want,
       give: p.give,
@@ -59,7 +60,10 @@ const start = async (zcf) => {
     console.log('FlattenOrders-seats:', seats);
     const activeSeats = seats.filter((s) => !s.hasExited());
     return activeSeats.map((seat) => {
-      return { sellerSeat: seat, proposal: dropExit(seat.getProposal()) };
+      return {
+        sellerSeat: seat,
+        proposal: dropExit(seat.getProposal(), seat.getStagedAllocation()),
+      };
     });
   }
 
@@ -77,13 +81,60 @@ const start = async (zcf) => {
   // If there's an existing offer that this offer is a match for, make the trade
   // and return the seat for the matched offer. If not, return undefined, so
   // the caller can know to add the new offer to the book.
-  function swapIfCanTrade(offers, seat) {
+  const swap = (leftSeat, rightSeat) => {
+    try {
+      rightSeat.decrementBy(harden(leftSeat.getProposal().want));
+      leftSeat.incrementBy(harden(leftSeat.getProposal().want));
+
+      leftSeat.decrementBy(harden(rightSeat.getProposal().want));
+      rightSeat.incrementBy(harden(rightSeat.getProposal().want));
+
+      zcf.reallocate(leftSeat, rightSeat);
+    } catch (err) {
+      leftSeat.fail(err);
+      rightSeat.fail(err);
+      throw err;
+    }
+    leftSeat.exit();
+    rightSeat.exit();
+    return `The offer has been accepted. Once the contract has been completed, please check your payout`;
+  };
+
+  function swapIfCanTrade(offers, seat, isSell) {
     for (const offer of offers) {
-      const satisfiedBy = (xSeat, ySeat) => {
-        return satisfies(zcf, xSeat, ySeat.getCurrentAllocation());
+      // const satisfiedBy = (xSeat, ySeat) => {
+      //   return satisfies(zcf, xSeat, ySeat.getCurrentAllocation());
+      // };
+
+      const compareSeats = (xSeat, ySeat) => {
+        if (isSell)
+          return (
+            satisfies(zcf, xSeat, ySeat.getCurrentAllocation()) &&
+            satisfies(zcf, ySeat, xSeat.getCurrentAllocation())
+          );
+        const xAllocation = xSeat.getCurrentAllocation();
+        const yAllocation = ySeat.getCurrentAllocation();
+        console.log('compareSeats:', { xAllocation, yAllocation });
+        const isAssetGreaterThanEqual = AmountMath.isGTE(
+          xAllocation.Asset,
+          yAllocation.Asset,
+          cardBrand,
+        );
+        const isPriceGreaterThanEqual = AmountMath.isGTE(
+          xAllocation.Price,
+          yAllocation.Price,
+        );
+        console.log('isAssetGreaterThanEqual:', isAssetGreaterThanEqual);
+        console.log('isPriceGreaterThanEqual:', isPriceGreaterThanEqual);
+        if (isAssetGreaterThanEqual && isPriceGreaterThanEqual) {
+          return true;
+        }
+        return false;
       };
-      if (satisfiedBy(offer, seat) && satisfiedBy(seat, offer)) {
-        swap(zcf, seat, offer);
+
+      // if (satisfiedBy(offer, seat) && satisfiedBy(seat, offer)) {
+      if (compareSeats(offer, seat)) {
+        swap(seat, offer);
         // return handle to remove
         return offer;
       }
@@ -95,8 +146,8 @@ const start = async (zcf) => {
   // the matching offer and return the remaining counterOffers. If there's no
   // matching offer, add the offerHandle to the coOffers, and return the
   // unmodified counterOfffers
-  function swapIfCanTradeAndUpdateBook(counterOffers, coOffers, seat) {
-    const offer = swapIfCanTrade(counterOffers, seat);
+  function swapIfCanTradeAndUpdateBook(counterOffers, coOffers, seat, isSell) {
+    const offer = swapIfCanTrade(counterOffers, seat, isSell);
 
     if (offer) {
       // remove the matched offer.
