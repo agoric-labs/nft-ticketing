@@ -100,36 +100,36 @@ const start = async (zcf) => {
     return `The offer has been accepted. Once the contract has been completed, please check your payout`;
   };
 
-  function swapIfCanTrade(offers, seat, isSell) {
+  function swapIfCanTrade(offers, seat) {
     for (const offer of offers) {
-      // const satisfiedBy = (xSeat, ySeat) => {
-      //   return satisfies(zcf, xSeat, ySeat.getCurrentAllocation());
-      // };
-
       const compareSeats = (xSeat, ySeat) => {
-        if (isSell)
-          return (
-            satisfies(zcf, xSeat, ySeat.getCurrentAllocation()) &&
-            satisfies(zcf, ySeat, xSeat.getCurrentAllocation())
-          );
-        const xAllocation = xSeat.getCurrentAllocation();
-        const yAllocation = ySeat.getCurrentAllocation();
-        console.log('compareSeats:', { xAllocation, yAllocation });
-        const isAssetGreaterThanEqual = AmountMath.isGTE(
-          xAllocation.Asset,
-          yAllocation.Asset,
-          cardBrand,
+        return (
+          satisfies(zcf, xSeat, ySeat.getCurrentAllocation()) &&
+          satisfies(zcf, ySeat, xSeat.getCurrentAllocation())
         );
-        const isPriceGreaterThanEqual = AmountMath.isGTE(
-          xAllocation.Price,
-          yAllocation.Price,
-        );
-        console.log('isAssetGreaterThanEqual:', isAssetGreaterThanEqual);
-        console.log('isPriceGreaterThanEqual:', isPriceGreaterThanEqual);
-        if (isAssetGreaterThanEqual && isPriceGreaterThanEqual) {
-          return true;
-        }
-        return false;
+        // if (isSell)
+        //   return (
+        //     satisfies(zcf, xSeat, ySeat.getCurrentAllocation()) &&
+        //     satisfies(zcf, ySeat, xSeat.getCurrentAllocation())
+        //   );
+        // const xAllocation = xSeat.getCurrentAllocation();
+        // const yAllocation = ySeat.getCurrentAllocation();
+        // console.log('compareSeats:', { xAllocation, yAllocation });
+        // const isAssetGreaterThanEqual = AmountMath.isGTE(
+        //   xAllocation.Asset,
+        //   yAllocation.Asset,
+        //   cardBrand,
+        // );
+        // const isPriceGreaterThanEqual = AmountMath.isGTE(
+        //   xAllocation.Price,
+        //   yAllocation.Price,
+        // );
+        // console.log('isAssetGreaterThanEqual:', isAssetGreaterThanEqual);
+        // console.log('isPriceGreaterThanEqual:', isPriceGreaterThanEqual);
+        // if (isAssetGreaterThanEqual && isPriceGreaterThanEqual) {
+        //   return true;
+        // }
+        // return false;
       };
 
       // if (satisfiedBy(offer, seat) && satisfiedBy(seat, offer)) {
@@ -146,8 +146,8 @@ const start = async (zcf) => {
   // the matching offer and return the remaining counterOffers. If there's no
   // matching offer, add the offerHandle to the coOffers, and return the
   // unmodified counterOfffers
-  function swapIfCanTradeAndUpdateBook(counterOffers, coOffers, seat, isSell) {
-    const offer = swapIfCanTrade(counterOffers, seat, isSell);
+  function swapIfCanTradeAndUpdateBook(counterOffers, coOffers, seat) {
+    const offer = swapIfCanTrade(counterOffers, seat);
 
     if (offer) {
       // remove the matched offer.
@@ -206,8 +206,8 @@ const start = async (zcf) => {
   });
 
   const invitationMakers = Far('invitation makers', {
-    PutOnSale: () => zcf.makeInvitation(exchangeOfferHandler, 'PutOnSale'),
-    BuyFromSale: () => zcf.makeInvitation(exchangeOfferHandler, 'BuyFromSale'),
+    MarketPlaceOffer: () =>
+      zcf.makeInvitation(exchangeOfferHandler, 'MarketPlaceOffer'),
     MintPayment: () => zcf.makeInvitation(mintPayment, 'mint a payment'),
   });
 

@@ -21,7 +21,7 @@ export const addToSale = async ({
         id: uuidv4(),
         continuingInvitation: {
           priorOfferId: offerId,
-          description: 'PutOnSale',
+          description: 'MarketPlaceOffer',
         },
         proposalTemplate: {
           want: {
@@ -61,7 +61,7 @@ export const buyEventTickets = async ({
       id: uuidv4(),
       continuingInvitation: {
         priorOfferId: previousOfferId,
-        description: 'PutOnSale',
+        description: 'MarketPlaceOffer',
       },
       proposalTemplate: {
         give: {
