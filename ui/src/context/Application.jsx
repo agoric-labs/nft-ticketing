@@ -25,8 +25,8 @@ import {
   setInvitationPurse,
   setIsSeller,
   setEventCards,
-  // setWalletOffers,
-  // setPreviousOfferId,
+  setWalletOffers,
+  setPreviousOfferId,
 } from '../store/store';
 import { handleInitialOffers } from '../helpers/wallet.js';
 import { mapSellingOffersToEvents } from '../services/marketPlace.js';
@@ -171,21 +171,23 @@ export default function Provider({ children }) {
           const offerNotifier = E(walletP).getOffersNotifier();
           for await (const offers of iterateNotifier(offerNotifier)) {
             await E(publicFacetMarketPlace).updateNotifier();
-            console.log('wallet offers:', offers);
-            // if (isSeller) {
-            //   const selectedOffer = offers.filter((offer) => {
-            //     if (offer.invitationDetail.description === 'mint a payment') {
-            //       return true;
-            //     } else return false;
-            //   });
-            //   console.log('wallet offers:', selectedOffer[0].id);
-            //   dispatch(setPreviousOfferId([selectedOffer[0].id]));
-            //   dispatch(setWalletOffers([offers]));
-            // }
+            console.log('wallet offers:');
+            const selectedOffer = offers.find((offer) => {
+              console.log(
+                'wallet offers:',
+                offer.invitationDetails.description,
+              );
+              if (offer.invitationDetails.description === 'mint a payment') {
+                return true;
+              } else return false;
+            });
+            console.log('wallet offers:', selectedOffer.id);
+            dispatch(setPreviousOfferId(selectedOffer.id));
+            dispatch(setWalletOffers([offers]));
           }
         }
         watchWallerOffers().catch((err) =>
-          console.error('got watchWalletoffer err', err),
+          console.log('got watchWalletoffer err', err),
         );
 
         async function watchMarketPlaceOffers() {
@@ -248,6 +250,8 @@ export default function Provider({ children }) {
     console.log('isSeller2:', isSeller);
     if (!isSeller) return;
     (async () => {
+      const minted = await E(publicFacetMarketPlace).getMinted();
+      if (minted) return;
       const params = {
         walletP,
         cardBrand,
