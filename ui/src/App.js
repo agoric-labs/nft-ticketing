@@ -13,27 +13,14 @@ import Main from './services/main';
 function App() {
   const {
     dispatch,
-    state: {
-      activeCard,
-      walletP,
-      publicFacetMarketPlace,
-      tokenPurses,
-      cardPurse,
-      openModal,
-    },
+    state: { openModal },
   } = useApplicationContext();
   useEffect(() => {
     dispatch(setActiveTab(0));
     dispatch(setType('marketplace'));
   }, []);
   console.log('component rerendering');
-  const { purchaseTickets } = Main(
-    activeCard,
-    walletP,
-    publicFacetMarketPlace,
-    tokenPurses,
-    cardPurse,
-  );
+  const { purchaseTickets } = Main();
   return (
     <div className="relative w-full h-full">
       <NavBar />

@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 // @ts-check
 
 import { Far } from '@endo/marshal';
@@ -155,7 +156,8 @@ const start = async (zcf) => {
 
   const invitationMakers = Far('invitation makers', {
     PutOnSale: () => zcf.makeInvitation(exchangeOfferHandler, 'PutOnSale'),
-    SellOffers: () => zcf.makeInvitation(exchangeOfferHandler, 'SellOffers'),
+    BuyFromSale: () => zcf.makeInvitation(exchangeOfferHandler, 'BuyFromSale'),
+    MintPayment: () => zcf.makeInvitation(mintPayment, 'mint a payment'),
   });
 
   const mintPayment = async (seat) => {

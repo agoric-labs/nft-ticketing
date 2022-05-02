@@ -279,6 +279,8 @@ export default function Provider({ children }) {
         state,
         dispatch,
         walletP,
+        cardPursePetname: cardPurse?.pursePetname,
+        tokenPursePetname: tokenPurses[0]?.pursePetname,
         publicFacetMarketPlace,
         CARD_BRAND_BOARD_ID,
       }}

@@ -48,43 +48,41 @@ export const addToSale = async ({
 };
 
 export const buyEventTickets = async ({
-  activeCard,
+  tokenPursePetname,
   walletP,
-  publicFacetMarketPlace,
-  tokenPurses,
-  cardPurse,
+  previousOfferId,
+  cardPursePetname,
+  totalPrice,
+  ticketsInSection,
 }) => {
-  tokenPurses = tokenPurses.reverse();
-  let invitation;
   try {
-    invitation = await E(publicFacetMarketPlace).makeInvitation();
-  } catch (e) {
-    console.error('Could not make buyer invitation', e);
-  }
-  console.log('invitation Successful:', invitation);
-  const id = Date.now();
-  const proposalTemplate = {
-    want: {
-      Asset: {
-        pursePetname: cardPurse.pursePetname,
-        value: harden([activeCard]),
+    const offer = {
+      // JSONable ID for this offer.  This is scoped to the origin.
+      id: uuidv4(),
+      continuingInvitation: {
+        priorOfferId: previousOfferId,
+        description: 'BuyFromSale',
       },
-    },
-    give: {
-      Price: {
-        pursePetname: tokenPurses[0].pursePetname,
-        value: BigInt(activeCard.ticketPrice) * 1000000n,
-      },
-    },
-    exit: { onDemand: null },
-  };
-  const offerConfig = { id, invitation, proposalTemplate };
-  try {
-    await E(walletP).addOffer(offerConfig);
+      proposalTemplate: {
+        give: {
+          Price: {
+            pursePetname: tokenPursePetname,
+            value: BigInt(totalPrice) * 1000000n,
+          },
+        },
+        want: {
+          Asset: {
+            pursePetname: cardPursePetname,
+            value: ticketsInSection,
+          },
+        },
+      }, // Tell the wallet that we're handling the offer result.
+      // dappContext: true,
+    };
+    await E(walletP).addOffer(offer);
   } catch (e) {
     console.error('Could not add sell offer to wallet', e);
   }
-  console.log('offerId:', id);
 };
 
 export const mapSellingOffersToEvents = async (orders) => {

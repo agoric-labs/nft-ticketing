@@ -1,20 +1,37 @@
+import { useApplicationContext } from '../context/Application';
 import { buyEventTickets, mapSellingOffersToEvents } from './marketPlace';
 
-const Main = (
-  activeCard,
-  walletP,
-  publicFacetMarketPlace,
-  tokenPurses,
-  cardPurse,
-) => {
-  // const { activeCard } = state;
+const Main = () => {
+  const {
+    tokenPursePetname,
+    walletP,
+    cardPursePetname,
+    state: { previousOfferId, activeCard },
+  } = useApplicationContext();
+
   const purchaseTickets = async () => {
-    await buyEventTickets({
-      activeCard,
+    const numberOfTickets = activeCard.ticketCount;
+    const totalPrice = activeCard.totalPrice;
+    const ticketsInSection = activeCard.sectionTickets.slice(
+      0,
+      numberOfTickets,
+    );
+    console.log('BuyTicketParams:', [
+      tokenPursePetname,
       walletP,
-      publicFacetMarketPlace,
-      tokenPurses,
-      cardPurse,
+      previousOfferId,
+      cardPursePetname,
+      activeCard,
+      totalPrice,
+      ticketsInSection,
+    ]);
+    await buyEventTickets({
+      tokenPursePetname,
+      walletP,
+      previousOfferId,
+      cardPursePetname,
+      ticketsInSection,
+      totalPrice,
     });
   };
 

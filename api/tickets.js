@@ -7,10 +7,10 @@ export const tickets = [
     ticketsSold: 0,
     ticketsCount: 40,
     eventDetails: [
-      { ticketType: 'Vip', ticketCount: 4, ticketPrice: 400 },
-      { ticketType: 'General', ticketCount: 6, ticketPrice: 50 },
-      { ticketType: 'Bussiness', ticketCount: 10, ticketPrice: 200 },
-      { ticketType: 'General Admission', ticketCount: 20, ticketPrice: 200 },
+      { ticketType: 'Vip', ticketCount: 4, ticketPrice: 1 },
+      { ticketType: 'General', ticketCount: 6, ticketPrice: 1 },
+      { ticketType: 'Bussiness', ticketCount: 10, ticketPrice: 1 },
+      { ticketType: 'General Admission', ticketCount: 20, ticketPrice: 1 },
     ],
   },
   {
@@ -21,10 +21,10 @@ export const tickets = [
     ticketsSold: 0,
     ticketsCount: 40,
     eventDetails: [
-      { ticketType: 'Vip', ticketCount: 4, ticketPrice: 400 },
-      { ticketType: 'General', ticketCount: 54, ticketPrice: 50 },
-      { ticketType: 'Bussiness', ticketCount: 10, ticketPrice: 200 },
-      { ticketType: 'General Admission', ticketCount: 20, ticketPrice: 200 },
+      { ticketType: 'Vip', ticketCount: 4, ticketPrice: 1 },
+      { ticketType: 'General', ticketCount: 54, ticketPrice: 1 },
+      { ticketType: 'Bussiness', ticketCount: 10, ticketPrice: 1 },
+      { ticketType: 'General Admission', ticketCount: 20, ticketPrice: 1 },
     ],
   },
   // {

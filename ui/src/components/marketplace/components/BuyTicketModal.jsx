@@ -35,9 +35,9 @@ const BuyTicketModal = ({ purchaseTickets }) => {
           <Button
             styles="w-full"
             text="Buy Ticket"
-            onClick={() => {
+            onClick={async () => {
+              await purchaseTickets();
               dispatch(setModalType(Modal.SUCCESS_MARKETPLACE));
-              purchaseTickets();
             }}
           />
         </div>
