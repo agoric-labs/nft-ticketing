@@ -24,6 +24,8 @@ import {
   setUserCards,
   setInvitationPurse,
   setIsSeller,
+  setWalletOffers,
+  setPreviousOfferId,
 } from '../store/store';
 import { handleInitialOffers } from '../helpers/wallet.js';
 import { mapSellingOffersToEvents } from '../services/marketPlace.js';
@@ -105,7 +107,8 @@ export default function Provider({ children }) {
           publicFacetMarketPlace,
         ).getAvailableEvents();
         dispatch(setAvailableCards(marketPlaceEvents || []));
-
+        const isAdmin = await E(publicFacetMarketPlace).isSeller();
+        dispatch(setIsSeller(isAdmin));
         const orderBookNotifier = await E(publicFacetMarketPlace).getNotifier();
         console.log('eventsNotifier:', orderBookNotifier);
         console.log('facet', publicFacetMarketPlace);
@@ -161,6 +164,27 @@ export default function Provider({ children }) {
         // watchMarketPlaceEvents().catch((err) =>
         //   console.log('got watchMarketPlaceEvents errs', err),
         // );
+        async function watchWallerOffers() {
+          const offerNotifier = E(walletP).getOffersNotifier();
+          for await (const offers of iterateNotifier(offerNotifier)) {
+            await E(publicFacetMarketPlace).updateNotifier();
+            console.log('wallet offers:', offers);
+            if (isSeller) {
+              const selectedOffer = offers.filter((offer) => {
+                if (offer.invitationDetail.description === 'mint a payment') {
+                  return true;
+                } else return false;
+              });
+              console.log('wallet offers:', selectedOffer[0].id);
+              dispatch(setPreviousOfferId([selectedOffer[0].id]));
+              dispatch(setWalletOffers([offers]));
+            }
+          }
+        }
+        watchWallerOffers().catch((err) =>
+          console.error('got watchWalletoffer err', err),
+        );
+
         async function watchMarketPlaceOffers() {
           for await (const orders of iterateNotifier(orderBookNotifier)) {
             console.log('offers in marketplace:', orders);

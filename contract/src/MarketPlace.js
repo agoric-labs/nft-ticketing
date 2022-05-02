@@ -42,6 +42,7 @@ const start = async (zcf) => {
   let sellSeats = [];
   let buySeats = [];
   let minted = false;
+  let isSeller = false;
   // eslint-disable-next-line no-use-before-define
   const { notifier, updater } = makeNotifierKit(getBookOrders());
   const { notifier: availabeEventsNotifier, updater: updateAvailableEvents } =
@@ -147,10 +148,14 @@ const start = async (zcf) => {
     // they wish to.
     makeInvitation: () =>
       zcf.makeInvitation(exchangeOfferHandler, 'SellOffers'),
+    setIsSeller: () => {
+      isSeller = true;
+    },
   });
 
   const invitationMakers = Far('invitation makers', {
     PutOnSale: () => zcf.makeInvitation(exchangeOfferHandler, 'PutOnSale'),
+    SellOffers: () => zcf.makeInvitation(exchangeOfferHandler, 'SellOffers'),
   });
 
   const mintPayment = async (seat) => {
@@ -187,6 +192,7 @@ const start = async (zcf) => {
       minted = true;
       return minted;
     },
+    isSeller: () => isSeller,
   });
   bookOrdersChanged();
   return harden({ publicFacet, creatorFacet, creatorInvitation });

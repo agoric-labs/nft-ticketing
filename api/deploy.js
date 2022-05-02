@@ -104,6 +104,7 @@ export default async function deployApi(homePromise, { pathResolve }) {
     harden({ Price: moneyIssuer }),
     allTickets,
   );
+  await E(marketPlaceCreatorFacet).setIsSeller();
   console.log('instance done');
   const { cardBrand, cardIssuer } = await E(marketPlaceFacet).getItemsIssuer();
   // CMT (hussain.rizvi@robor.systems): Storing each important variable on the board and getting their board ids.
