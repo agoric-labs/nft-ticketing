@@ -23,6 +23,13 @@ export const waitForOfferBeingAccepted = async ({ walletP, offerId }) => {
 
 export const handleInitialOffers = async (params) => {
   try {
+    console.log('pass check:', [
+      params?.tickets.length > 0,
+      params?.marketPlaceContractInstance,
+      params?.cardBrand,
+      params?.cardPursePetname,
+      params?.walletP,
+    ]);
     if (
       !(
         params?.tickets.length > 0 &&

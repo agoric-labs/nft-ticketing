@@ -24,8 +24,9 @@ import {
   setUserCards,
   setInvitationPurse,
   setIsSeller,
-  setWalletOffers,
-  setPreviousOfferId,
+  setEventCards,
+  // setWalletOffers,
+  // setPreviousOfferId,
 } from '../store/store';
 import { handleInitialOffers } from '../helpers/wallet.js';
 import { mapSellingOffersToEvents } from '../services/marketPlace.js';
@@ -103,16 +104,18 @@ export default function Provider({ children }) {
         publicFacetMarketPlace = await E(zoe).getPublicFacet(
           marketPlaceContractInstance,
         );
-        const { marketPlaceEvents } = await E(
+        const { marketPlaceEvents, availabeEventsNotifier } = await E(
           publicFacetMarketPlace,
         ).getAvailableEvents();
         dispatch(setAvailableCards(marketPlaceEvents || []));
         const isAdmin = await E(publicFacetMarketPlace).isSeller();
+        const isMinted = await E(publicFacetMarketPlace).getMinted();
         dispatch(setIsSeller(isAdmin));
         const orderBookNotifier = await E(publicFacetMarketPlace).getNotifier();
         console.log('eventsNotifier:', orderBookNotifier);
         console.log('facet', publicFacetMarketPlace);
-
+        console.log('isSeller1:', isSeller);
+        console.log('isMinted:', isMinted);
         const processPurses = (purses) => {
           const newTokenPurses = purses.filter(
             ({ brandBoardId }) => brandBoardId === MONEY_BRAND_BOARD_ID,
@@ -153,32 +156,32 @@ export default function Provider({ children }) {
         }
         watchPurses().catch((err) => console.error('got watchPurses err', err));
 
-        // async function watchMarketPlaceEvents() {
-        //   for await (const availableOffers of iterateNotifier(
-        //     availabeEventsNotifier,
-        //   )) {
-        //     console.log('In MarketPlace', availableOffers);
-        //     dispatch(setAvailableCards(availableOffers || []));
-        //   }
-        // }
-        // watchMarketPlaceEvents().catch((err) =>
-        //   console.log('got watchMarketPlaceEvents errs', err),
-        // );
+        async function watchMarketPlaceEvents() {
+          for await (const availableOffers of iterateNotifier(
+            availabeEventsNotifier,
+          )) {
+            console.log('In MarketPlace', availableOffers);
+            dispatch(setAvailableCards(availableOffers || []));
+          }
+        }
+        watchMarketPlaceEvents().catch((err) =>
+          console.log('got watchMarketPlaceEvents errs', err),
+        );
         async function watchWallerOffers() {
           const offerNotifier = E(walletP).getOffersNotifier();
           for await (const offers of iterateNotifier(offerNotifier)) {
             await E(publicFacetMarketPlace).updateNotifier();
             console.log('wallet offers:', offers);
-            if (isSeller) {
-              const selectedOffer = offers.filter((offer) => {
-                if (offer.invitationDetail.description === 'mint a payment') {
-                  return true;
-                } else return false;
-              });
-              console.log('wallet offers:', selectedOffer[0].id);
-              dispatch(setPreviousOfferId([selectedOffer[0].id]));
-              dispatch(setWalletOffers([offers]));
-            }
+            // if (isSeller) {
+            //   const selectedOffer = offers.filter((offer) => {
+            //     if (offer.invitationDetail.description === 'mint a payment') {
+            //       return true;
+            //     } else return false;
+            //   });
+            //   console.log('wallet offers:', selectedOffer[0].id);
+            //   dispatch(setPreviousOfferId([selectedOffer[0].id]));
+            //   dispatch(setWalletOffers([offers]));
+            // }
           }
         }
         watchWallerOffers().catch((err) =>
@@ -188,9 +191,11 @@ export default function Provider({ children }) {
         async function watchMarketPlaceOffers() {
           for await (const orders of iterateNotifier(orderBookNotifier)) {
             console.log('offers in marketplace:', orders);
-            const formatedEventList = await mapSellingOffersToEvents(orders);
+            let formatedEventList = [];
+            if (orders?.sells?.length > 0)
+              formatedEventList = await mapSellingOffersToEvents(orders);
             console.log('offers in marketplace', formatedEventList);
-            dispatch(setAvailableCards(formatedEventList || []));
+            dispatch(setEventCards(formatedEventList));
           }
         }
         watchMarketPlaceOffers().catch((err) =>
@@ -240,6 +245,7 @@ export default function Provider({ children }) {
   }, []);
 
   useEffect(() => {
+    console.log('isSeller2:', isSeller);
     if (!isSeller) return;
     (async () => {
       const params = {

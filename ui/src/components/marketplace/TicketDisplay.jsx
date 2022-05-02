@@ -10,22 +10,22 @@ const TicketDisplay = () => {
   const [page, setPage] = useState(0);
   const pageLength = 2;
   const {
-    state: { searchInput, searchOption, availableCards },
+    state: { searchInput, searchOption, eventCards },
   } = useApplicationContext();
   const [eventList, setEventList] = useState([]);
   useEffect(() => {
-    console.log('available Cards in:', availableCards);
+    console.log('available Cards in:', eventCards);
     setEventList(
       getFilteredList(
-        availableCards,
+        eventCards,
         searchInput,
         searchOption,
         page,
         page + pageLength,
       ),
     );
-    if (availableCards.length > 0) setLoader(false);
-  }, [searchInput, searchOption, availableCards, page]);
+    if (eventCards.length > 0) setLoader(false);
+  }, [searchInput, searchOption, eventCards, page]);
 
   return (
     <>
@@ -41,10 +41,10 @@ const TicketDisplay = () => {
           <Pagination
             page={page}
             pageLength={pageLength}
-            total={availableCards.length}
+            total={eventCards.length}
             onNext={() => {
               console.log('page:', page);
-              if (page + pageLength >= availableCards.length) return;
+              if (page + pageLength >= eventCards.length) return;
               setPage((pg) => pg + pageLength);
             }}
             onPrev={() => {
