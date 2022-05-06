@@ -79,6 +79,7 @@ export const buyEventTickets = async ({
       }, // Tell the wallet that we're handling the offer result.
       // dappContext: true,
     };
+    console.log('offer:', offer);
     await E(walletP).addOffer(offer);
   } catch (e) {
     console.error('Could not add sell offer to wallet', e);

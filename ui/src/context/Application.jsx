@@ -172,7 +172,7 @@ export default function Provider({ children }) {
           for await (const offers of iterateNotifier(offerNotifier)) {
             await E(publicFacetMarketPlace).updateNotifier();
             console.log('wallet offers:');
-            const selectedOffer = offers.find((offer) => {
+            const selectedOffer = offers?.find((offer) => {
               console.log(
                 'wallet offers:',
                 offer.invitationDetails.description,
@@ -181,9 +181,11 @@ export default function Provider({ children }) {
                 return true;
               } else return false;
             });
-            console.log('wallet offers:', selectedOffer.id);
-            dispatch(setPreviousOfferId(selectedOffer.id));
-            dispatch(setWalletOffers([offers]));
+            console.log('wallet offers:', selectedOffer?.id);
+            if (selectedOffer) {
+              dispatch(setPreviousOfferId(selectedOffer.id));
+            }
+            dispatch(setWalletOffers(offers || []));
           }
         }
         watchWallerOffers().catch((err) =>

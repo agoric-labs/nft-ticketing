@@ -47,9 +47,7 @@ const start = async (zcf) => {
   const { notifier, updater } = makeNotifierKit(getBookOrders());
   const { notifier: availabeEventsNotifier, updater: updateAvailableEvents } =
     makeNotifierKit(tickets);
-  function dropExit(p, a) {
-    console.log('proposal:', p);
-    console.log('currentAllocation:', a);
+  function dropExit(p) {
     return {
       want: p.want,
       give: p.give,
@@ -62,7 +60,9 @@ const start = async (zcf) => {
     return activeSeats.map((seat) => {
       return {
         sellerSeat: seat,
-        proposal: dropExit(seat.getProposal(), seat.getStagedAllocation()),
+        proposal: dropExit(seat.getProposal()),
+        currentAllocation: dropExit(seat.getCurrentAllocation()),
+        getStagedAllocation: dropExit(seat.getStagedAllocation()),
       };
     });
   }
@@ -96,40 +96,35 @@ const start = async (zcf) => {
       throw err;
     }
     leftSeat.exit();
-    rightSeat.exit();
+    // rightSeat.exit();
     return `The offer has been accepted. Once the contract has been completed, please check your payout`;
   };
 
   function swapIfCanTrade(offers, seat) {
     for (const offer of offers) {
       const compareSeats = (xSeat, ySeat) => {
-        return (
-          satisfies(zcf, xSeat, ySeat.getCurrentAllocation()) &&
-          satisfies(zcf, ySeat, xSeat.getCurrentAllocation())
+        const xAllocation = xSeat.getCurrentAllocation();
+        const yAllocation = ySeat.getCurrentAllocation();
+        console.log('compareSeats:', { xAllocation, yAllocation });
+        const isAssetGreaterThanEqual = AmountMath.isGTE(
+          xAllocation.Asset,
+          yAllocation.Asset,
+          cardBrand,
         );
-        // if (isSell)
-        //   return (
-        //     satisfies(zcf, xSeat, ySeat.getCurrentAllocation()) &&
-        //     satisfies(zcf, ySeat, xSeat.getCurrentAllocation())
-        //   );
-        // const xAllocation = xSeat.getCurrentAllocation();
-        // const yAllocation = ySeat.getCurrentAllocation();
-        // console.log('compareSeats:', { xAllocation, yAllocation });
-        // const isAssetGreaterThanEqual = AmountMath.isGTE(
-        //   xAllocation.Asset,
-        //   yAllocation.Asset,
-        //   cardBrand,
+        const isPriceGreaterThanEqual = AmountMath.isGTE(
+          xAllocation.Price,
+          yAllocation.Price,
+        );
+        console.log('isAssetGreaterThanEqual:', isAssetGreaterThanEqual);
+        console.log('isPriceGreaterThanEqual:', isPriceGreaterThanEqual);
+        if (isAssetGreaterThanEqual && isPriceGreaterThanEqual) {
+          return true;
+        }
+        return false;
+        // return (
+        //   satisfies(zcf, xSeat, ySeat.getCurrentAllocation()) &&
+        //   satisfies(zcf, ySeat, xSeat.getCurrentAllocation())
         // );
-        // const isPriceGreaterThanEqual = AmountMath.isGTE(
-        //   xAllocation.Price,
-        //   yAllocation.Price,
-        // );
-        // console.log('isAssetGreaterThanEqual:', isAssetGreaterThanEqual);
-        // console.log('isPriceGreaterThanEqual:', isPriceGreaterThanEqual);
-        // if (isAssetGreaterThanEqual && isPriceGreaterThanEqual) {
-        //   return true;
-        // }
-        // return false;
       };
 
       // if (satisfiedBy(offer, seat) && satisfiedBy(seat, offer)) {
