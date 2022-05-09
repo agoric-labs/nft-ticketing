@@ -53,6 +53,12 @@ const start = async (zcf) => {
       give: p.give,
     };
   }
+  function parseAllocation(a) {
+    return {
+      Asset: a.Asset,
+      Price: a.Price,
+    };
+  }
 
   function flattenOrders(seats) {
     console.log('FlattenOrders-seats:', seats);
@@ -61,8 +67,8 @@ const start = async (zcf) => {
       return {
         sellerSeat: seat,
         proposal: dropExit(seat.getProposal()),
-        currentAllocation: dropExit(seat.getCurrentAllocation()),
-        getStagedAllocation: dropExit(seat.getStagedAllocation()),
+        currentAllocation: parseAllocation(seat.getCurrentAllocation()),
+        getStagedAllocation: parseAllocation(seat.getStagedAllocation()),
       };
     });
   }
@@ -82,12 +88,17 @@ const start = async (zcf) => {
   // and return the seat for the matched offer. If not, return undefined, so
   // the caller can know to add the new offer to the book.
   const swap = (leftSeat, rightSeat) => {
+    console.log(
+      'In swap seat:',
+      rightSeat.getProposal(),
+      leftSeat.getProposal(),
+    );
     try {
-      rightSeat.decrementBy(harden(leftSeat.getProposal().want));
-      leftSeat.incrementBy(harden(leftSeat.getProposal().want));
+      rightSeat.decrementBy(harden(rightSeat.getProposal().give));
+      leftSeat.incrementBy(harden(rightSeat.getProposal().give));
 
-      leftSeat.decrementBy(harden(rightSeat.getProposal().want));
-      rightSeat.incrementBy(harden(rightSeat.getProposal().want));
+      leftSeat.decrementBy(harden(leftSeat.getProposal().give));
+      rightSeat.incrementBy(harden(leftSeat.getProposal().give));
 
       zcf.reallocate(leftSeat, rightSeat);
     } catch (err) {
@@ -101,23 +112,24 @@ const start = async (zcf) => {
   };
 
   function swapIfCanTrade(offers, seat) {
+    console.log('running swapIfCanTrade', offers, seat);
     for (const offer of offers) {
       const compareSeats = (xSeat, ySeat) => {
         const xAllocation = xSeat.getCurrentAllocation();
         const yAllocation = ySeat.getCurrentAllocation();
-        console.log('compareSeats:', { xAllocation, yAllocation });
-        const isAssetGreaterThanEqual = AmountMath.isGTE(
-          xAllocation.Asset,
-          yAllocation.Asset,
-          cardBrand,
+        const xProposal = xSeat.getProposal();
+        const yProposal = ySeat.getProposal();
+        console.log('xAllocation', xAllocation);
+        console.log('yAllocation', yAllocation);
+        console.log('xProposal', xProposal);
+        console.log('yProposal', yProposal);
+        const ticketIds = xAllocation?.Asset?.value?.map((item) => item.id);
+        console.log('ticketIds:', ticketIds);
+        const assetsMatch = yProposal?.want?.Asset?.value.every((item) =>
+          ticketIds.includes(item.id),
         );
-        const isPriceGreaterThanEqual = AmountMath.isGTE(
-          xAllocation.Price,
-          yAllocation.Price,
-        );
-        console.log('isAssetGreaterThanEqual:', isAssetGreaterThanEqual);
-        console.log('isPriceGreaterThanEqual:', isPriceGreaterThanEqual);
-        if (isAssetGreaterThanEqual && isPriceGreaterThanEqual) {
+        console.log('Assets Match:', assetsMatch);
+        if (assetsMatch) {
           return true;
         }
         return false;
@@ -129,7 +141,7 @@ const start = async (zcf) => {
 
       // if (satisfiedBy(offer, seat) && satisfiedBy(seat, offer)) {
       if (compareSeats(offer, seat)) {
-        swap(seat, offer);
+        swap(offer, seat);
         // return handle to remove
         return offer;
       }
@@ -142,8 +154,9 @@ const start = async (zcf) => {
   // matching offer, add the offerHandle to the coOffers, and return the
   // unmodified counterOfffers
   function swapIfCanTradeAndUpdateBook(counterOffers, coOffers, seat) {
+    console.log('In swapIfCanTradeAndUpdateBook');
     const offer = swapIfCanTrade(counterOffers, seat);
-
+    console.log('offer Result:', offer);
     if (offer) {
       // remove the matched offer.
       counterOffers = counterOffers.filter((value) => value !== offer);

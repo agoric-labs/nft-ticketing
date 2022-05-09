@@ -11,7 +11,13 @@ import { Modal } from '../../../helpers/ModalActions';
 import TicketPurchaseSuccessModal from '../../marketplace/components/TicketPurchaseSuccessModal';
 import { setActiveCard } from '../../../store/store';
 
-const ModalWrapper = ({ style, open, onClose, purchaseTickets }) => {
+const ModalWrapper = ({
+  style,
+  open,
+  onClose,
+  purchaseTickets,
+  createNewEvent,
+}) => {
   const {
     dispatch,
     state: { modalType },
@@ -33,7 +39,7 @@ const ModalWrapper = ({ style, open, onClose, purchaseTickets }) => {
       <div className="fixed inset-0 h-full w-full">
         <div className="h-full justify-center mx-auto w-96 items-center flex relative inset-0 z-50 outline-none focus:outline-none">
           <div className={`relative w-auto my-6  overflow-y-auto ${style}`}>
-            <div className=" border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+            <div className=" border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none m-w-[200px]">
               <div className="flex justify-end mr-5 mt-5">
                 <button onClick={onClose}>
                   <img src={CancelIcon} alt="close" className="w-3.5 h-3.5" />
@@ -43,7 +49,9 @@ const ModalWrapper = ({ style, open, onClose, purchaseTickets }) => {
                 {(() => {
                   switch (modalType) {
                     case Modal.CREATE_EVENT:
-                      return <CreateEventModal />;
+                      return (
+                        <CreateEventModal createNewEvent={createNewEvent} />
+                      );
                     case Modal.CHECK_IN:
                       return <CheckInEventModal />;
                     case Modal.MARKETPLACE:

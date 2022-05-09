@@ -4,7 +4,7 @@ import { getDateTime } from '../../../helpers/date';
 const ModalTopDetail = ({ cardDetail, image }) => {
   return (
     <div>
-      <div className={`card-media mb-3 relative self-center`}>
+      <div className="card-media mb-3 relative self-center min-h-[50%] min-w-[50%]">
         <img
           className="w-full rounded-md 0"
           src={image}

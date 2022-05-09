@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApplicationContext } from '../../../context/Application';
 import { Modal } from '../../../helpers/ModalActions';
 // import CheckInCard from '../../checkIn/components/CheckInCard';
@@ -13,6 +13,7 @@ const BuyTicketModal = ({ purchaseTickets }) => {
     dispatch,
     state: { activeCard },
   } = useApplicationContext();
+  const [isLoading, setIsLoading] = useState(false);
   const cardDetail = activeCard;
   const image = `${ipfsUrl + cardDetail.image}`;
   console.log('active Card:', activeCard);
@@ -36,9 +37,13 @@ const BuyTicketModal = ({ purchaseTickets }) => {
             styles="w-full"
             text="Buy Ticket"
             onClick={async () => {
+              setIsLoading(true);
               await purchaseTickets();
+              setIsLoading(false);
               dispatch(setModalType(Modal.SUCCESS_MARKETPLACE));
             }}
+            isLoading={isLoading}
+            inModal={true}
           />
         </div>
       </div>

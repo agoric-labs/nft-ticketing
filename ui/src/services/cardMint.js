@@ -48,6 +48,14 @@ export const mintTicketsWithOfferToWallet = async ({
   cardPursePetname,
   marketPlaceContractInstance,
 }) => {
+  if (
+    !walletP ||
+    !cardBrand ||
+    !tickets ||
+    !cardPursePetname ||
+    !marketPlaceContractInstance
+  )
+    return 'error due to missing params';
   let offerId = null;
   console.log('tickets:', tickets);
   const { eventTickets, sectionBags } = parseEventsToSeperateCards(tickets);
@@ -69,8 +77,6 @@ export const mintTicketsWithOfferToWallet = async ({
           },
         },
       },
-      // Tell the wallet that we're handling the offer result.
-      // dappContext: true,
     };
     offerId = await E(walletP).addOffer(offer);
     console.log('offerId:', offerId);

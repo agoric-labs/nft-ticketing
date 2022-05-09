@@ -7,6 +7,7 @@ const TicketPurchaseSuccessModal = () => {
   const {
     state: { activeCard },
   } = useApplicationContext();
+
   return (
     <div className="w-96">
       {' '}

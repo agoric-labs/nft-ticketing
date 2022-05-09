@@ -32,6 +32,7 @@ const CheckInEventModal = () => {
               dispatch(setModalType(Modal.SUCCESS_CHECK_IN));
               dispatch(setOpenModal(true));
             }}
+            inModal={true}
           />
         </div>
       </div>
