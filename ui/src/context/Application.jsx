@@ -174,7 +174,7 @@ export default function Provider({ children }) {
                 'wallet offers:',
                 offer.invitationDetails.description,
               );
-              if (offer.invitationDetails.description === 'mint a payment') {
+              if (offer.invitationDetails.description === 'MintPayment') {
                 return true;
               } else return false;
             });
@@ -262,7 +262,7 @@ export default function Provider({ children }) {
         marketPlaceContractInstance: marketPlaceInstanceForQuery,
         publicFacetMarketPlace,
       };
-      console.log(params);
+      console.log('params:', params);
       await handleInitialOffers(params);
     })();
   }, [

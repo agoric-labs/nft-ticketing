@@ -1,19 +1,36 @@
 import React from 'react';
+import { useApplicationContext } from '../../../context/Application';
 import CheckInContainer from '../../checkIn/CheckInContainer';
 import CreateTicketForm from '../../createEvent/CreateEventForm';
 import TicketDisplay from '../../marketplace/TicketDisplay';
 
 const ContentToDisplay = ({ tab }) => {
+  const {
+    dispatch,
+    state: { isSeller, searchInput, searchOption, userCards, eventCards },
+  } = useApplicationContext();
   let content;
   switch (tab) {
     case 0:
-      content = <TicketDisplay />;
+      content = (
+        <TicketDisplay
+          eventCards={eventCards}
+          searchInput={searchInput}
+          searchOption={searchOption}
+        />
+      );
       break;
     case 1:
-      content = <CheckInContainer />;
+      content = (
+        <CheckInContainer
+          userCards={userCards}
+          searchInput={searchInput}
+          searchOption={searchOption}
+        />
+      );
       break;
     case 2:
-      content = <CreateTicketForm />;
+      content = <CreateTicketForm isSeller={isSeller} dispatch={dispatch} />;
       break;
     default:
       content = <></>;

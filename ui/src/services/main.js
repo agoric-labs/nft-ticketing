@@ -1,3 +1,4 @@
+import { E } from '@agoric/eventual-send';
 import { useApplicationContext } from '../context/Application';
 import { mintTicketsWithOfferToWallet } from './cardMint';
 import { burnCard } from './checkIn';
@@ -9,9 +10,11 @@ const Main = () => {
     walletP,
     cardPursePetname,
     marketPlaceInstanceForQuery,
-    cardBrand,
+    publicFacetMarketPlace,
     state: { previousOfferId, activeCard },
   } = useApplicationContext();
+
+  const { cardBrand } = E(publicFacetMarketPlace).getItemsIssuer();
   const createNewEvent = async () => {
     console.log('params:', {
       walletP,

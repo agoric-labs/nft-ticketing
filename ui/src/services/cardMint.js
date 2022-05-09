@@ -60,7 +60,10 @@ export const mintTicketsWithOfferToWallet = async ({
   console.log('tickets:', tickets);
   const { eventTickets, sectionBags } = parseEventsToSeperateCards(tickets);
   console.log(sectionBags);
-  const newUserCardAmount = AmountMath.make(cardBrand, harden(eventTickets));
+  const newUserCardAmount = AmountMath.make(
+    await cardBrand,
+    harden(eventTickets),
+  );
   try {
     const offer = {
       // JSONable ID for this offer.  This is scoped to the origin.

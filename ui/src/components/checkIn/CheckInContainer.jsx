@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useApplicationContext } from '../../context/Application';
 import { getFilteredList } from '../../helpers/searchBar';
 import CheckInCard from './components/CheckInCard';
 import Pagination from '../common/Pagination';
 
-const CheckInContainer = () => {
-  const {
-    state: { searchInput, searchOption, userCards },
-  } = useApplicationContext();
+const CheckInContainer = ({ searchInput, searchOption, userCards }) => {
   const [eventList, setEventList] = useState(userCards);
   const [page, setPage] = useState(0);
   const pageLength = 9;

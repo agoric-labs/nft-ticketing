@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { useApplicationContext } from '../../context/Application';
+// import { useApplicationContext } from '../../context/Application';
 import { getFilteredList } from '../../helpers/searchBar';
 import Loader from '../common/Loader';
 import Pagination from '../common/Pagination';
 import TicketCard from './components/TicketCard';
 
-const TicketDisplay = () => {
+const TicketDisplay = ({ searchInput, searchOption, eventCards }) => {
   const [loader, setLoader] = useState(true);
   const [page, setPage] = useState(0);
   const pageLength = 2;
-  const {
-    state: { searchInput, searchOption, eventCards },
-  } = useApplicationContext();
+  // const {
+  //   state: { searchInput, searchOption, eventCards },
+  // } = useApplicationContext();
   const [eventList, setEventList] = useState([]);
   useEffect(() => {
     console.log('available Cards in:', eventCards);

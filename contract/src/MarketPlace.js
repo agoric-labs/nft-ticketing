@@ -236,7 +236,8 @@ const start = async (zcf) => {
   };
   const checkInTicket = async (seat) => {
     const proposal = await E(seat).getProposal();
-    console.log('proposal:', proposal);
+    const currentAllocation = await E(seat).getCurrentAllocation();
+    console.log('proposal:', proposal, currentAllocation);
     const amount = AmountMath.make(cardBrand, proposal.give.Asset.value);
     console.log('amount:', amount);
     zcfMint.burnLosses(harden({ Asset: amount }), seat);

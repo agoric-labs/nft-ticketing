@@ -8,16 +8,12 @@ import Input from '../common/InputField';
 // import { makeValue } from '../../utils/amount';
 import AttributeSelectorForm from './components/AttributeSelectorForm';
 import { setActiveCard, setModalType, setOpenModal } from '../../store/store';
-import { useApplicationContext } from '../../context/Application';
+// import { useApplicationContext } from '../../context/Application';
 import { Modal } from '../../helpers/ModalActions';
 // import { setAddFormLoader, setCreationSnackbar } from '../store/store';
 // import { useApplicationContext } from '../context/Application';
 
-function CreateTicketForm() {
-  const {
-    dispatch,
-    state: { isSeller },
-  } = useApplicationContext();
+function CreateTicketForm({ isSeller, dispatch }) {
   console.log(isSeller);
   const [error, setError] = useState('');
   const [Form, setForm] = useState({
