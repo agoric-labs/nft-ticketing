@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 export const addToSale = async ({
   walletP,
   cardPursePetname,
-  tokenPursePetname,
+  // tokenPursePetname,
   offerId,
   sectionBags,
 }) => {
@@ -24,12 +24,12 @@ export const addToSale = async ({
           description: 'MarketPlaceOffer',
         },
         proposalTemplate: {
-          want: {
-            Price: {
-              pursePetname: tokenPursePetname,
-              value: BigInt(totalPrice) * 1000000n,
-            },
-          },
+          // want: {
+          //   Price: {
+          //     pursePetname: tokenPursePetname,
+          //     value: BigInt(totalPrice) * 1000000n,
+          //   },
+          // },
           give: {
             Asset: {
               pursePetname: cardPursePetname,

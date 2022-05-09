@@ -88,23 +88,23 @@ const start = async (zcf) => {
     console.log(
       'In swap seat:',
       rightSeat.getProposal(),
+      // This is Buyer seat
       leftSeat.getProposal(),
+      // This is Seller seat
     );
     try {
       rightSeat.decrementBy(harden(rightSeat.getProposal().give));
-      leftSeat.incrementBy(harden(rightSeat.getProposal().give));
-
-      leftSeat.decrementBy(harden(leftSeat.getProposal().give));
-      rightSeat.incrementBy(harden(leftSeat.getProposal().give));
-
+      leftSeat.incrementBy(harden(leftSeat.getProposal().want));
+      leftSeat.decrementBy(harden(rightSeat.getProposal().want));
+      rightSeat.incrementBy(harden(rightSeat.getProposal().want));
       zcf.reallocate(leftSeat, rightSeat);
     } catch (err) {
       leftSeat.fail(err);
       rightSeat.fail(err);
       throw err;
     }
-    leftSeat.exit();
-    // rightSeat.exit();
+    // leftSeat.exit();
+    rightSeat.exit();
     return `The offer has been accepted. Once the contract has been completed, please check your payout`;
   };
 
@@ -112,6 +112,11 @@ const start = async (zcf) => {
     console.log('running swapIfCanTrade', offers, seat);
     const compareSeats = (xSeat, ySeat) => {
       console.log('Inside Compare seats:', xSeat, ySeat);
+      const xHasExited = xSeat.hasExited();
+      const yHasExited = xSeat.hasExited();
+      console.log('xHasExited:', xHasExited);
+      console.log('yHasExited:', yHasExited);
+      if (xHasExited && yHasExited) return false;
       const xAllocation = xSeat.getCurrentAllocation();
       const yAllocation = ySeat.getCurrentAllocation();
       const xProposal = xSeat.getProposal();
@@ -125,7 +130,10 @@ const start = async (zcf) => {
       const assetsMatch = yProposal?.want?.Asset?.value.every((item) =>
         ticketIds.includes(item.id),
       );
+      // const yPrice = yProposal?.give?.Price?.value;
+      // const xPrice = xProposal?.want?.Price?.value;
       console.log('Assets Match:', assetsMatch);
+      // console.log('Price Match:', xPrice >= yPrice);
       if (assetsMatch) {
         return true;
       }
@@ -172,7 +180,6 @@ const start = async (zcf) => {
   const sell = (seat) => {
     assertProposalShape(seat, {
       give: { Asset: null },
-      want: { Price: null },
     });
     buySeats = swapIfCanTradeAndUpdateBook(buySeats, sellSeats, seat);
     return 'Order Added';
