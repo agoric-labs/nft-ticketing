@@ -28,7 +28,7 @@ import {
   setWalletOffers,
   setPreviousOfferId,
 } from '../store/store';
-import { handleInitialOffers } from '../helpers/wallet.js';
+import { mintAndAddToSale } from '../helpers/wallet.js';
 import { mapSellingOffersToEvents } from '../services/marketPlace.js';
 // import { parseEventsToSeperateCards } from '../services/cardMint.js';
 
@@ -261,9 +261,10 @@ export default function Provider({ children }) {
         tokenPursePetname: tokenPurses[0]?.pursePetname,
         marketPlaceContractInstance: marketPlaceInstanceForQuery,
         publicFacetMarketPlace,
+        createEvent: false,
       };
       console.log('params:', params);
-      await handleInitialOffers(params);
+      await mintAndAddToSale(params);
     })();
   }, [
     availableCards,

@@ -23,7 +23,19 @@ export const parseEventsToSeperateCards = (events) => {
       delete obj.eventDetails;
       const sectionInEvents = [];
       const sectionId = uuidv4();
-      [...Array(ticketType.ticketCount)].forEach((_) => {
+      console.log(
+        'Condition:',
+        typeof ticketType.ticketCount === 'string'
+          ? parseInt(ticketType.ticketCount, 10)
+          : ticketType.ticketCount,
+      );
+      [
+        ...Array(
+          typeof ticketType.ticketCount === 'string'
+            ? parseInt(ticketType.ticketCount, 10)
+            : ticketType.ticketCount,
+        ),
+      ].forEach((_) => {
         const id = uuidv4();
         obj.id = id;
         obj = {
@@ -47,6 +59,8 @@ export const mintTicketsWithOfferToWallet = async ({
   tickets,
   cardPursePetname,
   marketPlaceContractInstance,
+  createEvent,
+  previousOfferId,
 }) => {
   if (
     !walletP ||
@@ -59,7 +73,7 @@ export const mintTicketsWithOfferToWallet = async ({
   let offerId = null;
   console.log('tickets:', tickets);
   const { eventTickets, sectionBags } = parseEventsToSeperateCards(tickets);
-  console.log(sectionBags);
+  console.log('sectionBags:', sectionBags, eventTickets);
   const newUserCardAmount = AmountMath.make(
     await cardBrand,
     harden(eventTickets),
@@ -68,10 +82,6 @@ export const mintTicketsWithOfferToWallet = async ({
     const offer = {
       // JSONable ID for this offer.  This is scoped to the origin.
       id: Date.now(),
-      invitationQuery: {
-        instance: marketPlaceContractInstance,
-        description: 'MintPayment',
-      },
       proposalTemplate: {
         want: {
           Token: {
@@ -81,6 +91,18 @@ export const mintTicketsWithOfferToWallet = async ({
         },
       },
     };
+    if (createEvent) {
+      offer.continuingInvitation = {
+        priorOfferId: previousOfferId,
+        description: 'MintPayment',
+      };
+    } else {
+      offer.invitationQuery = {
+        instance: marketPlaceContractInstance,
+        description: 'MintPayment',
+      };
+    }
+    console.log('offer in mint:', offer);
     offerId = await E(walletP).addOffer(offer);
     console.log('offerId:', offerId);
   } catch (err) {

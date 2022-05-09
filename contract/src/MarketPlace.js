@@ -5,10 +5,7 @@ import { Far } from '@endo/marshal';
 import { E } from '@endo/eventual-send';
 import { makeNotifierKit } from '@agoric/notifier';
 import '@agoric/zoe/exported';
-import {
-  satisfies,
-  assertProposalShape,
-} from '@agoric/zoe/src/contractSupport/index.js';
+import { assertProposalShape } from '@agoric/zoe/src/contractSupport/index.js';
 import { AmountMath, AssetKind } from '@agoric/ertp';
 
 /**

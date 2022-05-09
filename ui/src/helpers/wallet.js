@@ -21,7 +21,7 @@ export const waitForOfferBeingAccepted = async ({ walletP, offerId }) => {
   return 'not waiting';
 };
 
-export const handleInitialOffers = async (params) => {
+export const mintAndAddToSale = async (params) => {
   try {
     console.log('pass check:', [
       params?.tickets.length > 0,
@@ -40,10 +40,11 @@ export const handleInitialOffers = async (params) => {
       )
     )
       return;
+    console.log('after check');
     const minted = await E(params.publicFacetMarketPlace).getMinted();
     await E(params.publicFacetMarketPlace).setMinted();
-    console.log('Is minted:', minted);
-    if (minted) return;
+    console.log('willpass:', minted && !params.createEvent);
+    if (minted && !params.createEvent) return;
     params.cardBrand = await params.cardBrand;
     console.log('Running mintTicketsWithOfferToWallet');
     const { offerId, eventTickets, sectionBags } =

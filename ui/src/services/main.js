@@ -1,5 +1,5 @@
 import { useApplicationContext } from '../context/Application';
-import { mintTicketsWithOfferToWallet } from './cardMint';
+import { mintAndAddToSale } from '../helpers/wallet';
 import { burnCard } from './checkIn';
 import { buyEventTickets, mapSellingOffersToEvents } from './marketPlace';
 
@@ -10,6 +10,7 @@ const Main = () => {
     cardPursePetname,
     cardBrand,
     marketPlaceInstanceForQuery,
+    publicFacetMarketPlace,
     state: { previousOfferId, activeCard },
   } = useApplicationContext();
 
@@ -22,12 +23,16 @@ const Main = () => {
       tickets: harden([activeCard]),
       cardBrand,
     });
-    await mintTicketsWithOfferToWallet({
+    await mintAndAddToSale({
       walletP,
       cardPursePetname,
+      tokenPursePetname,
       marketPlaceContractInstance: marketPlaceInstanceForQuery,
-      tickets: activeCard,
+      tickets: harden([activeCard]),
       cardBrand,
+      createEvent: true,
+      publicFacetMarketPlace,
+      previousOfferId,
     });
   };
   const purchaseTickets = async () => {
