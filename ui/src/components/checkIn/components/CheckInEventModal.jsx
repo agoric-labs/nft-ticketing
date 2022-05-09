@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApplicationContext } from '../../../context/Application';
 import { Modal } from '../../../helpers/ModalActions';
 // import CheckInCard from '../../checkIn/components/CheckInCard';
@@ -13,6 +13,7 @@ const CheckInEventModal = ({ checkInCard }) => {
     dispatch,
     state: { activeCard },
   } = useApplicationContext();
+  const [loader, setLoader] = useState(false);
   const cardDetail = activeCard;
   const image = `${ipfsUrl + cardDetail.image}`;
 
@@ -29,10 +30,13 @@ const CheckInEventModal = ({ checkInCard }) => {
             styles="w-full"
             text="Check In"
             onClick={async () => {
+              setLoader(true);
               await checkInCard();
+              setLoader(false);
               dispatch(setModalType(Modal.SUCCESS_CHECK_IN));
               dispatch(setOpenModal(true));
             }}
+            isLoading={loader}
             inModal={true}
           />
         </div>

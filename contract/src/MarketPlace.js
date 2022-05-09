@@ -113,32 +113,31 @@ const start = async (zcf) => {
 
   function swapIfCanTrade(offers, seat) {
     console.log('running swapIfCanTrade', offers, seat);
+    const compareSeats = (xSeat, ySeat) => {
+      const xAllocation = xSeat.getCurrentAllocation();
+      const yAllocation = ySeat.getCurrentAllocation();
+      const xProposal = xSeat.getProposal();
+      const yProposal = ySeat.getProposal();
+      console.log('xAllocation', xAllocation);
+      console.log('yAllocation', yAllocation);
+      console.log('xProposal', xProposal);
+      console.log('yProposal', yProposal);
+      const ticketIds = xAllocation?.Asset?.value?.map((item) => item.id);
+      console.log('ticketIds:', ticketIds);
+      const assetsMatch = yProposal?.want?.Asset?.value.every((item) =>
+        ticketIds.includes(item.id),
+      );
+      console.log('Assets Match:', assetsMatch);
+      if (assetsMatch) {
+        return true;
+      }
+      return false;
+      // return (
+      //   satisfies(zcf, xSeat, ySeat.getCurrentAllocation()) &&
+      //   satisfies(zcf, ySeat, xSeat.getCurrentAllocation())
+      // );
+    };
     for (const offer of offers) {
-      const compareSeats = (xSeat, ySeat) => {
-        const xAllocation = xSeat.getCurrentAllocation();
-        const yAllocation = ySeat.getCurrentAllocation();
-        const xProposal = xSeat.getProposal();
-        const yProposal = ySeat.getProposal();
-        console.log('xAllocation', xAllocation);
-        console.log('yAllocation', yAllocation);
-        console.log('xProposal', xProposal);
-        console.log('yProposal', yProposal);
-        const ticketIds = xAllocation?.Asset?.value?.map((item) => item.id);
-        console.log('ticketIds:', ticketIds);
-        const assetsMatch = yProposal?.want?.Asset?.value.every((item) =>
-          ticketIds.includes(item.id),
-        );
-        console.log('Assets Match:', assetsMatch);
-        if (assetsMatch) {
-          return true;
-        }
-        return false;
-        // return (
-        //   satisfies(zcf, xSeat, ySeat.getCurrentAllocation()) &&
-        //   satisfies(zcf, ySeat, xSeat.getCurrentAllocation())
-        // );
-      };
-
       // if (satisfiedBy(offer, seat) && satisfiedBy(seat, offer)) {
       if (compareSeats(offer, seat)) {
         swap(offer, seat);

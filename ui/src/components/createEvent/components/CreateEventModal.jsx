@@ -25,12 +25,12 @@ const CreateEventModal = ({ createNewEvent }) => {
           <div className="w-full h-32 overflow-auto mb-8 customScrollbar">
             {cardDetail.eventDetails.map((ticket, i) => {
               return (
-                <>
+                <div key={i}>
                   <ModalBottomDetail key={i} ticket={ticket} />
                   {i + 1 !== cardDetail.eventDetails.length && (
                     <hr className="mt-3 mb-2 bg-alternativeLight" />
                   )}
-                </>
+                </div>
               );
             })}
           </div>

@@ -82,7 +82,7 @@ function CreateTicketForm({ isSeller, dispatch }) {
         eventDetails,
       };
       console.log('cardDetails:', cardDetails);
-      dispatch(setActiveCard([cardDetails]));
+      dispatch(setActiveCard(cardDetails));
       setForm({
         name: '',
         image: '',
