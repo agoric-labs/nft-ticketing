@@ -14,7 +14,11 @@ import { Modal } from '../../helpers/ModalActions';
 // import { useApplicationContext } from '../context/Application';
 
 function CreateTicketForm() {
-  const { dispatch } = useApplicationContext();
+  const {
+    dispatch,
+    state: { isSeller },
+  } = useApplicationContext();
+  console.log(isSeller);
   const [error, setError] = useState('');
   const [Form, setForm] = useState({
     id: '',
@@ -57,6 +61,10 @@ function CreateTicketForm() {
       eventDetails.length === 0
     ) {
       setError('* All fields are required');
+      return;
+    }
+    if (!isSeller) {
+      setError('* Only admins are allowed to create events');
       return;
     }
     setError('');

@@ -216,8 +216,8 @@ const start = async (zcf) => {
   const invitationMakers = Far('invitation makers', {
     MarketPlaceOffer: () =>
       zcf.makeInvitation(exchangeOfferHandler, 'MarketPlaceOffer'),
-    MintPayment: () => zcf.makeInvitation(mintPayment, 'mint a payment'),
-    CheckInTicket: () => zcf.makeInvitation(checkInTicket, 'check in a ticket'),
+    MintPayment: () => zcf.makeInvitation(mintPayment, 'MintPayment'),
+    CheckInTicket: () => zcf.makeInvitation(checkInTicket, 'CheckInTicket'),
   });
 
   const mintPayment = async (seat) => {
@@ -237,15 +237,12 @@ const start = async (zcf) => {
   const checkInTicket = async (seat) => {
     const proposal = await E(seat).getProposal();
     console.log('proposal:', proposal);
-    const amount = AmountMath.make(
-      proposal.give.Asset.brand,
-      proposal.give.Asset.value,
-    );
+    const amount = AmountMath.make(cardBrand, proposal.give.Asset.value);
     console.log('amount:', amount);
     zcfMint.burnLosses(harden({ Asset: amount }), seat);
     seat.exit();
   };
-  const creatorInvitation = zcf.makeInvitation(mintPayment, 'mint a payment');
+  const creatorInvitation = zcf.makeInvitation(mintPayment, 'MintPayment');
   const publicFacet = Far('MarketPlacePublicFacet', {
     updateNotifier: bookOrdersChanged,
     getNotifier: () => notifier,

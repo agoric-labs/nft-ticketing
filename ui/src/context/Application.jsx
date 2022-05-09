@@ -143,13 +143,6 @@ export default function Provider({ children }) {
           dispatch(
             setInvitationPurse(zoeInvitationPurse?.currentAmount?.value),
           );
-          if (
-            zoeInvitationPurse?.currentAmount?.value.length > 0 &&
-            zoeInvitationPurse?.currentAmount?.value[0].description ===
-              'mint a payment'
-          ) {
-            dispatch(setIsSeller(true));
-          }
         };
 
         async function watchPurses() {

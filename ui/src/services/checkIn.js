@@ -14,7 +14,7 @@ export const burnCard = async ({
       id: uuidv4(),
       continuingInvitation: {
         priorOfferId: offerId,
-        description: 'check in a ticket',
+        description: 'CheckInTicket',
       },
       proposalTemplate: {
         give: {

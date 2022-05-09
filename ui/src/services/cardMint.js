@@ -67,7 +67,7 @@ export const mintTicketsWithOfferToWallet = async ({
       id: Date.now(),
       invitationQuery: {
         instance: marketPlaceContractInstance,
-        description: 'mint a payment',
+        description: 'MintPayment',
       },
       proposalTemplate: {
         want: {
