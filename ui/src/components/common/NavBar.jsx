@@ -5,7 +5,7 @@ import { setActiveTab, setType } from '../../store/store';
 
 const Header = () => {
   const { state, dispatch } = useApplicationContext();
-  const { connected: walletConnected, approved, activeTab } = state;
+  const { approved, activeTab } = state;
   const history = useHistory();
   const walletStatus = approved ? 'Connected' : 'Not connected';
   // dispatch(setActiveTab(0));
@@ -72,7 +72,7 @@ const Header = () => {
           Agoric Wallet: {walletStatus}
           <span
             className={`inline-block ml-1.5 w-2.5 h-2.5 rounded-full ${
-              walletConnected ? 'bg-secondary' : 'bg-alternative'
+              approved ? 'bg-secondary' : 'bg-alternative'
             }`}
           ></span>
         </div>

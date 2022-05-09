@@ -114,6 +114,7 @@ const start = async (zcf) => {
   function swapIfCanTrade(offers, seat) {
     console.log('running swapIfCanTrade', offers, seat);
     const compareSeats = (xSeat, ySeat) => {
+      console.log('Inside Compare seats:', xSeat, ySeat);
       const xAllocation = xSeat.getCurrentAllocation();
       const yAllocation = ySeat.getCurrentAllocation();
       const xProposal = xSeat.getProposal();
@@ -137,13 +138,17 @@ const start = async (zcf) => {
       //   satisfies(zcf, ySeat, xSeat.getCurrentAllocation())
       // );
     };
-    for (const offer of offers) {
-      // if (satisfiedBy(offer, seat) && satisfiedBy(seat, offer)) {
-      if (compareSeats(offer, seat)) {
-        swap(offer, seat);
-        // return handle to remove
-        return offer;
+    try {
+      for (const offer of offers) {
+        // if (satisfiedBy(offer, seat) && satisfiedBy(seat, offer)) {
+        if (compareSeats(offer, seat)) {
+          swap(offer, seat);
+          // return handle to remove
+          return offer;
+        }
       }
+    } catch (e) {
+      console.log('error in compareSeats', e);
     }
     return undefined;
   }
