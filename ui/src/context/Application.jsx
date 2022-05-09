@@ -109,6 +109,10 @@ export default function Provider({ children }) {
         ).getAvailableEvents();
         dispatch(setAvailableCards(marketPlaceEvents || []));
         const isAdmin = await E(publicFacetMarketPlace).isSeller();
+        if (!isAdmin) {
+          // Do logic for non-admin users.
+          // Send an offer so that a non-admin invitation maker is returned.
+        }
         const isMinted = await E(publicFacetMarketPlace).getMinted();
         dispatch(setIsSeller(isAdmin));
         const orderBookNotifier = await E(publicFacetMarketPlace).getNotifier();

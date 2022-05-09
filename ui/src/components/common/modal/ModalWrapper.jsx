@@ -17,6 +17,7 @@ const ModalWrapper = ({
   onClose,
   purchaseTickets,
   createNewEvent,
+  checkInCard,
 }) => {
   const {
     dispatch,
@@ -53,7 +54,7 @@ const ModalWrapper = ({
                         <CreateEventModal createNewEvent={createNewEvent} />
                       );
                     case Modal.CHECK_IN:
-                      return <CheckInEventModal />;
+                      return <CheckInEventModal checkInCard={checkInCard} />;
                     case Modal.MARKETPLACE:
                       return (
                         <BuyTicketModal purchaseTickets={purchaseTickets} />

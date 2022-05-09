@@ -8,7 +8,7 @@ import Button from '../../common/Button';
 import ModalBottomDetail from '../../common/modal/ModalBottomDetail';
 import ModalTopDetail from '../../common/modal/ModalTopDetail';
 
-const CheckInEventModal = () => {
+const CheckInEventModal = ({ checkInCard }) => {
   const {
     dispatch,
     state: { activeCard },
@@ -28,7 +28,8 @@ const CheckInEventModal = () => {
           <Button
             styles="w-full"
             text="Check In"
-            onClick={() => {
+            onClick={async () => {
+              await checkInCard();
               dispatch(setModalType(Modal.SUCCESS_CHECK_IN));
               dispatch(setOpenModal(true));
             }}

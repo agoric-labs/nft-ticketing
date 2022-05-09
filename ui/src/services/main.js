@@ -1,5 +1,6 @@
 import { useApplicationContext } from '../context/Application';
 import { mintTicketsWithOfferToWallet } from './cardMint';
+import { burnCard } from './checkIn';
 import { buyEventTickets, mapSellingOffersToEvents } from './marketPlace';
 
 const Main = () => {
@@ -57,7 +58,16 @@ const Main = () => {
     await mapSellingOffersToEvents({ sectionBags });
   };
 
-  return { purchaseTickets, fetchEventsOnSale, createNewEvent };
+  const checkInCard = async () => {
+    await burnCard({
+      offerId: previousOfferId,
+      walletP,
+      cardPursePetname,
+      tickets: activeCard,
+    });
+  };
+
+  return { purchaseTickets, fetchEventsOnSale, createNewEvent, checkInCard };
 };
 
 export default Main;

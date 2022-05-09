@@ -217,6 +217,7 @@ const start = async (zcf) => {
     MarketPlaceOffer: () =>
       zcf.makeInvitation(exchangeOfferHandler, 'MarketPlaceOffer'),
     MintPayment: () => zcf.makeInvitation(mintPayment, 'mint a payment'),
+    CheckInTicket: () => zcf.makeInvitation(checkInTicket, 'check in a ticket'),
   });
 
   const mintPayment = async (seat) => {
@@ -232,6 +233,17 @@ const start = async (zcf) => {
     // Exit the seat so that the user can get a payout.
     seat.exit();
     return harden({ invitationMakers });
+  };
+  const checkInTicket = async (seat) => {
+    const proposal = await E(seat).getProposal();
+    console.log('proposal:', proposal);
+    const amount = AmountMath.make(
+      proposal.give.Asset.brand,
+      proposal.give.Asset.value,
+    );
+    console.log('amount:', amount);
+    zcfMint.burnLosses(harden({ Asset: amount }), seat);
+    seat.exit();
   };
   const creatorInvitation = zcf.makeInvitation(mintPayment, 'mint a payment');
   const publicFacet = Far('MarketPlacePublicFacet', {
@@ -249,7 +261,7 @@ const start = async (zcf) => {
       }),
     getMinted: () => minted,
     setMinted: () => {
-      console.log('setMinted');
+      if (!isSeller) return 'Access denied';
       minted = true;
       return minted;
     },

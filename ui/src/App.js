@@ -20,7 +20,7 @@ function App() {
     dispatch(setType('marketplace'));
   }, []);
   console.log('component rerendering');
-  const { purchaseTickets, createNewEvent } = Main();
+  const { purchaseTickets, createNewEvent, checkInCard } = Main();
   return (
     <div className="relative w-full h-full">
       <NavBar />
@@ -30,6 +30,7 @@ function App() {
         onClose={() => dispatch(setOpenModal(false))}
         purchaseTickets={purchaseTickets}
         createNewEvent={createNewEvent}
+        checkInCard={checkInCard}
       ></ModalWrapper>
       <Footer />
     </div>
