@@ -1,3 +1,15 @@
+// import { Far } from '@endo/marshal';
+
+// const makeCounter = () => {
+//   let count = 0;
+//   return Far('counter', {
+//     incr: () => (count += 1),
+//     decr: () => (count -= 1),
+//     count: () => count,
+//   });
+// };
+// const counter = makeCounter();
+
 export const tickets = [
   {
     id: '4cCuxGrhmw1_ccYnuOIXqrk',
@@ -7,8 +19,18 @@ export const tickets = [
     ticketsSold: 0,
     ticketsCount: 40,
     eventDetails: [
-      { ticketType: 'Vip', ticketCount: 4, ticketPrice: 1 },
-      { ticketType: 'General', ticketCount: 6, ticketPrice: 1 },
+      {
+        ticketType: 'Vip',
+        ticketSold: 0,
+        ticketCount: 4,
+        ticketPrice: 1,
+      },
+      {
+        ticketType: 'General',
+        ticketSold: 0,
+        ticketCount: 6,
+        ticketPrice: 1,
+      },
       // { ticketType: 'Bussiness', ticketCount: 10, ticketPrice: 1 },
       // { ticketType: 'General Admission', ticketCount: 20, ticketPrice: 1 },
     ],

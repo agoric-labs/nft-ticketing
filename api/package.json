@@ -30,6 +30,7 @@
     "@agoric/ertp": "*",
     "@agoric/eventual-send": "*",
     "@agoric/zoe": "*",
+    "@endo/marshal": "^0.5.4",
     "json5": "^2.2.0",
     "uuid": "^8.3.2"
   },

@@ -16,10 +16,11 @@ const TicketCard = ({ cardDetail }) => {
   const [ticketCount, setTicketCount] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [selectedTicket, setSelectedTicket] = useState('');
+  const [selectedIndex, setSelectedIndex] = useState('');
   const [selectedTicketInMenu, setSelectedTicketInMenu] = useState({});
   const [error, setError] = useState('');
   const image = `${ipfsUrl + cardDetail.image}`;
-  console.log('hello');
+  console.log('hello:', cardDetail);
   useEffect(() => {
     setTicketCount(0);
   }, [selectedTicket]);
@@ -32,10 +33,10 @@ const TicketCard = ({ cardDetail }) => {
       return;
     }
     setError('');
-    const ticketsLeft = selectedTicket.ticketCount - cardDetail.ticketsSold;
+    const ticketsLeft = selectedTicket.ticketCount - selectedTicket.ticketSold;
     if (ticketCount === ticketsLeft) {
       setError(
-        `Only ${selectedTicket.ticketCount} tickets for ${selectedTicket.ticketType} section are left`,
+        `Only ${ticketsLeft} tickets for ${selectedTicket.ticketType} section are left`,
       );
       return;
     }
@@ -54,6 +55,10 @@ const TicketCard = ({ cardDetail }) => {
     const selectedTicketType = cardDetail.eventDetails.find(
       (ticket) => ticket.ticketType === e.target.value,
     );
+    const index = cardDetail.eventDetails.findIndex(
+      (ticket) => ticket.ticketType === e.target.value,
+    );
+    setSelectedIndex(index);
     setSelectedTicketInMenu(e.target.value);
     setSelectedTicket(selectedTicketType);
   };
@@ -67,19 +72,29 @@ const TicketCard = ({ cardDetail }) => {
     } else setError('');
     dispatch(
       setActiveCard({
-        id: cardDetail.id,
+        eventId: cardDetail.id,
         name: cardDetail.name,
         date: cardDetail.date,
         image: cardDetail.image,
+        sectionIndex: selectedIndex,
         ...selectedTicket,
         ticketCount,
         totalPrice,
       }),
     );
+    console.log('ActiveCard in marketPlace:', {
+      eventId: cardDetail.id,
+      name: cardDetail.name,
+      date: cardDetail.date,
+      image: cardDetail.image,
+      sectionIndex: selectedIndex,
+      ...selectedTicket,
+      ticketCount,
+      totalPrice,
+    });
     dispatch(setModalType(Modal.MARKETPLACE));
     dispatch(setOpenModal(true));
   };
-
   return (
     <div className="flex flex-col md:flex-row p-4 border border-alternativeLight rounded-md my-10 transition-all duration-100 hover:shadow-xl">
       <div className="w-full md:6/12 lg:w-5/12">

@@ -7,7 +7,14 @@ import TicketDisplay from '../../marketplace/TicketDisplay';
 const ContentToDisplay = ({ tab }) => {
   const {
     dispatch,
-    state: { isSeller, searchInput, searchOption, userCards, eventCards },
+    state: {
+      isSeller,
+      searchInput,
+      searchOption,
+      userCards,
+      eventCards,
+      priorOfferId,
+    },
   } = useApplicationContext();
   let content;
   switch (tab) {
@@ -17,6 +24,7 @@ const ContentToDisplay = ({ tab }) => {
           eventCards={eventCards}
           searchInput={searchInput}
           searchOption={searchOption}
+          priorOfferId={priorOfferId}
         />
       );
       break;

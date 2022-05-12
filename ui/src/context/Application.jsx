@@ -16,20 +16,22 @@ import {
   setApproved,
   setConnected,
   setOpenEnableAppDialog,
-  setAvailableCards,
+  // setAvailableCards,
   setCardPurse,
   setTokenDisplayInfo,
   setTokenPetname,
   setTokenPurses,
   setUserCards,
   setInvitationPurse,
-  setIsSeller,
+  // setIsSeller,
   setEventCards,
   setWalletOffers,
   setPreviousOfferId,
 } from '../store/store';
-import { mintAndAddToSale } from '../helpers/wallet.js';
-import { mapSellingOffersToEvents } from '../services/marketPlace.js';
+import { getInvitationMakerInWallet } from '../services/marketPlace.js';
+// import { parseEventsToSeperateCards } from '../services/cardMint.js';
+// import { mintAndAddToSale } from '../helpers/wallet.js';
+// import { mapSellingOffersToEvents } from '../services/marketPlace.js';
 // import { parseEventsToSeperateCards } from '../services/cardMint.js';
 
 const {
@@ -46,7 +48,7 @@ let publicFacetMarketPlace;
 /* eslint-enable */
 let marketPlaceInstanceForQuery;
 let cardBrand;
-let moneyBrand;
+// let moneyBrand;
 export { walletP, publicFacetMarketPlace };
 
 export const ApplicationContext = createContext();
@@ -58,7 +60,7 @@ export function useApplicationContext() {
 /* eslint-disable complexity, react/prop-types */
 export default function Provider({ children }) {
   const [state, dispatch] = useReducer(reducer, defaultState);
-  const { cardPurse, availableCards, tokenPurses, isSeller } = state;
+  const { cardPurse, tokenPurses } = state;
   useEffect(() => {
     // Receive callbacks from the wallet connection.
     const otherSide = Far('otherSide', {
@@ -104,37 +106,47 @@ export default function Provider({ children }) {
         publicFacetMarketPlace = await E(zoe).getPublicFacet(
           marketPlaceContractInstance,
         );
-        const { marketPlaceEvents, availabeEventsNotifier } = await E(
+        const { events, availabeEventsNotifier } = await E(
           publicFacetMarketPlace,
         ).getAvailableEvents();
-        dispatch(setAvailableCards(marketPlaceEvents || []));
-        const isAdmin = await E(publicFacetMarketPlace).isSeller();
-        if (!isAdmin) {
-          // Do logic for non-admin users.
-          // Send an offer so that a non-admin invitation maker is returned.
+        dispatch(setEventCards(events || []));
+        const Issuer = await E(publicFacetMarketPlace).getItemsIssuer();
+        cardBrand = Issuer.cardBrand;
+        try {
+          const offerId = await getInvitationMakerInWallet({
+            marketPlaceContractInstance,
+            walletP,
+          });
+          console.log('offerID IN APPLICATION:', offerId);
+          if (offerId) dispatch(setPreviousOfferId(offerId));
+        } catch (e) {
+          console.log('error in application getting Invitation Maker', e);
         }
-        const isMinted = await E(publicFacetMarketPlace).getMinted();
-        dispatch(setIsSeller(isAdmin));
-        const orderBookNotifier = await E(publicFacetMarketPlace).getNotifier();
-        console.log('eventsNotifier:', orderBookNotifier);
-        console.log('facet', publicFacetMarketPlace);
-        console.log('isSeller1:', isSeller);
-        console.log('isMinted:', isMinted);
+
+        // const isAdmin = await E(publicFacetMarketPlace).isSeller();
+        // if (!isAdmin) {
+        //   // Do logic for non-admin users.
+        //   // Send an offer so that a non-admin invitation maker is returned.
+        // }
+        // const isMinted = await E(publicFacetMarketPlace).getMinted();
+        // dispatch(setIsSeller(isAdmin));
+        // console.log('isSeller1:', isSeller);
+        // console.log('isMinted:', isMinted);
         const processPurses = (purses) => {
           const newTokenPurses = purses.filter(
             ({ brandBoardId }) => brandBoardId === MONEY_BRAND_BOARD_ID,
           );
-          cardBrand = E(board).getValue(CARD_BRAND_BOARD_ID);
+          // cardBrand = E(board).getValue(CARD_BRAND_BOARD_ID);
           const newCardPurse = purses.find(
             ({ brandBoardId }) => brandBoardId === CARD_BRAND_BOARD_ID,
           );
-          moneyBrand = E(board).getValue(MONEY_BRAND_BOARD_ID);
+          // moneyBrand = E(board).getValue(MONEY_BRAND_BOARD_ID);
 
           const zoeInvitationPurse = purses.find(
             ({ brandBoardId }) => brandBoardId === INVITE_BRAND_BOARD_ID,
           );
           console.log(MONEY_ISSUER_BOARD_ID);
-          console.log('newTokenPurses', newTokenPurses);
+          console.log('newCardPurse', newCardPurse);
           dispatch(setTokenPurses(newTokenPurses));
           dispatch(setTokenDisplayInfo(newTokenPurses[0].displayInfo));
           dispatch(setTokenPetname(newTokenPurses[0].brandPetname));
@@ -157,8 +169,8 @@ export default function Provider({ children }) {
           for await (const availableOffers of iterateNotifier(
             availabeEventsNotifier,
           )) {
-            console.log('In MarketPlace', availableOffers);
-            dispatch(setAvailableCards(availableOffers || []));
+            console.log('In MarketPlace change in events:', availableOffers);
+            dispatch(setEventCards(availableOffers || []));
           }
         }
         watchMarketPlaceEvents().catch((err) =>
@@ -167,14 +179,14 @@ export default function Provider({ children }) {
         async function watchWallerOffers() {
           const offerNotifier = E(walletP).getOffersNotifier();
           for await (const offers of iterateNotifier(offerNotifier)) {
-            await E(publicFacetMarketPlace).updateNotifier();
+            // await E(publicFacetMarketPlace).updateNotifier();
             console.log('wallet offers:');
             const selectedOffer = offers?.find((offer) => {
               console.log(
                 'wallet offers:',
                 offer.invitationDetails.description,
               );
-              if (offer.invitationDetails.description === 'MintPayment') {
+              if (offer.invitationDetails.description === 'createNewEvent') {
                 return true;
               } else return false;
             });
@@ -187,22 +199,6 @@ export default function Provider({ children }) {
         }
         watchWallerOffers().catch((err) =>
           console.log('got watchWalletoffer err', err),
-        );
-
-        async function watchMarketPlaceOffers() {
-          for await (const orders of iterateNotifier(orderBookNotifier)) {
-            console.log('offers in marketplace:', orders);
-            let formatedEventList = [];
-            if (orders?.sells?.length > 0) {
-              console.log('inside sell');
-              formatedEventList = await mapSellingOffersToEvents(orders);
-            }
-            console.log('offers in marketplace', formatedEventList);
-            dispatch(setEventCards(formatedEventList));
-          }
-        }
-        watchMarketPlaceOffers().catch((err) =>
-          console.log('got watchMarketPlaceOffers errs', err),
         );
         try {
           const installationBoardId = MARKET_PLACE_INSTALLATION_BOARD_ID;
@@ -247,34 +243,34 @@ export default function Provider({ children }) {
     return deactivateWebSocket;
   }, []);
 
-  useEffect(() => {
-    console.log('isSeller2:', isSeller);
-    if (!isSeller) return;
-    (async () => {
-      const minted = await E(publicFacetMarketPlace).getMinted();
-      if (minted) return;
-      const params = {
-        walletP,
-        cardBrand,
-        tickets: availableCards,
-        cardPursePetname: cardPurse?.pursePetname,
-        tokenPursePetname: tokenPurses[0]?.pursePetname,
-        marketPlaceContractInstance: marketPlaceInstanceForQuery,
-        publicFacetMarketPlace,
-        createEvent: false,
-      };
-      console.log('params:', params);
-      await mintAndAddToSale(params);
-    })();
-  }, [
-    availableCards,
-    marketPlaceInstanceForQuery,
-    cardBrand,
-    moneyBrand,
-    cardPurse,
-    tokenPurses,
-    isSeller,
-  ]);
+  // useEffect(() => {
+  //   console.log('isSeller2:', isSeller);
+  //   if (!isSeller) return;
+  //   (async () => {
+  //     const minted = await E(publicFacetMarketPlace).getMinted();
+  //     if (minted) return;
+  //     const params = {
+  //       walletP,
+  //       cardBrand,
+  //       tickets: availableCards,
+  //       cardPursePetname: cardPurse?.pursePetname,
+  //       tokenPursePetname: tokenPurses[0]?.pursePetname,
+  //       marketPlaceContractInstance: marketPlaceInstanceForQuery,
+  //       publicFacetMarketPlace,
+  //       createEvent: false,
+  //     };
+  //     console.log('params:', params);
+  //     await mintAndAddToSale(params);
+  //   })();
+  // }, [
+  //   availableCards,
+  //   marketPlaceInstanceForQuery,
+  //   cardBrand,
+  //   moneyBrand,
+  //   cardPurse,
+  //   tokenPurses,
+  //   isSeller,
+  // ]);
   return (
     <ApplicationContext.Provider
       value={{

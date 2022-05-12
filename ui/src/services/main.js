@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import { useApplicationContext } from '../context/Application';
 import { mintAndAddToSale } from '../helpers/wallet';
 import { burnCard } from './checkIn';
@@ -38,10 +39,12 @@ const Main = () => {
   const purchaseTickets = async () => {
     const numberOfTickets = activeCard.ticketCount;
     const totalPrice = activeCard.totalPrice;
-    const ticketsInSection = activeCard.sectionTickets.slice(
-      0,
-      numberOfTickets,
-    );
+    const tickets = Array(numberOfTickets)
+      .fill(0)
+      .map((_) => {
+        return { id: uuidv4(), ...activeCard };
+      });
+    console.log('ticket in purchase:', tickets);
     console.log('BuyTicketParams:', [
       tokenPursePetname,
       walletP,
@@ -49,14 +52,13 @@ const Main = () => {
       cardPursePetname,
       activeCard,
       totalPrice,
-      ticketsInSection,
     ]);
     await buyEventTickets({
       tokenPursePetname,
       walletP,
       previousOfferId,
       cardPursePetname,
-      ticketsInSection,
+      ticketsInSection: tickets,
       totalPrice,
     });
   };
@@ -74,7 +76,12 @@ const Main = () => {
     });
   };
 
-  return { purchaseTickets, fetchEventsOnSale, createNewEvent, checkInCard };
+  return {
+    purchaseTickets,
+    fetchEventsOnSale,
+    createNewEvent,
+    checkInCard,
+  };
 };
 
 export default Main;

@@ -127,3 +127,27 @@ export const mapSellingOffersToEvents = async (orders) => {
   console.log('formatedEventList:', formatedEventList);
   return formatedEventList;
 };
+
+export const getInvitationMakerInWallet = async ({
+  marketPlaceContractInstance,
+  walletP,
+}) => {
+  try {
+    const offer = {
+      // JSONable ID for this offer.  This is scoped to the origin.
+      id: uuidv4(),
+      invitationQuery: {
+        instance: marketPlaceContractInstance,
+        description: 'createNewEvent',
+      },
+      proposalTemplate: {}, // Tell the wallet that we're handling the offer result.
+    };
+    console.log('offer In add to Sale:', offer);
+    const offerId = await E(walletP).addOffer(offer);
+    console.log('offerId', offerId);
+    return offerId;
+  } catch (e) {
+    console.error('Could not get invitation maker in wallet', e);
+  }
+  return null;
+};
