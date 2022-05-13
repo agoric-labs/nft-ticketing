@@ -203,7 +203,7 @@ export default function Provider({ children }) {
               );
               if (
                 offer.invitationDetails.description === 'InitInvitationMaker' &&
-                offer.status === 'accept'
+                (offer.status === 'accept' || offer.status === 'complete')
               ) {
                 return true;
               } else return false;

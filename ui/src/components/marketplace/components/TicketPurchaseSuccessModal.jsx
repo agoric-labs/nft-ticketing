@@ -2,9 +2,11 @@ import React from 'react';
 import Button from '../../common/Button';
 import checkLogo from '../../../assets/icons/Check.svg';
 import { useApplicationContext } from '../../../context/Application';
+import { setActiveTab, setOpenModal, setType } from '../../../store/store';
 
 const TicketPurchaseSuccessModal = () => {
   const {
+    dispatch,
     state: { activeCard },
   } = useApplicationContext();
 
@@ -18,7 +20,15 @@ const TicketPurchaseSuccessModal = () => {
           {`You've`} bought {activeCard.ticketCount} tickets for event{' '}
           <b>{`"${activeCard.name}"`}</b> successfully!
         </p>
-        <Button styles="w-full" text="View My Tickets" />
+        <Button
+          styles="w-full"
+          text="View My Tickets"
+          onClick={() => {
+            dispatch(setActiveTab(1));
+            dispatch(setOpenModal(false));
+            dispatch(setType('Checkin'));
+          }}
+        />
       </div>
     </div>
   );

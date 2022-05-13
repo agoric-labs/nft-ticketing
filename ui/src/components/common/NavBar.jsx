@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { useApplicationContext } from '../../context/Application';
 import { setActiveTab, setType } from '../../store/store';
 
@@ -9,6 +9,33 @@ const Header = () => {
   const history = useHistory();
   const walletStatus = approved ? 'Connected' : 'Not connected';
   // dispatch(setActiveTab(0));
+  const { activePage } = useParams();
+
+  useEffect(() => {
+    switch (activePage) {
+      case 'marketplace': {
+        dispatch(setActiveTab(0));
+        dispatch(setType('Marketplace'));
+        break;
+      }
+
+      case 'checkin': {
+        dispatch(setActiveTab(1));
+        dispatch(setType('Checkin'));
+        break;
+      }
+      case 'create': {
+        dispatch(setActiveTab(2));
+        dispatch(setType('Create'));
+        break;
+      }
+      default:
+        dispatch(setActiveTab(0));
+        dispatch(setType('Marketplace'));
+        break;
+    }
+  }, []);
+
   useEffect(() => {
     switch (activeTab) {
       case 0:

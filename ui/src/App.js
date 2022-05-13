@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import './styles/global.css';
+// import { useParams } from 'react-router-dom';
 
 import NavBar from './components/common/NavBar.jsx';
 
 import { useApplicationContext } from './context/Application';
-import { setActiveTab, setOpenModal, setType } from './store/store';
+import { setOpenModal } from './store/store';
 import MainContainer from './components/mainContainer/MainContainer';
 import Footer from './components/common/Footer';
 import ModalWrapper from './components/common/modal/ModalWrapper';
@@ -15,11 +16,13 @@ function App() {
     dispatch,
     state: { openModal },
   } = useApplicationContext();
-  useEffect(() => {
-    dispatch(setActiveTab(0));
-    dispatch(setType('marketplace'));
-  }, []);
+
+  // useEffect(() => {
+  //   dispatch(setActiveTab(0));
+  //   dispatch(setType('marketplace'));
+  // }, []);
   console.log('component rerendering');
+
   const { purchaseTickets, createNewEvent, checkInCard } = Main();
   return (
     <div className="relative w-full h-full">
