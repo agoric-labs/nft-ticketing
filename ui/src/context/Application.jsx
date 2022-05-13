@@ -29,6 +29,7 @@ import {
   setPreviousOfferId,
 } from '../store/store';
 import { getInvitationMakerInWallet } from '../services/marketPlace.js';
+import { waitForOfferBeingAccepted } from '../helpers/wallet.js';
 // import { parseEventsToSeperateCards } from '../services/cardMint.js';
 // import { mintAndAddToSale } from '../helpers/wallet.js';
 // import { mapSellingOffersToEvents } from '../services/marketPlace.js';
@@ -60,7 +61,7 @@ export function useApplicationContext() {
 /* eslint-disable complexity, react/prop-types */
 export default function Provider({ children }) {
   const [state, dispatch] = useReducer(reducer, defaultState);
-  const { cardPurse, tokenPurses } = state;
+  const { cardPurse, tokenPurses, previousOfferId } = state;
   useEffect(() => {
     // Receive callbacks from the wallet connection.
     const otherSide = Far('otherSide', {
@@ -75,7 +76,7 @@ export default function Provider({ children }) {
 
     let walletAbort;
     let walletDispatch;
-
+    let initInvitationMaker = false;
     const onConnect = async () => {
       dispatch(setConnected(true));
       const socket = getActiveSocket();
@@ -113,25 +114,39 @@ export default function Provider({ children }) {
         const Issuer = await E(publicFacetMarketPlace).getItemsIssuer();
         cardBrand = Issuer.cardBrand;
         try {
+          const installationBoardId = MARKET_PLACE_INSTALLATION_BOARD_ID;
+          console.log('walletp', walletP);
+          await E(walletP).suggestInstallation(
+            'Installation',
+            installationBoardId,
+          );
+          console.log('suggestion 1');
+          await E(walletP).suggestInstance(
+            'Instance',
+            MARKET_PLACE_INSTANCE_BOARD_ID,
+          );
+          console.log('suggestion 2');
+          await E(walletP).suggestIssuer('Event Tickets', CARD_ISSUER_BOARD_ID);
+          console.log('suggestion 3');
+        } catch (error) {
+          console.log('error in promise all:', error);
+        }
+        const initializeInvitationMaker = async () => {
           const offerId = await getInvitationMakerInWallet({
             marketPlaceContractInstance,
             walletP,
           });
+          initInvitationMaker = true;
           console.log('offerID IN APPLICATION:', offerId);
+          await waitForOfferBeingAccepted({ walletP, offerId });
           if (offerId) dispatch(setPreviousOfferId(offerId));
+        };
+        try {
+          if (!previousOfferId && !initInvitationMaker)
+            initializeInvitationMaker();
         } catch (e) {
           console.log('error in application getting Invitation Maker', e);
         }
-
-        // const isAdmin = await E(publicFacetMarketPlace).isSeller();
-        // if (!isAdmin) {
-        //   // Do logic for non-admin users.
-        //   // Send an offer so that a non-admin invitation maker is returned.
-        // }
-        // const isMinted = await E(publicFacetMarketPlace).getMinted();
-        // dispatch(setIsSeller(isAdmin));
-        // console.log('isSeller1:', isSeller);
-        // console.log('isMinted:', isMinted);
         const processPurses = (purses) => {
           const newTokenPurses = purses.filter(
             ({ brandBoardId }) => brandBoardId === MONEY_BRAND_BOARD_ID,
@@ -186,7 +201,10 @@ export default function Provider({ children }) {
                 'wallet offers:',
                 offer.invitationDetails.description,
               );
-              if (offer.invitationDetails.description === 'createNewEvent') {
+              if (
+                offer.invitationDetails.description === 'InitInvitationMaker' &&
+                offer.status === 'accept'
+              ) {
                 return true;
               } else return false;
             });
@@ -200,24 +218,6 @@ export default function Provider({ children }) {
         watchWallerOffers().catch((err) =>
           console.log('got watchWalletoffer err', err),
         );
-        try {
-          const installationBoardId = MARKET_PLACE_INSTALLATION_BOARD_ID;
-          console.log('walletp', walletP);
-          await E(walletP).suggestInstallation(
-            'Installation',
-            installationBoardId,
-          );
-          console.log('suggestion 1');
-          await E(walletP).suggestInstance(
-            'Instance',
-            MARKET_PLACE_INSTANCE_BOARD_ID,
-          );
-          console.log('suggestion 2');
-          await E(walletP).suggestIssuer('Event Tickets', CARD_ISSUER_BOARD_ID);
-          console.log('suggestion 3');
-        } catch (error) {
-          console.log('error in promise all:', error);
-        }
       } catch (e) {
         console.log('error in application', e);
       }

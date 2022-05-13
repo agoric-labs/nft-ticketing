@@ -138,7 +138,7 @@ export const getInvitationMakerInWallet = async ({
       id: uuidv4(),
       invitationQuery: {
         instance: marketPlaceContractInstance,
-        description: 'createNewEvent',
+        description: 'InitInvitationMaker',
       },
       proposalTemplate: {}, // Tell the wallet that we're handling the offer result.
     };
@@ -147,7 +147,7 @@ export const getInvitationMakerInWallet = async ({
     console.log('offerId', offerId);
     return offerId;
   } catch (e) {
-    console.error('Could not get invitation maker in wallet', e);
+    console.log('Could not get invitation maker in wallet', e);
   }
   return null;
 };
