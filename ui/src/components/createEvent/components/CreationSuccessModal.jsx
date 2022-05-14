@@ -2,9 +2,11 @@ import React from 'react';
 import Button from '../../common/Button';
 import checkLogo from '../../../assets/icons/Check.svg';
 import { useApplicationContext } from '../../../context/Application';
+import { setActiveTab, setOpenModal, setType } from '../../../store/store';
 
 const CreationSuccessModal = () => {
   const {
+    dispatch,
     state: { activeCard },
   } = useApplicationContext();
   return (
@@ -17,7 +19,15 @@ const CreationSuccessModal = () => {
           Your event <b>{`"${activeCard.name}"`}</b> has been created
           successfully.
         </p>
-        <Button styles="w-full" text="View Event on Marketplace" />
+        <Button
+          styles="w-full"
+          text="View Event on Marketplace"
+          onClick={() => {
+            dispatch(setActiveTab(0));
+            dispatch(setOpenModal(false));
+            dispatch(setType('Marketplace'));
+          }}
+        />
       </div>
     </div>
   );

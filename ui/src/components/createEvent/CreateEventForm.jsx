@@ -10,11 +10,15 @@ import AttributeSelectorForm from './components/AttributeSelectorForm';
 import { setActiveCard, setModalType, setOpenModal } from '../../store/store';
 // import { useApplicationContext } from '../../context/Application';
 import { Modal } from '../../helpers/ModalActions';
+import { useApplicationContext } from '../../context/Application';
 // import { setAddFormLoader, setCreationSnackbar } from '../store/store';
-// import { useApplicationContext } from '../context/Application';
 
-function CreateTicketForm({ isSeller, dispatch }) {
-  console.log(isSeller);
+function CreateTicketForm() {
+  // { isSeller, dispatch, priorOfferId }
+  const {
+    dispatch,
+    state: { isSeller, previousOfferId },
+  } = useApplicationContext();
   const [error, setError] = useState('');
   const [Form, setForm] = useState({
     id: '',
@@ -54,15 +58,25 @@ function CreateTicketForm({ isSeller, dispatch }) {
       Form.name === '' ||
       Form.dateTime === null ||
       Form.image === '' ||
-      eventDetails.length === 0
+      eventDetails.length === 0 ||
+      eventDetails[0].ticketType === '' ||
+      eventDetails[0].ticketCount === 0 ||
+      eventDetails[0].ticketPrice === 0
     ) {
       setError('* All fields are required');
       return;
     }
-    // if (!isSeller) {
-    //   setError('* Only admins are allowed to create events');
-    //   return;
-    // }
+    console.log('isSeller:', isSeller);
+    if (!isSeller) {
+      setError('* Only admins are allowed to create events');
+      return;
+    }
+    if (!previousOfferId) {
+      setError(
+        '* First accept empty offer in wallet to able to use create Event',
+      );
+      return;
+    }
     setError('');
     try {
       const id = uuidv4();

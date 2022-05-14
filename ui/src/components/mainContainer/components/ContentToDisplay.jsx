@@ -38,7 +38,13 @@ const ContentToDisplay = ({ tab }) => {
       );
       break;
     case 2:
-      content = <CreateTicketForm isSeller={isSeller} dispatch={dispatch} />;
+      content = (
+        <CreateTicketForm
+          isSeller={isSeller}
+          dispatch={dispatch}
+          priorOfferId={priorOfferId}
+        />
+      );
       break;
     default:
       content = <></>;

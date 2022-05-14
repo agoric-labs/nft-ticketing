@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { useApplicationContext } from '../context/Application';
+import { waitForOfferBeingAccepted } from '../helpers/wallet';
 // import { mintAndAddToSale } from '../helpers/wallet';
 import { createNewEvent } from './cardMint';
 import { burnCard } from './checkIn';
@@ -12,7 +13,7 @@ const Main = () => {
     cardPursePetname,
     // cardBrand,
     // marketPlaceInstanceForQuery,
-    // publicFacetMarketPlace,
+    publicFacetMarketPlace,
     state: { previousOfferId, activeCard },
   } = useApplicationContext();
 
@@ -55,6 +56,7 @@ const Main = () => {
       totalPrice,
     ]);
     await buyEventTickets({
+      publicFacetMarketPlace,
       tokenPursePetname,
       walletP,
       previousOfferId,
@@ -70,6 +72,7 @@ const Main = () => {
 
   const checkInCard = async () => {
     await burnCard({
+      publicFacetMarketPlace,
       offerId: previousOfferId,
       walletP,
       cardPursePetname,
@@ -78,12 +81,13 @@ const Main = () => {
   };
   const createEvent = async () => {
     const events = harden([activeCard]);
-    await createNewEvent({
+    const offerId = await createNewEvent({
       events,
       cardPursePetname,
       previousOfferId,
       walletP,
     });
+    await waitForOfferBeingAccepted({ walletP, offerId });
   };
 
   return {

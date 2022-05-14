@@ -2,6 +2,7 @@ import { E } from '@agoric/eventual-send';
 import { v4 as uuidv4 } from 'uuid';
 
 export const burnCard = async ({
+  publicFacetMarketPlace,
   offerId,
   walletP,
   cardPursePetname,
@@ -9,13 +10,15 @@ export const burnCard = async ({
 }) => {
   console.log([offerId, walletP, cardPursePetname, tickets]);
   try {
+    const invitation = await E(publicFacetMarketPlace).getCheckInvitation();
     const offer = {
       // JSONable ID for this offer.  This is scoped to the origin.
       id: uuidv4(),
-      continuingInvitation: {
-        priorOfferId: offerId,
-        description: 'CheckInTicket',
-      },
+      // continuingInvitation: {
+      //   priorOfferId: offerId,
+      //   description: 'CheckInTicket',
+      // },
+      invitation,
       proposalTemplate: {
         give: {
           Asset: {

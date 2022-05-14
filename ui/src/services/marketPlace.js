@@ -48,21 +48,27 @@ export const addToSale = async ({
 };
 
 export const buyEventTickets = async ({
+  publicFacetMarketPlace,
   tokenPursePetname,
   walletP,
-  previousOfferId,
+  // previousOfferId,
   cardPursePetname,
   totalPrice,
   ticketsInSection,
 }) => {
   try {
+    const invitation = await E(
+      publicFacetMarketPlace,
+    ).getMarketPlaceInvitation();
+    console.log('invitation:', invitation);
     const offer = {
       // JSONable ID for this offer.  This is scoped to the origin.
       id: uuidv4(),
-      continuingInvitation: {
-        priorOfferId: previousOfferId,
-        description: 'MarketPlaceOffer',
-      },
+      invitation,
+      // continuingInvitation: {
+      //   priorOfferId: previousOfferId,
+      //   description: 'MarketPlaceOffer',
+      // },
       proposalTemplate: {
         give: {
           Price: {
@@ -79,7 +85,7 @@ export const buyEventTickets = async ({
       }, // Tell the wallet that we're handling the offer result.
       // dappContext: true,
     };
-    console.log('offer:', offer);
+    console.log('offer in marketplace:', offer);
     await E(walletP).addOffer(offer);
   } catch (e) {
     console.error('Could not add sell offer to wallet', e);

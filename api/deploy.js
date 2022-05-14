@@ -94,20 +94,9 @@ export default async function deployApi(homePromise, { pathResolve }) {
   const allTickets = { tickets };
   console.log('- SUCCESS! contract instance is running on Zoe');
   console.log('Retrieving Board IDs for issuers and brands');
-  const makeCounter = () => {
-    let count = 0;
-    return Far('counter', {
-      incr: () => (count += 1),
-      decr: () => (count -= 1),
-      count: () => count,
-    });
-  };
-  const counter = makeCounter();
-  const n = await E(counter).incr();
-  console.log('n:', n);
   const {
     creatorInvitation,
-    // creatorFacet: marketPlaceCreatorFacet,
+    creatorFacet: marketPlaceCreatorFacet,
     publicFacet: marketPlaceFacet,
     instance: marketPlaceInstance,
   } = await E(zoe).startInstance(
@@ -149,7 +138,9 @@ export default async function deployApi(homePromise, { pathResolve }) {
   // Depositing creator Invitation to contract deployer's wallet.
   const depositFacet = await E(board).getValue(depositFacetId);
   console.log('creatorInvitation', creatorInvitation);
+  const sellerInvitation = await E(marketPlaceCreatorFacet).makeInvitation();
   await E(depositFacet).receive(creatorInvitation);
+  await E(depositFacet).receive(sellerInvitation);
   // const invitation = await E(marketPlaceCreatorFacet).makeInvitation();
   // await E(depositFacet).receive(invitation);
 

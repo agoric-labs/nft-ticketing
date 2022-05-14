@@ -146,12 +146,6 @@ const start = async (zcf) => {
       throw seat.fail(Error('error in exchangeOfferHandler'));
     }
   };
-  const creatorFacet = Far('creatorFacet', {
-    // The creator of the instance can send invitations to anyone
-    // they wish to.
-    makeInvitation: () =>
-      zcf.makeInvitation(exchangeOfferHandler, 'SellOffers'),
-  });
 
   /** @type {OfferHandler} */
   const checkInTicket = async (seat) => {
@@ -201,6 +195,11 @@ const start = async (zcf) => {
     seat.exit();
     return harden({ invitationMakers });
   };
+  const creatorFacet = Far('creatorFacet', {
+    // The creator of the instance can send invitations to anyone
+    // they wish to.
+    makeInvitation: () => zcf.makeInvitation(() => {}, 'SellerAccess'),
+  });
   const creatorInvitation = zcf.makeInvitation(
     InitInvitationMaker,
     'InitInvitationMaker',
@@ -215,7 +214,12 @@ const start = async (zcf) => {
         cardIssuer,
         cardBrand,
       }),
+    getMarketPlaceInvitation: () =>
+      zcf.makeInvitation(exchangeOfferHandler, 'MarketPlaceOffer'),
+    getCheckInvitation: () =>
+      zcf.makeInvitation(checkInTicket, 'CheckInTicket'),
   });
+
   return harden({ publicFacet, creatorFacet, creatorInvitation });
 };
 

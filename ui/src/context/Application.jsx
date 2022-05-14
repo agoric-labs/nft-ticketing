@@ -22,7 +22,7 @@ import {
   setTokenPurses,
   setUserCards,
   setInvitationPurse,
-  // setIsSeller,
+  setIsSeller,
   setEventCards,
   setWalletOffers,
   setPreviousOfferId,
@@ -155,6 +155,15 @@ export default function Provider({ children }) {
           const zoeInvitationPurse = purses.find(
             ({ brandBoardId }) => brandBoardId === INVITE_BRAND_BOARD_ID,
           );
+          console.log('zoeInvitationPurse:', zoeInvitationPurse);
+          const sellerStatus = zoeInvitationPurse?.currentAmount?.value.some(
+            (item) => {
+              if (item.description === 'SellerAccess') return true;
+              else return false;
+            },
+          );
+          console.log('seller Status:', sellerStatus);
+          dispatch(setIsSeller(sellerStatus));
           console.log(MONEY_ISSUER_BOARD_ID);
           console.log('newCardPurse', newCardPurse);
           dispatch(setTokenPurses(newTokenPurses));

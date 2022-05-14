@@ -1,17 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApplicationContext } from '../../../context/Application';
 import { Modal } from '../../../helpers/ModalActions';
 // import CheckInCard from '../../checkIn/components/CheckInCard';
 import { ipfsUrl } from '../../../tickets';
-import { setAddFormLoader, setModalType } from '../../../store/store';
+import { setModalType } from '../../../store/store';
 import Button from '../../common/Button';
 import ModalBottomDetail from '../../common/modal/ModalBottomDetail';
 import ModalTopDetail from '../../common/modal/ModalTopDetail';
 
 const CreateEventModal = ({ createNewEvent }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const {
     dispatch,
-    state: { activeCard, addFormLoader },
+    state: { activeCard },
   } = useApplicationContext();
   const cardDetail = activeCard;
   const image = `${ipfsUrl + cardDetail.image}`;
@@ -39,11 +40,13 @@ const CreateEventModal = ({ createNewEvent }) => {
             text="Create"
             onClick={async () => {
               dispatch(setModalType(Modal.SUCCESS_CREATE_EVENT));
-              dispatch(setAddFormLoader(true));
+              // dispatch(setAddFormLoader(true));
+              setIsLoading(true);
               await createNewEvent();
-              dispatch(setAddFormLoader(false));
+              // dispatch(setAddFormLoader(false));
+              setIsLoading(false);
             }}
-            isLoading={addFormLoader}
+            isLoading={isLoading}
             inModal={true}
           />
         </div>

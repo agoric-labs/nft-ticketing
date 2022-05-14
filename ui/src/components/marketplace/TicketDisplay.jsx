@@ -18,7 +18,7 @@ const TicketDisplay = () =>
     const [page, setPage] = useState(0);
     const pageLength = 2;
     const {
-      state: { searchInput, searchOption, eventCards, previousOfferId },
+      state: { searchInput, searchOption, eventCards },
     } = useApplicationContext();
     const [eventList, setEventList] = useState([]);
     useEffect(() => {
@@ -35,8 +35,8 @@ const TicketDisplay = () =>
     }, [searchInput, searchOption, eventCards, page]);
 
     useEffect(() => {
-      if (eventCards.length > 0 && previousOfferId) setLoader(false);
-    }, [eventCards, previousOfferId]);
+      if (eventCards.length > 0) setLoader(false);
+    }, [eventCards]);
     return (
       <>
         {' '}
