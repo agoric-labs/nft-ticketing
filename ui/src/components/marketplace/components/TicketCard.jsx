@@ -21,6 +21,13 @@ const TicketCard = ({ cardDetail }) => {
   const [error, setError] = useState('');
   const image = `${ipfsUrl + cardDetail.image}`;
   console.log('hello:', cardDetail);
+  const reInitalize = () => {
+    setTicketCount(0);
+    setTotalPrice(0);
+    setSelectedTicket('');
+    setSelectedIndex('');
+    setSelectedTicketInMenu({});
+  };
   useEffect(() => {
     setTicketCount(0);
   }, [selectedTicket]);
@@ -92,6 +99,7 @@ const TicketCard = ({ cardDetail }) => {
       ticketCount,
       totalPrice,
     });
+    reInitalize();
     dispatch(setModalType(Modal.MARKETPLACE));
     dispatch(setOpenModal(true));
   };
