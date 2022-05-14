@@ -7,7 +7,12 @@ const CheckInSuccessModal = () => {
       {' '}
       <div className="flex flex-col gap-y-4 mt-2 mx-10 mb-8 justify-center items-center">
         <img className="w-12 animate-pulse" src={checkLogo} alt="React Logo" />
-        <p className="text-center text-xl font-semibold">CheckIn Successful!</p>
+        <p className="text-center text-xl font-semibold">
+          Check In offer sent!
+        </p>
+        <p className="text-center text-sm font-normal text-gray-400">
+          Accept offer in Wallet to checkIn
+        </p>
       </div>
     </div>
   );

@@ -17,8 +17,8 @@ const TicketPurchaseSuccessModal = () => {
         <img className="w-12 animate-pulse" src={checkLogo} alt="React Logo" />
         <p className="font-semibold text-xl">Congratulations!</p>
         <p className="text-center">
-          {`You've`} bought {activeCard.ticketCount} tickets for event{' '}
-          <b>{`"${activeCard.name}"`}</b> successfully!
+          Offer sent to wallet to buy {activeCard.ticketCount} tickets for event{' '}
+          <b>{`"${activeCard.name}"`}</b>
         </p>
         <Button
           styles="w-full"
