@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { getFilteredList } from '../../helpers/searchBar';
 import CheckInCard from './components/CheckInCard';
+import Loader from '../common/Loader';
 import Pagination from '../common/Pagination';
+import { useApplicationContext } from '../../context/Application';
 
-const CheckInContainer = ({ searchInput, searchOption, userCards }) => {
+const CheckInContainer = () => {
+  const {
+    state: { searchInput, searchOption, userCards, cardPurseLoader },
+  } = useApplicationContext();
   const [eventList, setEventList] = useState(userCards);
   const [page, setPage] = useState(0);
   const pageLength = 9;
@@ -43,9 +48,20 @@ const CheckInContainer = ({ searchInput, searchOption, userCards }) => {
       />
     </>
   ) : (
-    <div className="flex justify-center items-center">
-      <h3>No card in wallet to check In</h3>
-    </div>
+    <>
+      {cardPurseLoader ? (
+        <div className="w-full flex flex-row items-center justify-center">
+          <Loader />
+          <p className="text-lg font-normal pl-4 animate-pulse">
+            fetching cards from wallet...
+          </p>
+        </div>
+      ) : (
+        <div className="flex justify-center items-center">
+          <h3>No card in wallet to check In</h3>
+        </div>
+      )}
+    </>
   );
 };
 

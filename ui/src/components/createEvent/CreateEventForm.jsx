@@ -14,7 +14,6 @@ import { useApplicationContext } from '../../context/Application';
 // import { setAddFormLoader, setCreationSnackbar } from '../store/store';
 
 function CreateTicketForm() {
-  // { isSeller, dispatch, priorOfferId }
   const {
     dispatch,
     state: { isSeller, previousOfferId },

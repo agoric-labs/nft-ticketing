@@ -26,6 +26,7 @@ import {
   setEventCards,
   setWalletOffers,
   setPreviousOfferId,
+  setCardPurseLoader,
 } from '../store/store';
 import { getInvitationMakerInWallet } from '../services/marketPlace.js';
 import { waitForOfferBeingAccepted } from '../helpers/wallet.js';
@@ -170,6 +171,7 @@ export default function Provider({ children }) {
           dispatch(setTokenDisplayInfo(newTokenPurses[0].displayInfo));
           dispatch(setTokenPetname(newTokenPurses[0].brandPetname));
           dispatch(setCardPurse(newCardPurse));
+          dispatch(setCardPurseLoader(false));
           dispatch(setUserCards(newCardPurse?.currentAmount?.value));
           dispatch(
             setInvitationPurse(zoeInvitationPurse?.currentAmount?.value),
