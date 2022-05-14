@@ -25,7 +25,7 @@ function CreateTicketForm({ isSeller, dispatch }) {
     Tickets: 0,
   });
   const [eventDetails, setEventDetails] = useState([
-    { ticketType: '', ticketCount: 0, ticketPrice: 0 },
+    { ticketType: '', ticketSold: 0, ticketCount: 0, ticketPrice: 0 },
   ]);
   const handleRemoveAttribute = (index) => {
     const temp = eventDetails;
@@ -36,7 +36,7 @@ function CreateTicketForm({ isSeller, dispatch }) {
   const handleAddAttribute = () => {
     setEventDetails([
       ...eventDetails,
-      { ticketType: '', ticketCount: 0, ticketPrice: 0 },
+      { ticketType: '', ticketSold: 0, ticketCount: 0, ticketPrice: 0 },
     ]);
   };
 
@@ -59,14 +59,14 @@ function CreateTicketForm({ isSeller, dispatch }) {
       setError('* All fields are required');
       return;
     }
-    if (!isSeller) {
-      setError('* Only admins are allowed to create events');
-      return;
-    }
+    // if (!isSeller) {
+    //   setError('* Only admins are allowed to create events');
+    //   return;
+    // }
     setError('');
     try {
       const id = uuidv4();
-      const ticketCount = eventDetails
+      const ticketsCount = eventDetails
         .map((item) => item.ticketCount)
         .reduce(
           (prev, current) => parseInt(prev, 10) + parseInt(current, 10),
@@ -78,7 +78,7 @@ function CreateTicketForm({ isSeller, dispatch }) {
         image: Form.image,
         date: Form.dateTime,
         ticketsSold: 0,
-        ticketCount,
+        ticketsCount,
         eventDetails,
       };
       console.log('cardDetails:', cardDetails);
@@ -89,7 +89,9 @@ function CreateTicketForm({ isSeller, dispatch }) {
         dateTime: '',
         ticketsCount: 0,
       });
-      setEventDetails([{ ticketType: '', ticketCount: 0, ticketPrice: 0 }]);
+      setEventDetails([
+        { ticketType: '', ticketSold: 0, ticketCount: 0, ticketPrice: 0 },
+      ]);
       dispatch(setModalType(Modal.CREATE_EVENT));
       dispatch(setOpenModal(true));
     } catch (err) {

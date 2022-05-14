@@ -23,7 +23,7 @@ function App() {
   // }, []);
   console.log('component rerendering');
 
-  const { purchaseTickets, createNewEvent, checkInCard } = Main();
+  const { purchaseTickets, createEvent, checkInCard } = Main();
   return (
     <div className="relative w-full h-full">
       <NavBar />
@@ -32,7 +32,7 @@ function App() {
         open={openModal}
         onClose={() => dispatch(setOpenModal(false))}
         purchaseTickets={purchaseTickets}
-        createNewEvent={createNewEvent}
+        createNewEvent={createEvent}
         checkInCard={checkInCard}
       ></ModalWrapper>
       <Footer />

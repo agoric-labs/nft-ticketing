@@ -165,19 +165,33 @@ const start = async (zcf) => {
   };
   /** @type {OfferHandler} */
   const createNewEvent = async (seat) => {
-    if (seat.getProposal().give.NewEvent) {
-      const newEvent = seat.getProposal().give.NewEvent[0];
-      events.push(newEvent);
-      updateAvailableEvents.updateState(events);
-    } else {
-      throw seat.fail(Error('error in exchangeOfferHandler'));
+    try {
+      if (seat.getProposal().want.Asset) {
+        const Asset = seat.getProposal().want.Asset;
+        console.log('Asset:', Asset);
+        console.log('Asset.value:', Asset.value);
+        console.log('Asset.value[0]:', Asset.value[0]);
+        const newEvent = Asset.value[0];
+        console.log('newEvent:', newEvent);
+        console.log('events:', events);
+        const updatedEvent = events.map((event) => event);
+        console.log('updatedEvents:', updatedEvent);
+        events = updatedEvent;
+        updatedEvent.push(newEvent);
+        updateAvailableEvents.updateState(updatedEvent);
+        seat.exit();
+      } else {
+        throw seat.fail(Error('error proposal not valid'));
+      }
+    } catch (e) {
+      throw seat.fail(Error('error in createNewEvent'));
     }
   };
   const invitationMakers = Far('invitation makers', {
     MarketPlaceOffer: () =>
       zcf.makeInvitation(exchangeOfferHandler, 'MarketPlaceOffer'),
     CheckInTicket: () => zcf.makeInvitation(checkInTicket, 'CheckInTicket'),
-    createNewEvent: () => zcf.makeInvitation(createNewEvent, 'createNewEvent'),
+    CreateNewEvent: () => zcf.makeInvitation(createNewEvent, 'CreateNewEvent'),
   });
 
   /** @type {OfferHandler} */

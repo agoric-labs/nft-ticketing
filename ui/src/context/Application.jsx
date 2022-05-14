@@ -2,7 +2,6 @@ import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { makeCapTP, E } from '@agoric/captp';
 import { makeAsyncIterableFromNotifier as iterateNotifier } from '@agoric/notifier';
 import { Far } from '@agoric/marshal';
-
 import {
   activateWebSocket,
   deactivateWebSocket,
@@ -30,10 +29,6 @@ import {
 } from '../store/store';
 import { getInvitationMakerInWallet } from '../services/marketPlace.js';
 import { waitForOfferBeingAccepted } from '../helpers/wallet.js';
-// import { parseEventsToSeperateCards } from '../services/cardMint.js';
-// import { mintAndAddToSale } from '../helpers/wallet.js';
-// import { mapSellingOffersToEvents } from '../services/marketPlace.js';
-// import { parseEventsToSeperateCards } from '../services/cardMint.js';
 
 const {
   MARKET_PLACE_INSTANCE_BOARD_ID,

@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { useApplicationContext } from '../context/Application';
-import { mintAndAddToSale } from '../helpers/wallet';
+// import { mintAndAddToSale } from '../helpers/wallet';
+import { createNewEvent } from './cardMint';
 import { burnCard } from './checkIn';
 import { buyEventTickets, mapSellingOffersToEvents } from './marketPlace';
 
@@ -9,33 +10,33 @@ const Main = () => {
     tokenPursePetname,
     walletP,
     cardPursePetname,
-    cardBrand,
-    marketPlaceInstanceForQuery,
-    publicFacetMarketPlace,
+    // cardBrand,
+    // marketPlaceInstanceForQuery,
+    // publicFacetMarketPlace,
     state: { previousOfferId, activeCard },
   } = useApplicationContext();
 
   // const { cardBrand } = E(publicFacetMarketPlace).getItemsIssuer();
-  const createNewEvent = async () => {
-    console.log('params:', {
-      walletP,
-      cardPursePetname,
-      marketPlaceContractInstance: marketPlaceInstanceForQuery,
-      tickets: harden([activeCard]),
-      cardBrand,
-    });
-    await mintAndAddToSale({
-      walletP,
-      cardPursePetname,
-      tokenPursePetname,
-      marketPlaceContractInstance: marketPlaceInstanceForQuery,
-      tickets: harden([activeCard]),
-      cardBrand,
-      createEvent: true,
-      publicFacetMarketPlace,
-      previousOfferId,
-    });
-  };
+  // const createNewEvent = async () => {
+  //   console.log('params:', {
+  //     walletP,
+  //     cardPursePetname,
+  //     marketPlaceContractInstance: marketPlaceInstanceForQuery,
+  //     tickets: harden([activeCard]),
+  //     cardBrand,
+  //   });
+  //   await mintAndAddToSale({
+  //     walletP,
+  //     cardPursePetname,
+  //     tokenPursePetname,
+  //     marketPlaceContractInstance: marketPlaceInstanceForQuery,
+  //     tickets: harden([activeCard]),
+  //     cardBrand,
+  //     createEvent: true,
+  //     publicFacetMarketPlace,
+  //     previousOfferId,
+  //   });
+  // };
   const purchaseTickets = async () => {
     const numberOfTickets = activeCard.ticketCount;
     const totalPrice = activeCard.totalPrice;
@@ -75,12 +76,22 @@ const Main = () => {
       tickets: activeCard,
     });
   };
+  const createEvent = async () => {
+    const events = harden([activeCard]);
+    await createNewEvent({
+      events,
+      cardPursePetname,
+      previousOfferId,
+      walletP,
+    });
+  };
 
   return {
     purchaseTickets,
     fetchEventsOnSale,
     createNewEvent,
     checkInCard,
+    createEvent,
   };
 };
 
