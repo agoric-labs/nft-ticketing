@@ -119,7 +119,7 @@ function CreateTicketForm() {
           setForm({ ...Form, image: val });
         }}
         label="Event Cover Image URL"
-        placeHolder="https://imageurl.jpg"
+        placeHolder="IPFS CID"
         type="text"
       />
       <Input

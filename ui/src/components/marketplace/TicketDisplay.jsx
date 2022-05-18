@@ -8,7 +8,7 @@ import TicketCard from './components/TicketCard';
 const TicketDisplay = () => {
   const [loader, setLoader] = useState(true);
   const [page, setPage] = useState(0);
-  const pageLength = 2;
+  const pageLength = 5;
   const {
     state: { searchInput, searchOption, eventCards },
   } = useApplicationContext();
