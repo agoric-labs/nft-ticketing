@@ -1,7 +1,7 @@
 import React from 'react';
 import Loader from './Loader';
 
-function Button({ text, styles, onClick, outLine, isLoading }) {
+function Button({ text, styles, onClick, outLine, isLoading, inModal }) {
   return (
     <button
       onClick={onClick}
@@ -11,7 +11,7 @@ function Button({ text, styles, onClick, outLine, isLoading }) {
           : 'bg-secondary hover:bg-secondaryDark text-white'
       } btn-shadow h-12 transition-colors duration-300 rounded text-lg`}
     >
-      {isLoading && <Loader color="white" />}
+      {isLoading && <Loader color="white" inModal={inModal} />}
       {text}
     </button>
   );

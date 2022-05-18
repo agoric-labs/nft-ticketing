@@ -23,8 +23,8 @@ agoric start --reset --verbose
 
 In a second terminal, enter `agoric open` in a terminal window to open a wallet.
 
-
 ```sh
+# Make sure to connect your dapp to your wallet before running this command.
 agoric deploy contract/deploy.js api/deploy.js
 ```
 
@@ -34,8 +34,6 @@ In a third terminal,
 # Navigate to the `ui` directory and start a local server
 cd ui && yarn start
 ```
-
-
 
 To learn more about how to build Agoric Dapps, please see the [Dapp Guide](https://agoric.com/documentation/dapps/).
 

@@ -22,20 +22,22 @@
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^3.3.1",
-    "prettier": "^2.2.1"
+    "prettier": "^2.2.1",
+    "uuidv4": "6.2.13"
   },
   "dependencies": {
     "@agoric/assert": "*",
     "@agoric/babel-parser": "^7.6.4",
     "@agoric/bundle-source": "*",
     "@agoric/ertp": "*",
-    "@agoric/eventual-send": "*",
+    "@endo/eventual-send": "^0.14.4",
     "@agoric/install-ses": "*",
-    "@agoric/marshal": "*",
+    "@endo/marshal": "^0.5.4",
     "@agoric/notifier": "*",
     "@agoric/store": "*",
     "@agoric/zoe": "*",
-    "import-meta-resolve": "^1.1.1"
+    "import-meta-resolve": "^1.1.1",
+    "@agoric/nat":"^4.1.0"
   },
   "ava": {
     "files": [

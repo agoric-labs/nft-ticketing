@@ -1,7 +1,7 @@
 import React from 'react';
 import Snackbar from '@material-ui/core/Snackbar';
-import { useApplicationContext } from '../context/Application';
-import { setNeedToApproveOffer, setBoughtCard } from '../store/store';
+import { useApplicationContext } from '../../../context/Application';
+import { setNeedToApproveOffer, setBoughtCard } from '../../../store/store';
 
 const ApproveOfferSnackbar = () => {
   // The snackbar to approve the offer will be closed by code not timeout.

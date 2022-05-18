@@ -1,14 +1,41 @@
 import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import { useApplicationContext } from '../context/Application';
-import { setActiveTab, setType } from '../store/store';
+import { useHistory, useParams } from 'react-router-dom';
+import { useApplicationContext } from '../../context/Application';
+import { setActiveTab, setType } from '../../store/store';
 
 const Header = () => {
   const { state, dispatch } = useApplicationContext();
-  const { connected: walletConnected, activeTab } = state;
+  const { approved, activeTab } = state;
   const history = useHistory();
-  const walletStatus = walletConnected ? 'Connected' : 'Not connected';
+  const walletStatus = approved ? 'Connected' : 'Not connected';
   // dispatch(setActiveTab(0));
+  const { activePage } = useParams();
+
+  useEffect(() => {
+    switch (activePage) {
+      case 'marketplace': {
+        dispatch(setActiveTab(0));
+        dispatch(setType('Marketplace'));
+        break;
+      }
+
+      case 'checkin': {
+        dispatch(setActiveTab(1));
+        dispatch(setType('Checkin'));
+        break;
+      }
+      case 'create': {
+        dispatch(setActiveTab(2));
+        dispatch(setType('Create'));
+        break;
+      }
+      default:
+        dispatch(setActiveTab(0));
+        dispatch(setType('Marketplace'));
+        break;
+    }
+  }, []);
+
   useEffect(() => {
     switch (activeTab) {
       case 0:
@@ -63,16 +90,16 @@ const Header = () => {
     <>
       <div className="flex justify-between nav-shadow items-center w-full h-20 px-14 text-base">
         <p className="lg:text-xl">Ticket Store</p>
-        <div className="flex-row flex text-base text-center">
+        <div className="flex-row flex text-base text-center md:pl-12">
           <TabButton tabIndex={0} text="Marketplace" width="w-36" />
           <TabButton tabIndex={1} text="Check In" width="w-36" />
-          <TabButton tabIndex={2} text="Create" width="w-28" />
+          <TabButton tabIndex={2} text="Create" width="w-32" />
         </div>
         <div>
           Agoric Wallet: {walletStatus}
           <span
             className={`inline-block ml-1.5 w-2.5 h-2.5 rounded-full ${
-              walletConnected ? 'bg-secondary' : 'bg-alternative'
+              approved ? 'bg-secondary' : 'bg-alternative'
             }`}
           ></span>
         </div>

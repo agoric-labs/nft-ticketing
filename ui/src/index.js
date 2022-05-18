@@ -8,7 +8,7 @@ import App from './App.js';
 ReactDOM.render(
   <BrowserRouter>
     <Switch>
-      <Route path={'/:activeTab?'}>
+      <Route path={'/:activePage?'}>
         <ApplicationContextProvider>
           <App />
         </ApplicationContextProvider>

@@ -54,60 +54,13 @@ export default async function deployContract(
     board,
   } = home;
 
-  // First, we must bundle up our contract code (./src/contract.js)
-  // and install it on Zoe. This returns an installationHandle, an
-  // opaque, unforgeable identifier for our contract code that we can
-  // reuse again and again to create new, live contract instances.
-  const bundle = await bundleSource(pathResolve(`./src/contract.js`));
-  const installation = await E(zoe).install(bundle);
-
-  // CMT (haseeb.asim@robor.systems): Following lines of code provide:
-  // - The bundle URL of the auctionItems contract
-  // - The bundle path name.
-  // - Using the path name the contract is bundled up.
-  // - The bundle is then installed on zoe and an installation object is returned.
-  const bundleUrl = await importMetaResolve(
-    './src/auctionItems.js',
+  const marketPlaceBundleUrl = await importMetaResolve(
+    './src/MarketPlace.js',
     import.meta.url,
   );
-  const bundlePath = new URL(bundleUrl).pathname;
-  const auctionItemsBundle = await bundleSource(bundlePath);
-  const auctionItemsInstallation = await E(zoe).install(auctionItemsBundle);
-
-  // CMT (haseeb.asim@robor.systems): Following lines of code provide:
-  // - The bundle URL of the auction logic
-  // - The bundle path name.
-  // - Using the path name the contract is bundled up.
-  // - The bundle is then installed on zoe and an installation object is returned.
-  const auctionBundleUrl = await importMetaResolve(
-    '@agoric/zoe/src/contracts/auction/index.js',
-    import.meta.url,
-  );
-  const auctionBundlePath = new URL(auctionBundleUrl).pathname;
-  const auctionBundle = await bundleSource(auctionBundlePath);
-  const auctionInstallation = await E(zoe).install(auctionBundle);
-
-  const simpleExchangeBundleUrl = await importMetaResolve(
-    './src/simpleExchange.js',
-    import.meta.url,
-  );
-  const simpleExchangeBundlePath = new URL(simpleExchangeBundleUrl).pathname;
-  const simpleExchangeBundle = await bundleSource(simpleExchangeBundlePath);
-  const simpleExchangeInstallation = await E(zoe).install(simpleExchangeBundle);
-
-  const simpleExchangeWrapperBundleUrl = await importMetaResolve(
-    './src/simpleExchangeWrapper.js',
-    import.meta.url,
-  );
-  const simpleExchangeWrapperBundlePath = new URL(
-    simpleExchangeWrapperBundleUrl,
-  ).pathname;
-  const simpleExchangeWrapperBundle = await bundleSource(
-    simpleExchangeWrapperBundlePath,
-  );
-  const simpleExchangeWrapperInstallation = await E(zoe).install(
-    simpleExchangeWrapperBundle,
-  );
+  const marketPlaceBundlePath = new URL(marketPlaceBundleUrl).pathname;
+  const marketPlaceBundle = await bundleSource(marketPlaceBundlePath);
+  const marketPlaceInstallation = await E(zoe).install(marketPlaceBundle);
 
   // Let's share this installation with other people, so that
   // they can run our contract code by making a contract
@@ -118,39 +71,19 @@ export default async function deployContract(
   // To share the installation, we're going to put it in the
   // board. The board is a shared, on-chain object that maps
   // strings to objects.
-  const CONTRACT_NAME = 'cardStore';
-  const INSTALLATION_BOARD_ID = await E(board).getId(installation);
-  const AUCTION_ITEMS_INSTALLATION_BOARD_ID = await E(board).getId(
-    auctionItemsInstallation,
-  );
-  const AUCTION_INSTALLATION_BOARD_ID = await E(board).getId(
-    auctionInstallation,
-  );
+  const CONTRACT_NAME = 'ticketStore';
 
-  const SIMPLE_EXCHANGE_INSTALLATION_BOARD_ID = await E(board).getId(
-    simpleExchangeInstallation,
-  );
-  const SIMPLE_EXCHANGE_WRAPPER_INSTALLATION_BOARD_ID = await E(board).getId(
-    simpleExchangeWrapperInstallation,
+  const MARKET_PLACE_INSTALLATION_BOARD_ID = await E(board).getId(
+    marketPlaceInstallation,
   );
   console.log('- SUCCESS! contract code installed on Zoe');
   console.log(`-- Contract Name: ${CONTRACT_NAME}`);
-  console.log(`-- Installation Board Id: ${INSTALLATION_BOARD_ID}`);
   console.log(
-    `-- Auction Installation Board Id: ${AUCTION_INSTALLATION_BOARD_ID}`,
+    `-- MarketPlace Installation Board Id: ${MARKET_PLACE_INSTALLATION_BOARD_ID}`,
   );
-  console.log(
-    `-- Auction Items Installation Board Id: ${AUCTION_ITEMS_INSTALLATION_BOARD_ID}`,
-  );
+
   // Save the constants somewhere where the UI and api can find it.
-  const dappConstants = {
-    CONTRACT_NAME,
-    INSTALLATION_BOARD_ID,
-    AUCTION_INSTALLATION_BOARD_ID,
-    AUCTION_ITEMS_INSTALLATION_BOARD_ID,
-    SIMPLE_EXCHANGE_INSTALLATION_BOARD_ID,
-    SIMPLE_EXCHANGE_WRAPPER_INSTALLATION_BOARD_ID,
-  };
+  const dappConstants = { CONTRACT_NAME, MARKET_PLACE_INSTALLATION_BOARD_ID };
   const defaultsFolder = pathResolve(`../ui/src/conf`);
   const defaultsFile = pathResolve(`../ui/src/conf/installationConstants.js`);
   console.log('writing', defaultsFile);

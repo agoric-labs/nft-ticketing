@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Loader({ color, size }) {
+function Loader({ color, size, inModal }) {
   return (
     <div>
       <div
@@ -10,8 +10,8 @@ function Loader({ color, size }) {
         } border-2 border-${
           !color ? 'secondary' : color
         } border-solid rounded-full animate-spin ${
-          color && 'absolute right-3'
-        }`}
+          inModal && 'absolute right-12'
+        } `}
       ></div>
     </div>
   );
