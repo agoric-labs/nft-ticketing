@@ -89,7 +89,7 @@ const start = async (zcf) => {
     events = updatedEvents;
     return updatedEvents;
   };
-  const checkOfferSaftey = (seat) => {
+  const checkOfferSafety = (seat) => {
     try {
       const Asset = seat.getProposal().want.Asset;
       const ticket = Asset.value[0];
@@ -137,7 +137,7 @@ const start = async (zcf) => {
       console.log('Inside Exchange offer handler:', seat.getProposal());
       // Buy Order
       if (seat.getProposal().want.Asset) {
-        const params = checkOfferSaftey(seat);
+        const params = checkOfferSafety(seat);
         await swapAllocations(seat);
         updateAvailableEvents.updateState(getUpdatedEvents(params));
       } else throw seat.fail(Error('offer is Invalid'));
